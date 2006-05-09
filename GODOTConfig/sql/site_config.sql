@@ -1,0 +1,11 @@
+CREATE TABLE site_config (
+	id		SERIAL PRIMARY KEY,
+	site		INTEGER NOT NULL,
+	config_group	VARCHAR(1024),
+	field		VARCHAR(1024),
+	value		VARCHAR(16384),
+	created		TIMESTAMP NOT NULL DEFAULT NOW(),
+	modified	TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+

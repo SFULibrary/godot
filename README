@@ -1,0 +1,43 @@
+README
+
+Installing GODOT
+
+    Please see 'http://researcher.sfu.ca | DOCUMENTS | GODOT Administration Guide'
+    for installation instructions.
+
+
+Changes
+
+    2.0.3 Fixed problem related to using Class::Accessor and 'location' as a field name.  
+          Assume this was related to the fact that location is also a subroutine name.
+
+    2.0.2 Performance improvements.  Changed site profile cache to use object store of 
+          GODOTConfig::Cache objects implemented as files in a cache directory.  Removed 
+          unnecessary string conversions in GODOT::CatalogueHoldings::Record and 
+          GODOT::CatalogueHoldings::BibCirc logic.
+
+
+Note for SFU Developers
+
+    Distribution file created by 'util/make_distrib.pl'.
+
+
+Contributors
+
+    Dave Binkley * 
+    Jonathan Esterhazy
+    Todd Holdbrook
+    Kristina Long
+    Doug Macdonald
+    Yang Yu
+    
+    * http://www.trentu.ca/news/daily/archive/050225dbinkley.html
+
+    This is not a complete list.  Citation parsers were written by others at SFU and at other 
+    COPPUL libraries.  I need to review some of our old documentation as well look at some of 
+    the comments in the parser modules in order to complete the list.  If you know of others
+    that should be added to this list, please let me know. 
+
+
+Kristina Long - klong@sfu.ca
+

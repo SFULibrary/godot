@@ -1,0 +1,13 @@
+[% USE CGI %]
+
+<table class="form" border="0">
+<tr><td class="form-header" colspan="2">general settings</td></tr>
+<tr><td class="form-label">key:</td><td class="form-field">[% account.key %]</td></tr>
+<tr><td class="form-label">name:</td><td class="form-field"><input type="text" name="account_name" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_name : account.name %]"></td></tr>
+<tr><td class="form-label">email:</td><td class="form-field"><input type="text" name="account_email" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_email : account.email %]"></td></tr>
+<tr><td class="form-label">phone:</td><td class="form-field"><input type="text" name="account_phone" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_phone : account.phone %]"></td></tr>
+<tr><td class="form-label">password:</td><td class="form-field"><input type="password" name="account_password" size="50" maxlength="256" value=""></td></tr>
+<tr><td class="form-label">password (again):</td><td class="form-field"><input type="password" name="verify_password" size="50" maxlength="256" value=""></td></tr>
+<tr><td class="form-input" colspan="2"><input type="submit" name="state_local_submit_edit_account" value="submit"> <input type="submit" name="state_admin_accounts" value="cancel"><input type="hidden" name="account_id" value="[% account.id %]"><input type="hidden" name="submit_attempt" value="1"></td></tr>
+</table>
+

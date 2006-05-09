@@ -1,0 +1,26 @@
+[% PROCESS citation_data.atml %]
+<HTML>
+
+<HEAD>
+<TITLE>GODOT Example Citations</TITLE>
+</HEAD>
+
+<BODY>
+<H1>GODOT Example Citations</H1>
+<TABLE WIDTH="100%" CELLPADDING=10>
+
+[% FOREACH citation = citations %]
+    <TR><TD>
+        [[% citation.genre %]]<BR>
+        [% citation.format %]<BR>  
+        <A HREF="[% sfu_godot_url %]?sid=[% sid %]&[% citation.url %]">[SFU GODOT]</A> 
+        <A HREF="[% local_godot_url %]?sid=[% sid %]&[% citation.url %]">[YOUR GODOT]</A>
+    </TD></TR>
+[% END %]
+
+
+</TABLE>
+</BODY>
+
+</HTML>
+

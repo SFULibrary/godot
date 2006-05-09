@@ -1,0 +1,28 @@
+<div class="template-name-heading">[% template_name %]</div><br />
+<form method="post" enctype="multipart/form-data">
+<table class="form">
+<tr><td class="form-header">edit template</td></tr>
+<tr><td class="form-field">
+<textarea rows="40" cols="80" name="template_data">
+[%- template_data | html -%]
+</textarea>
+</td></tr>
+<tr><td class="form-input">
+<input type="submit" name="state_local_submit_edit_template" value="submit">
+<input type="submit" name="state_local_list_templates" value="cancel">
+<input type="hidden" name="template" value="[% template_name %]">
+<input type="hidden" name="group" value="[% template_group %]">
+</td></tr>
+</table>
+
+<br />
+
+<table class="form">
+<tr><td class="form-header">upload template</td></tr>
+<tr><td class="form-field" nowrap="nowrap">
+upload local template:
+<input type="file" name="template_file"> <input type="submit" name="state_local_upload_template" value="upload">
+</td></tr>
+</table>
+
+</form>

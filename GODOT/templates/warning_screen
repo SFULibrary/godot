@@ -1,0 +1,46 @@
+[% DEFAULT  
+        submit = 'Continue'
+%]
+
+<div id="warning">
+
+[% INCLUDE skipped_main %]
+
+[% IF page.your_library_has_warning  %]
+
+        [% SET title = citation.parsed('TITLE') %]
+        [% SET isbn  = citation.parsed('ISBN')  %]
+        [% SET issn  = citation.parsed('ISSN')  %]
+
+        [% config.abbrev_name %] appears to have 
+
+        [% IF title  %]
+                '[% title %]'                 
+        [% ELSIF isbn  %]
+                an item with an ISBN of '[% isbn %]'
+        [% ELSIF issn  %]
+                an item with an ISSN of '[% issn %]'
+        [% END %]
+        .
+        <p>
+        [% INCLUDE config_your_library_has_warning_text %]
+
+[% END  %]
+
+
+<div id="warning-submit">
+<INPUT TYPE="SUBMIT" NAME="[% page.buttons.first.action %][% page.buttons.first.param  %]" VALUE="[% submit %]"/>
+</div>
+
+
+<div id="warning-links">
+<ul id="warning-links">
+[% IF page.instructions.back_to_dbase %]
+        <li><a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a></li>        
+[% END %]
+</ul>
+</div>
+
+
+
+</div>

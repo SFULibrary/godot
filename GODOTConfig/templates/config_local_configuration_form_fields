@@ -1,0 +1,196 @@
+[% SET config_local_configuration_form_fields = [
+
+{ name => 'parallel_server_msg',            type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' },
+{ name => 'use_javascript',                 type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' },
+{ name => 'display_citation_capture_links', type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' }, 
+{ name => 'display_command_links',          type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' }, 
+{ name => 'display_related_info_links',     type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' }, 
+{ name => 'expand_fulltext_by_default',     type => 'CHECKBOX_BOOL',   section => 'display',  help => 'display'}, 
+{ name => 'expand_holdings_by_default',     type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' }, 
+{ name => 'openurl_cookie_pusher_image',    type => 'TEXTFIELD',       size => '80', section => 'display', help => 'display' },
+
+{ name => 'group',                        type => 'POPUP',         choice_labels => 'SITE_GROUPS',    section => 'general', help => 'general' },
+{ name => 'contact',                      type => 'TEXTAREA',      rows => '25', section => 'general', help => 'general' },
+
+
+{ name => 'error_not_parseable',          type => 'TEXTAREA',                  section => 'errors', help => 'errors' },
+
+
+{ name => 'rank',                         type => 'LIST',                      section => 'holdings', help => 'holdings' },
+{ name => 'other_rank',                   type => 'CHECKBOX_BOOL',             section => 'holdings', help => 'holdings' },
+{ name => 'other_rank_display_group',     type => 'POPUP',                     section => 'holdings', help => 'holdings' },
+{ name => 'other_rank_search_group',      type => 'POPUP',                     section => 'holdings', help => 'holdings' },
+{ name => 'rank_non_journal',             type => 'LIST',                      section => 'holdings', help => 'holdings' },
+{ name => 'other_rank_non_journal',       type => 'CHECKBOX_BOOL',             section => 'holdings', help => 'holdings' },
+{ name => 'other_rank_non_journal_display_group', type => 'POPUP',             section => 'holdings', help => 'holdings' },
+{ name => 'other_rank_non_journal_search_group', type => 'POPUP',              section => 'holdings', help => 'holdings' },
+{ name => 'skip_main_holdings_screen_if_no_holdings', type => 'CHECKBOX_BOOL', section => 'holdings', help => 'holdings' },
+
+{ name => 'auto_req',                     type => 'CHECKBOX_BOOL',       section => 'auto_requesting', help => 'auto_requesting' },
+{ name => 'other_auto_req_show',          type => 'CHECKBOX_BOOL',       section => 'auto_requesting', help => 'auto_requesting' },
+{ name => 'auto_req_non_journal',         type => 'CHECKBOX_BOOL',       section => 'auto_requesting', help => 'auto_requesting' },
+{ name => 'other_auto_req_show_non_journal', type => 'CHECKBOX_BOOL',    section => 'auto_requesting', help => 'auto_requesting' },
+
+{ name => 'eric_coll_avail',              type => 'POPUP',         choice_labels => 'ERIC_COLL_AVAIL', section => 'collections', help => 'collections' },
+{ name => 'eric_coll_text',               type => 'TEXTAREA',      section => 'collections', help => 'collections' },
+{ name => 'mlog_coll_avail',              type => 'CHECKBOX_BOOL', section => 'collections', help => 'collections' },
+{ name => 'mlog_coll_text',               type => 'TEXTAREA',      section => 'collections', help => 'collections' },
+
+
+{ name => 'use_856_links',                type => 'CHECKBOX_BOOL', section => 'fulltext', help => 'fulltext' },
+{ name => 'use_fulltext_links',           type => 'CHECKBOX_BOOL', section => 'fulltext', help => 'fulltext' },
+{ name => 'link_from_cat_name',           type => 'TEXTFIELD',     size => '15', maxlength => '15', section => 'fulltext', help => 'fulltext' },
+{ name => 'link_name',                    type => 'TEXTFIELD',     size => '15', maxlength => '15', section => 'fulltext', help => 'fulltext' },
+
+
+{ name => 'blocking',                     type => 'POPUP',         choice_labels => 'BLOCKING', section => 'blocking', help => 'blocking' },
+{ name => 'blocking_holdings',            type => 'TEXTFIELD',     size => '15', maxlength => '15', section => 'blocking', help => 'blocking' },
+{ name => 'include_fulltext_as_holdings', type => 'CHECKBOX_BOOL', section => 'blocking', help => 'blocking' },
+
+
+{ name => 'no_holdings_req',              type => 'CHECKBOX_BOOL', section => 'ill_form', help => 'ill_form' },
+{ name => 'no_holdings_req_non_journal',  type => 'CHECKBOX_BOOL', section => 'ill_form', help => 'ill_form' },
+{ name => 'ill_req_form',                 type => 'POPUP',         choice_labels => 'ILL_REQ_LINK', section => 'ill_form', help => 'ill_form' },
+{ name => 'ill_req_form_non_journal',     type => 'POPUP',         choice_labels => 'ILL_REQ_LINK', section => 'ill_form', help => 'ill_form' },
+{ name => 'ill_req_form_limit_text',      type => 'TEXTAREA',      section => 'ill_form', help => 'ill_form' },
+{ name => 'ill_req_form_limit',           type => 'LIST',          section => 'ill_form', help => 'ill_form' },
+
+
+{ name => 'ill_nuc',                      type => 'TEXTFIELD',     section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'from_name',                    type => 'TEXTFIELD',     maxlength => '40', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'from_email',                   type => 'TEXTFIELD',     maxlength => '40', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_local_system',             type => 'POPUP',         choice_labels => 'ILL_LOCAL_SYSTEM', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_local_system_host',        type => 'TEXTFIELD',     section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_local_system_email',       type => 'TEXTFIELD',     section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_copy_to_local_system',     type => 'CHECKBOX_BOOL', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_id',                       type => 'TEXTFIELD',     section => 'borrowing_message', help => 'borrowing_message' },
+#### { name => 'ill_local_system_date_format', type => 'POPUP',         section => 'borrowing_message',       }, 
+{ name => 'holdings_list',                type => 'CHECKBOX_BOOL', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_max_cost',                 type => 'TEXTFIELD',     maxlength => '40', section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_account',                  type => 'LIST',          section => 'borrowing_message', help => 'borrowing_message' },
+{ name => 'ill_fax',                      type => 'TEXTFIELD',     maxlength => '40', section => 'borrowing_message', help => 'borrowing_message' },
+
+
+{ name => 'request',                      type => 'LIST',          section => 'borrowing_relationships', help => 'borrowing_relationships' },
+{ name => 'other_request',                type => 'POPUP',         section => 'borrowing_relationships', help => 'borrowing_relationships' },
+{ name => 'request_non_journal',          type => 'LIST',          section => 'borrowing_relationships', help => 'borrowing_relationships' },
+{ name => 'other_request_non_journal',    type => 'POPUP',         section => 'borrowing_relationships', help => 'borrowing_relationships' },
+
+
+{ name => 'use_request_confirmation_screen',   type => 'CHECKBOX_BOOL', section => 'borrowing', help => 'borrowing' },
+{ name => 'use_request_acknowledgment_screen', type => 'CHECKBOX_BOOL', section => 'borrowing', help => 'borrowing' },
+{ name => 'ill_email_ack_msg',                 type => 'CHECKBOX_BOOL', section => 'borrowing', help => 'borrowing' },
+{ name => 'ill_email_ack_msg_text',            type => 'TEXTAREA',      section => 'borrowing', help => 'borrowing' },
+
+
+
+{ name => 'lend',                         type => 'CHECKBOX_BOOL', section => 'lending', help => 'lending' },
+{ name => 'request_msg_fmt',              type => 'POPUP',         choice_labels => 'REQUEST_MESSAGE_FORMATS', section => 'lending', help => 'lending' },
+{ name => 'request_msg_email',            type => 'TEXTFIELD',     section => 'lending', help => 'lending' },
+#### { name => 'request_msg_date_format',      type => 'POPUP',         section => 'lending',         }, 
+{ name => 'same_nuc_email',               type => 'POPUP',  choice_labels => 'SAME_NUC_EMAIL', section => 'lending', help => 'lending' },
+
+
+{ name => 'patr_last_name',               type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_first_name',              type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_library_id',              type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_type',             type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_not_req_after',           type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_prov',                    type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_department',              type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_email',            type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_pickup',                  type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_phone',                   type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_phone_work',              type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_building',                type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_noti',             type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_street',                  type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_city',                    type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_postal_code',             type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_rush_req',                type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_paid',                    type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_account_no',              type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+{ name => 'patr_note',                    type => 'POPUP', choice_labels => 'REQUEST_FORM_FIELD', section => 'request_form', help => 'request_form' },
+
+{ name => 'patr_library_id_def',          type => 'TEXTFIELD',     size => '20', maxlength => '20', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_type_edit_allowed', type => 'CHECKBOX_BOOL', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_type_disp',        type => 'CHECKBOX_BOOL', section => 'request_form', help => 'request_form' },
+{ name => 'patr_patron_type_choice',      type => 'LIST',          section => 'request_form', help => 'request_form' },
+#### { name => 'request_form_date_type',       type => 'POPUP',         section => 'request_form',    }, 
+{ name => 'patr_department_choice',       type => 'LIST',          section => 'request_form', help => 'request_form' },
+{ name => 'patr_pickup_choice',           type => 'LIST',          section => 'request_form', help => 'request_form' },
+{ name => 'patr_paid_choice',             type => 'LIST',          section => 'request_form', help => 'request_form' },
+
+{ name => 'ill_cache_patron_info',        type => 'CHECKBOX_BOOL', section => 'request_form', help => 'request_form' },
+
+{ name => 'patron_email_pattern',         type => 'TEXTFIELD',     size => '80', section => 'patron_email', help => 'patron_email' },
+{ name => 'patron_email_no_match_text',   type => 'TEXTAREA',      section => 'patron_email', help => 'patron_email' },
+
+
+
+{ name => 'password_needed',              type => 'POPUP',   choice_labels => 'PASSWORD_NEEDED',  section => 'request_password', help => 'request_password' },
+{ name => 'password_value',               type => 'TEXTFIELD',     section => 'request_password', help => 'request_password' },
+{ name => 'skip_required_if_password',    type => 'CHECKBOX_BOOL', section => 'request_password', help => 'request_password' },
+
+{ name => 'use_blank_citation_form',      type => 'CHECKBOX_BOOL', section => 'blank_citation', help => 'blank_citation' },
+
+{ name => 'use_patron_api',               type => 'CHECKBOX_BOOL', section => 'patron_api', help => 'patron_api' },
+{ name => 'patron_api_type',              type => 'POPUP',   choice_labels => 'PATRON_API', section => 'patron_api', help => 'patron_api' },
+{ name => 'patron_api_host',              type => 'TEXTFIELD',     section => 'patron_api', help => 'patron_api' },
+{ name => 'patron_api_port',              type => 'TEXTFIELD',     section => 'patron_api', help => 'patron_api' },
+{ name => 'patron_need_pin',              type => 'CHECKBOX_BOOL', section => 'patron_api', help => 'patron_api' },
+{ name => 'patr_fine_limit',              type => 'TEXTFIELD',     section => 'patron_api', help => 'patron_api' },
+
+
+{ name => 'use_site_holdings',                    type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'abbrev_name',                          type => 'TEXTFIELD',     size => '15', maxlength => '15', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'disable_holdings_statement_display',   type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'disable_item_and_circulation_display', type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'catalogue_source_journal',             type => 'TEXTFIELD', size => '10', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'catalogue_source_non_journal',         type => 'TEXTFIELD', size => '10', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'catalogue_source_default',             type => 'TEXTFIELD', size => '10', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'disable_journal_details',              type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
+{ name => 'disable_non_journal_details',          type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
+
+
+{ name => 'source_name',                  type => 'TEXTFIELD',     section => 'system', help => 'system' },
+{ name => 'system_type',                  type => 'POPUP',         section => 'system', help => 'system' },
+{ name => 'strip_apostrophe_s',           type => 'CHECKBOX_BOOL', section => 'system', help => 'system' },
+
+{ name => 'use_z3950',                    type => 'CHECKBOX_BOOL', section => 'z3950', help => 'z3950' },
+{ name => 'zhost',                        type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zport',                        type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zdbase',                       type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zid',                          type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zpassword',                    type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zsysid_search_avail',          type => 'CHECKBOX_BOOL', section => 'z3950', help => 'z3950' },
+{ name => 'zuse_att_sysid',               type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zuse_att_isbn',                type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zuse_att_issn',                type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zuse_att_title',               type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+{ name => 'zuse_att_journal_title',       type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
+
+{ name => 'zpos_att_sw_title',            type => 'POPUP', choice_labels => 'Z3950_POSITION', section => 'z3950', help => 'z3950' },
+{ name => 'zpos_att_title',               type => 'POPUP', choice_labels => 'Z3950_POSITION', section => 'z3950', help => 'z3950' },
+{ name => 'zpos_att_sw_journal_title',    type => 'POPUP', choice_labels => 'Z3950_POSITION', section => 'z3950', help => 'z3950' },
+{ name => 'zpos_att_journal_title',       type => 'POPUP', choice_labels => 'Z3950_POSITION', section => 'z3950', help => 'z3950' },
+
+{ name => 'zstruct_att_sw_title',         type => 'POPUP', choice_labels => 'Z3950_STRUCTURE', section => 'z3950', help => 'z3950' },
+{ name => 'zstruct_att_title',            type => 'POPUP', choice_labels => 'Z3950_STRUCTURE', section => 'z3950', help => 'z3950' },
+{ name => 'zstruct_att_sw_journal_title', type => 'POPUP', choice_labels => 'Z3950_STRUCTURE', section => 'z3950', help => 'z3950' },
+{ name => 'zstruct_att_journal_title',    type => 'POPUP', choice_labels => 'Z3950_STRUCTURE', section => 'z3950', help => 'z3950' },
+
+{ name => 'ztrunc_att_sw_title',          type => 'POPUP', choice_labels => 'Z3950_TRUNCATION', section => 'z3950', help => 'z3950' },
+{ name => 'ztrunc_att_title',             type => 'POPUP', choice_labels => 'Z3950_TRUNCATION', section => 'z3950', help => 'z3950' },
+{ name => 'ztrunc_att_sw_journal_title',  type => 'POPUP', choice_labels => 'Z3950_TRUNCATION', section => 'z3950', help => 'z3950' },
+{ name => 'ztrunc_att_journal_title',     type => 'POPUP', choice_labels => 'Z3950_TRUNCATION', section => 'z3950', help => 'z3950' },
+
+{ name => 'zcompl_att_sw_title',          type => 'POPUP', choice_labels => 'Z3950_COMPLETENESS', section => 'z3950', help => 'z3950' },
+{ name => 'zcompl_att_title',             type => 'POPUP', choice_labels => 'Z3950_COMPLETENESS', section => 'z3950', help => 'z3950' },
+{ name => 'zcompl_att_sw_journal_title',  type => 'POPUP', choice_labels => 'Z3950_COMPLETENESS', section => 'z3950', help => 'z3950' },
+{ name => 'zcompl_att_journal_title',     type => 'POPUP', choice_labels => 'Z3950_COMPLETENESS', section => 'z3950', help => 'z3950' },
+
+    ]
+
+%]
+

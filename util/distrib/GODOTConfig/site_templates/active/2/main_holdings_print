@@ -1,0 +1,69 @@
+<!-- TODD [% page.holdings_records.size %] - [% groups.keys.size %] -->
+[% RETURN UNLESS page.holdings_records.size && groups.keys.size %]
+[% DEFAULT
+	request_link = 'Request this item'
+        check_link   = 'Check detailed holdings'
+	groups       = {} ;
+%]
+
+[%
+	link_text.REQ = request_link
+	link_text.CHK = check_link  
+%]
+
+<div id="main-holdings-print" class="results-display">
+[% SET idcount = 0 %]
+[% SET groupcount = 0 %]
+[% FOREACH display_group = groups.keys %]
+
+	[% SET write_heading = 1 %]
+
+	[% FOREACH record = page.holdings_records  %]
+
+		[% NEXT IF record.search_group != page.scrno     %]
+		[% NEXT IF record.display_group != display_group %]
+
+		[% IF write_heading %]
+			[% SET groupcount = groupcount + 1 %]
+			[% groups.$display_group %]
+			<a href="javascript:void(0)" onClick="toggleAll('print.[% groupcount %]', 'showall.[% groupcount %]','(hide details)','(view details)',[% config.expand_holdings_by_default ? '1' : '0' %])"> <span class="results-hidden-link" id="showall.[% groupcount %]">([% config.expand_holdings_by_default ? 'hide' : 'view' %] details)</span></a>
+			[% SET write_heading = 0 %]
+		[% END %]
+		[% SET idcount = idcount + 1 %]
+
+		<ul class="holdings-print">
+		[% SET layer_id = "print." _ groupcount _ "." _ idcount %]
+
+		[% SET button_text = '<ul class="holdings-print-buttons">' %]
+		[% FOREACH button = record.buttons %]
+			[% SET button_label = button.label %]
+			[% SET label = (link_text.defined(button_label)) ? link_text.$button_label : 'Link' %]
+			[% SET url = button.link(page, 'main_holdings_screen') %]
+			[% SET button_text = button_text _ '<li><a href="' _ url _ '">' _ label _ '</a></li>' %]
+		[% END %]
+		[% SET button_text = button_text _ '</ul>' %]
+
+ 		[% holdings_text = record.text;
+ 		   holdings_text = holdings_text.replace('(?gi)<br><p>', '<br />');
+ 		   holdings_text = holdings_text.replace('(?gi)<p>', '<br />');
+ 		   holdings_text = holdings_text.replace('(?gi)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');
+ 		   holdings_text = holdings_text.replace('(?gi)<table>', '<table class="results-hidden">');
+ 		%]
+	 		
+ 		[% SET message = record.description.escapeHTML.escapeHTML %]
+	 		
+ 		<li>
+		<a href="javascript:void(0)" onClick="toggleServicesLayer('[% layer_id %]', '[% message %]', '[% message %]' )">
+		<span id="showhide[% layer_id %]">[% record.description.escapeHTML %]</span>
+		</a>
+		<span class="results-hidden" [% UNLESS config.expand_holdings_by_default %]style="display: none"[% END %] id="others[% layer_id %]">
+		[% button_text %]
+		[% holdings_text %]
+		</span>
+		</li>
+	 		
+		[% SET holdings_text = '' %]
+		</ul>
+	[% END %]
+[% END %]
+</div>

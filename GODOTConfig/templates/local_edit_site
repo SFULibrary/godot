@@ -1,0 +1,52 @@
+[% USE CGI %]
+<form method="post">
+<table class="form">
+<tr><td class="form-header" colspan="2">general settings</td></tr>
+
+<tr>
+ <td class="form-label">key:</td>
+ <td class="form-field">[% site.key %]</td>
+</tr>
+
+<tr>
+ <td class="form-label">name:</td>
+ <td class="form-field"><input type="text" name="site_name" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.site_name : site.name | html %]" /></td>
+</tr>
+
+<tr>
+ <td class="form-label">email:</td>
+ <td class="form-field"><input type="text" name="site_email" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.site_email : site.email | html %]" /></td>
+</tr>
+
+<tr><td class="form-field" colspan="2">&nbsp;</td></tr>
+
+<tr><td class="form-header" colspan="2">template chaining</td></tr>
+
+<tr><td class="form-field" colspan="2">local templates</span></tr>
+
+[% SET count = 0 %]
+[% FOREACH chain = site.chains.nsort('rank') %]
+ [% SET count = count + 1 %]
+ <tr><td class="form-field" colspan="2"><input type="text" size="3" maxlength="3" name="rank_[% count %]" value="[% chain.rank %]">
+ [% INCLUDE sites_pulldown name="chain_$count" skip_site=site.id selected=chain.chain.id include_blank=1 %]
+ </td></tr>
+[% END %]
+<tr><td class="form-field" colspan="2"><input type="text" size="3" maxlength="3" name="rank_new">
+[% INCLUDE sites_pulldown name="chain_new" skip_site=site.id include_blank=1 %]
+</td></tr>
+<tr><td class="form-field" colspan="2">global templates</td></tr>
+
+<tr><td class="form-input" colspan="2"><input type="submit" name="state_local_submit_edit_site" value="submit" /> <input type="submit" name="state_main" value="cancel"><input type="hidden" name="site_id" value="[% site.id %]" /><input type="hidden" name="submit_attempt" value="1" /></span>
+</table>
+
+</form>
+
+[% BLOCK sites_pulldown %]
+ <select name="[% name %]">
+ [% IF include_blank %]<option value="" [% 'selected="selected"' UNLESS selected.defined %]></option>[% END %]
+ [% FOREACH p_site = sites %]
+  [% NEXT IF p_site.id == skip_site %]
+  <option value="[% p_site.id %]" [% 'selected="selected"' IF p_site.id == selected %]>[% p_site.name %]</option>
+ [% END %]
+ </select>
+[% END %]

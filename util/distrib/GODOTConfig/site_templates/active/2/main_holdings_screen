@@ -1,0 +1,46 @@
+[% PROCESS setup_variables %]
+[% INCLUDE citation_display %]
+
+<div id="results">
+
+[% IF page.scrno == 1 %]
+        [% IF fulltext_available %]
+                [% INCLUDE main_holdings_cufts %]
+                [% INCLUDE main_holdings_marc_856 %]
+                [% INCLUDE main_holdings_preprint  %]
+        [% ELSE %]
+                [% INCLUDE config_no_fulltext_available_text %]
+        [% END %]
+[% END %] 
+
+[% IF page.scrno == 2 %]
+	[% INCLUDE main_holdings_ill_form link = 'Place an Interlibrary Loan request' %]
+	[% INCLUDE main_holdings_auto_req link = 'Place an Interlibrary Loan request'
+                                          heading = 'Request this item:' %]
+[% END %]
+
+
+[% INCLUDE main_holdings_print # request_link = '' 
+                               # check_link   = ''    
+                               groups         = {'1' = 'This item may be available in print at the SFU Library:',
+                                                 '2' = 'For your information, this item is owned by:'} 
+%]
+                                
+[% INCLUDE main_holdings_no_holdings %]
+[% INCLUDE main_holdings_search_all %]
+[% INCLUDE main_holdings_show_all %]
+
+[% IF page.scrno == 1 %]
+	[% INCLUDE main_holdings_scrno heading = 'Use the link below if not available at the SFU Library <br /> OR for an inter-campus / Telebook (Distance Education, Faculty of Education) request:' 
+                                   link    = 'Search other libraries / Request this item'
+                                   scrno   = 2
+	%]
+[% END %]
+
+[% INCLUDE main_holdings_related_info %]
+[% INCLUDE main_holdings_citation_capture %]
+[% INCLUDE main_holdings_contact_us %]
+[% INCLUDE main_holdings_command_links %]
+[% INCLUDE main_holdings_search_messages %]
+
+</div>

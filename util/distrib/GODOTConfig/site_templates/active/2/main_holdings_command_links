@@ -1,0 +1,5 @@
+[% IF page.instructions.back_to_dbase %]
+<div id="main-holdings-command-links">
+	<a href="[% page.instructions.back_to_dbase %]">Back to Database</a>
+</div>
+[% END %]

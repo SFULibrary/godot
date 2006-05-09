@@ -1,0 +1,620 @@
+/*
+	===========================
+	= Main Layout 
+	===========================
+*/   
+
+body {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+input {
+	font-family: sans-serif;
+	font-size: 80%;
+}
+
+td {
+	font-family: Helvetica, Arial, sans-serif;	
+}
+
+/*	width: auto; */
+div.content {
+	font-family: Helvetica, Arial, sans-serif;	
+	position: relative;
+	padding-right: 5px;
+	padding-left: 2px;
+	padding-top: 3px;
+	margin-left: 8em;
+	margin-top: 1.5em;
+	background: white;
+	color: black;
+        width: 40em;
+        height: 27em;
+}
+
+
+div.submission_errors {
+        color: red;
+        font-size: 80%;
+	font-weight: bold;
+}
+
+
+
+/*
+	===========================
+	=  Page header
+	===========================
+*/
+
+div.page-header {
+	top: 0px;
+	left: 0px;
+	background: #BBB229;
+	width: 100%;
+	border-bottom: 1px black solid;
+	z-index: 2;
+}
+
+div.logged-in {
+	float: right;
+	border-bottom: 1px black solid;
+	border-left: 1px black solid;
+	padding-left: 20px;
+	padding-bottom: 2px;
+	padding-right: 20px;
+	padding-top: 2px;
+	font-size: 80%;
+	z-index: 1;
+}
+
+
+
+/*
+	===========================
+ 	= Sidebar menu
+	===========================
+*/
+
+a.sidebar {
+	color: black;
+	font-family: Verdana, Arial, sans-serif;
+	font-weight: bold;
+	font-size: smaller;
+}
+
+div.sidebar {
+	position: absolute;
+	left: 0px;
+	background: #CCC44E;
+	width: 7.5em;
+	border-right: 1px black solid;
+	border-bottom: 1px black solid;
+	z-index: 2;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+div.sidebar-divider {
+	height: 1px;
+	margin-top: 2px;
+	margin-bottom: 1px;
+	margin-left: 10%;
+	width: 80%;
+	background: black;
+}
+
+div.sidebar-item {
+	width: 100%;
+	background: #CCC44E;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	text-align: center;
+}	
+
+div.sidebar-item-active {
+	width: 100%;
+	background: #BBB229;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	text-align: center;
+}
+
+
+
+
+/*
+	===========================
+	= Linking
+	===========================
+*/
+
+a {
+	color: blue;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a.heading {
+	color: white;
+	text-decoration: none;
+}
+
+
+
+/*
+	===========================
+	= Form tables (field: input)
+	===========================
+*/
+
+table.form {
+	background: #EEEECC;
+	border: 1px solid #AAA118;
+        /* width: 100%; */
+}
+
+td.form-header {
+	text-align: left;
+	font-weight: bold;
+	font-variant: small-caps;
+	font-size: 110%;
+	color: #777001;
+}
+
+td.form-heading {
+       	text-align: left;
+	font-variant: small-caps;
+	font-size: 110%;
+	color: #777001;
+}
+
+td.form-label {
+	text-align: right;
+	padding-right: .3em;
+}
+
+td.form-field {
+	text-align: left;
+}
+
+td.form-input {
+	text-align: right;
+	padding-right: .5em;
+	padding-bottom: .2em;
+}
+
+
+/*
+	===========================
+	= Form list tool
+	===========================
+*/
+
+div.form-list-tool {
+       margin-left: 0em;
+}
+
+div.form-list-tool-error-message {
+        font-variant: small-caps;
+        color: red;
+        font-size:  80%;
+}
+
+table.form-list-tool-outer {
+        background:  #CCCC88;
+        width: 100%;
+        margin-left; 0em;
+        /* background:  #CCCC88; */
+}
+
+table.form-list-tool-outer td.form-input {
+        text-align: left;
+        padding: 6px;
+        /* border:  1px solid #AAA118; */
+}
+
+table.form-list-tool-outer td.display-column {
+        text-align: top;
+        padding: 6px;
+        /* border:  1px solid #AAA118; */
+}
+
+table.form-list-tool {
+       border:  1px solid #AAA118; 
+}
+
+table.form-list-tool td.column-header {
+        text-align: left;
+        padding: 6px;
+        font-variant: small-caps;
+        font-size:  80%;
+        /* border:  1px solid #AAA118; */
+}
+
+table.form-list-tool td.column {
+        text-align: top;
+        /* padding: 3px; */
+        /* border:  1px solid #AAA118; */
+}
+
+table.form-list-tool td.form-input {
+        text-align: top;
+        /* padding: 3px; */
+        /* border:  0px solid #AAA118; */
+}
+
+table.form-list-tool-display {
+        /* border:  1px solid #AAA118; */
+}
+
+
+/*
+	===========================
+	= Tabular tables
+	===========================
+*/
+
+table.tabular {
+	background: #CCCC88;
+	border-collapse: collapse;
+}
+
+table.tabular td {
+	border: 1px solid #AAA118;
+}
+
+table.tabular td.header0 {
+	background: white;
+	color: black;
+	border-left: 0px none white;
+	border-right: 0px none white;
+}
+
+table.tabular td.header {
+	background: #EEEECC;
+	color: #777001;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 110%;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.tabular td.header2 {
+	background: #CCCC88;
+	color: #554000;
+	text-align: center;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 110%;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.tabular td.field0 {
+	padding-right: 5px;
+	padding-left: 5px;
+	color: black;
+	background: white;
+}
+
+table.tabular td.field1 {
+	padding-right: 5px;
+	padding-left: 5px;
+        background: #EEEBB7;
+	color: black;
+}
+
+table.tabular td.field3 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: #FFFDDA;
+	color: black;
+}
+
+div.display-level {
+	background: #EEEECC;
+	border: 1px solid #AAA118;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 3px;
+	width: 20em;
+}
+
+div.display-level-heading {
+	background: #EEEECC;
+	color: #777001;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 110%;
+
+}
+
+div.display-level-label {
+}
+
+a.display-more {
+	font-size: 80%;
+}
+
+/*
+	====================================
+	= local_configuration template table
+	====================================
+*/
+
+
+table.local-configuration {
+	background: #CCCC88;
+	border-collapse: collapse;
+        width: 100%;
+}
+
+table.local-configuration td {
+	border: 1px solid #AAA118;
+}
+
+table.local-configuration td.header {
+	background: #EEEECC;
+	color: #777001;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 110%;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.local-configuration td.header2 {
+	background: #CCCC88;
+	color: #554000;
+	text-align: center;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 110%;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.local-configuration td.field1 {
+	padding-right: 5px;
+	padding-left: 5px;
+        background: #EEEBB7;
+	color: black;
+}
+
+a.header2 {
+        color: #554000;
+	text-decoration: none;
+}
+
+
+
+/*
+	===========================
+	= Template views
+	===========================
+*/
+
+pre.view-template {
+	border: 1px black solid;
+	padding: 5px;
+}
+
+/*
+	===========================
+	= CSS views
+	===========================
+*/
+
+pre.view-css {
+	border: 1px black solid;
+	padding: 5px;
+}
+
+
+/*
+	===========================
+	= Results
+	===========================
+*/
+
+div#results {
+	border: 1px #22BB22 solid;
+	padding: 3px;
+	margin-bottom: 10px;
+	display: block;
+	background: #EEFFEE;
+}
+ul#results {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	list-style: none;
+	margin-left: 0px;
+	padding-left: 0px;
+}
+ul#results li {}
+
+
+
+/* 
+	===========================
+	= Template Editing
+	===========================
+*/
+
+div.template-name-heading {
+	font-weight: bold;
+	font-size: 120%;
+}
+
+
+/* 
+	===========================
+	= Help
+	===========================
+*/
+
+h1.help-header {
+	text-align: left;
+	font-weight: bold;
+	font-variant: small-caps;
+	font-size: 150%;
+	color: #777001;
+}
+
+h2.help-option-heading {
+	text-align: left;
+        font-size: 100%;
+
+}
+
+span.help-option-name {
+        font-weight: bold;
+	color: #777001;
+}
+
+p.help-option-text {
+
+}
+
+div.help-option {
+        background: #EEEECC;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 3px;
+}
+
+div.help-group {
+        padding-top: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 3px;
+}
+
+
+/* ---- UNKNOWN LEFTOVERS OR STUFF TO BE DEPRECATED! ---- */
+
+
+
+/* Table controls */
+
+td.heading-bar {
+	font-weight: bold;
+	background: #BBB229;
+	color: black;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+td.heading {
+	background: #BBB229;
+	font-weight: bold;
+	color: black;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+span.heading {
+	color: black;
+	font-size: 120%;
+}
+
+span.small-heading {
+	color: black;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+
+td.label {
+	padding-left: 10px;
+	padding-right: 3px;
+	font-weight: bold;
+	color: black;
+}
+
+td.label0 {
+	padding-left: 10px;
+	padding-right: 3px;
+	font-weight: bold;
+	color: black;
+	background: white;
+}
+
+td.label1 {
+	padding-left: 10px;
+	padding-right: 3px;
+	font-weight: bold;
+	color: black;
+	background: #EEEBB7;
+}
+
+td.field {
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+td.field0 {
+	padding-right: 5px;
+	padding-left: 5px;
+	color: black;
+	background: white;
+}
+
+td.field1 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: #EEEBB7;
+	color: white;
+}
+
+td.active-field0 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: white;
+	color: black;
+}
+
+td.active-field1 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: #EEEBB7;
+	color: black;
+}
+
+td.inactive-field0 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: white;
+	color: #666666;
+}
+
+td.inactive-field1 {
+	padding-right: 5px;
+	padding-left: 5px;
+	background: #EEEBB7;
+	color: #666666;
+}
+
+
+td.container {
+	background: #EEEBB7;
+}
+
+td.edge {
+	background: #BBB229;
+}
+
+
+
+div.table-border {
+	border: 1px solid #AAA118;
+	clear: both;
+	float: left;
+}
+
+

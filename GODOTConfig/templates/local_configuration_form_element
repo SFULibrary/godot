@@ -1,0 +1,60 @@
+[% DEFAULT  
+        element = {}
+        size = 40   
+        maxlength = 80
+        cols = 70
+        rows = 5                 
+%]
+
+[% PROCESS config_local_configuration_choice_labels %]
+
+[% USE CGI  %]
+                       
+[% SET name = element.name  %]
+[% SET param = 'config_' _ element.name  %]
+
+[% SET value = site.$name %]
+[%# IF CGI.params.$param.defined  %]
+        [%# SET value = CGI.params.$param %]
+[%# END  %]
+
+
+[% SWITCH element.type  %]
+[% CASE 'CHECKBOX_BOOL' %]
+        [% SET checked = (value) ? 'checked="checked"' : ''%]
+        <input type="checkbox" name="[% param %]" value="1" [% checked %]/>    
+[% CASE 'POPUP' %]
+        <select name="[% param %]">
+        [% SET choice_label_type = element.choice_labels %]
+        [% SET choice_labels = (config_local_configuration_choice_labels.defined(choice_label_type)) ? config_local_configuration_choice_labels.$choice_label_type : {}  %]
+        [% FOREACH choice = element.choices %]
+                 [% SET selected = (value == choice) ? 'selected="selected"' : '' %]                 
+                 [% SET label = (choice_labels.defined(choice)) ? choice_labels.$choice : choice %]
+                 <option [% selected %] value="[% choice %]">[% label %]</option>                              
+        [% END %]
+        </select>                        
+[% CASE 'RADIO' %]
+        [% FOREACH choice = choices %]
+                [% SET checked = (value == choice) ? ' checked="checked"' : '' %]
+                <input type="radio" name="[% param %]" value="[% choice %]" [% checked %]/>[% choice %]
+        [% END  %]
+[% CASE 'TEXTFIELD' %]
+        <input type="text" name="[% param %]" value="[% value %]" SIZE="[% size %]" maxlength="[% maxlength %]" />    
+[% CASE 'TEXTAREA' %]
+        <textarea name="[% param  %]" rows="[% rows %]" cols="[% cols %]">[% value %]</textarea>
+[% CASE 'LIST'  %]
+        <script language="javascript" type="text/javascript">
+        <!--
+        document.write("<tr id=\"layer_[% name %]\" style=\"" + layerStyleDisplay('[% name %]') + "\">");        
+        // -->
+        </script>
+        <td colspan="3">[% INCLUDE local_configuration_list_tool %]</td>
+        </tr>
+[% END  %]     
+
+
+
+
+
+
+

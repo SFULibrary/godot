@@ -1,0 +1,4 @@
+<div id="article-form-text">
+[% INCLUDE config_article_form_text  %]
+</div>
+

@@ -1,0 +1,5 @@
+<div class="submission_errors">
+[% FOREACH error = errors %]
+[% error %]<br /><br />
+[% END %]
+</div>

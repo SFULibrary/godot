@@ -1,0 +1,58 @@
+[% INCLUDE results %]
+<table id="global_templates" class="tabular">
+<tr>
+ <td class="header">template</td>
+ <td class="header">active</td>
+ <td class="header">transfer</td>
+ <td class="header">sandbox</td>
+</tr>
+[% FOREACH template = all_templates.sort %]
+ [% SET active_template_exists = active_templates.in(template) %]
+ [% SET sandbox_template_exists = sandbox_templates.in(template) %]
+ [% SET class = "field" _ (loop.count mod 2) %]
+ 
+ <tr>
+
+ <td class="[% class %]">[% template %]</td>
+
+ <td class="[% class %]" align="center">
+ [% IF active_template_exists %]
+  <a href="?state=global_view_template&type=active&template=[% template %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="12" border="0">
+ [% END %]
+
+ [% IF active_template_exists %]
+  <a href="?state=global_delete_template&type=active&template=[% template %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_template_exists %]
+  <a href="?state=global_transfer_template&template=[% template %]"><img src="images/transfer-button.gif" alt="transfer" title="transfer" width="12" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/transfer-button-inactive.gif"  alt="transfer (inactive)" title="transfer (inactive)" width="12" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_template_exists %]
+  <a href="?state=global_view_template&type=sandbox&template=[% template %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="11" border="0">
+ [% END %]
+
+ <a href="?state=global_edit_template&type=sandbox&template=[% template %]"><img src="images/edit-button.gif" alt="edit" title="edit" width="15" height="12" border="0"></a>
+
+ [% IF sandbox_template_exists %]
+  <a href="?state=global_delete_template&type=sandbox&template=[% template %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+ 
+ </tr>
+[% END %]
+</table>

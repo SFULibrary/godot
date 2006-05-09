@@ -1,0 +1,57 @@
+[% SET config_local_configuration_list_tool_labels = {
+
+        'rank'                    => { 'rank_site'     => 'site',
+                                       'display_group' => 'display group',
+                                       'search_group'  => 'search group',
+                                       'auto_req'      => 'auto requesting' },
+
+
+        'rank_non_journal'        => { 'rank_site'     => 'site',
+                                       'display_group' => 'display group',
+                                       'search_group'  => 'search group',
+                                       'auto_req'      => 'auto requesting' },
+
+        'request'                 => { 'type' => 'type' },
+
+        'request_non_journal'     => { 'type' => 'type' },
+
+        'patr_patron_type_choice' => { 'type' => 'type' },
+
+        'patr_department_choice'  => { 'department' => 'department' },
+
+        'patr_pickup_choice'      => { 'location' => 'location' },
+
+        'patr_paid_choice'        => { 'payment_method' => 'payment method',
+                                       'input_box'      => 'require input box?' },
+
+        'ill_req_form_limit'      => { 'patron_type' => 'patron type',
+                                       'message'     => 'message' },
+
+        'ill_account'             => { 'account_site' => 'site', 
+                                       'number'       => 'account number'}
+}
+
+%]
+
+
+[% SET config_local_configuration_list_tool_size = {
+        'ill_account'             => { 'number'         => 20 },
+        'ill_req_form_limit'      => { 'patron_type'    => 20,
+                                       'message'        => 60 },
+        'patr_patron_type_choice' => { 'type'           => 40 }, 
+        'patr_department_choice'  => { 'department'     => 60 },
+        'patr_pickup_choice'      => { 'location'       => 60 },
+        'patr_paid_choice'        => { 'payment_method' => 40 }
+}  
+%]
+
+[% SET config_local_configuration_list_tool_maxlength = {
+        'ill_account'             => { 'number'         => 20  },
+        'ill_req_form_limit'      => { 'patron_type'    => 20,
+                                       'message'        => 160 },
+        'patr_patron_type_choice' => { 'type'           => 80  }, 
+        'patr_department_choice'  => { 'department'     => 120 },
+        'patr_pickup_choice'      => { 'location'       => 120 },
+        'patr_paid_choice'        => { 'payment_method' => 80  }
+}  
+%]

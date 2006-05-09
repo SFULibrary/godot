@@ -1,0 +1,9 @@
+[% local_text =  BLOCK %] [% INCLUDE config_acknowledgment_local_text %] [% END  %]
+
+<div id="request-acknowledgment-text">
+[% IF local_text.not_empty and page.is_local_ill_request_type  %]
+        [% INCLUDE config_acknowledgment_local_text  %]
+[% ELSE  %]
+        [% INCLUDE config_acknowledgment_text %]
+[% END  %]
+</div>

@@ -1,0 +1,8 @@
+[% RETURN UNLESS results.size %]
+<div id="results">
+ <ul id="results">
+ [% FOREACH result = results %]
+  <li>[% result %]</li>
+ [% END %]
+ </ul>
+</div>

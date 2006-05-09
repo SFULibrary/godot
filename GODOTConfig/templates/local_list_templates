@@ -1,0 +1,95 @@
+[% USE CGI %]
+[% SET browse_level = CGI.cookie('browse_level') || 1 %]
+[% INCLUDE results %]
+<div class="display-level">
+<div class="display-level-heading">display level</div>
+<a href="#" onClick="showLevel(1,'level',4,[% all_templates.size + 8 %]); createCookie('browse_level', 1, 7); return false;">basic</a> &nbsp;|&nbsp; 
+<a href="#" onClick="showLevel(2,'level',4,[% all_templates.size + 8 %]); createCookie('browse_level', 2, 7); return false;">intermediate</a> &nbsp;|&nbsp; 
+<a href="#" onClick="showLevel(3,'level',4,[% all_templates.size + 8 %]); createCookie('browse_level', 3, 7); return false;">advanced</a>
+</div>
+
+<br />
+<table id="local-templates" class="tabular">
+[% SET last_level = 0 %]
+[% SET extra_count = 1 %]
+[% FOREACH template = all_templates %]
+ [% SET active_template_exists = active_templates.in(template) %]
+ [% SET sandbox_template_exists = sandbox_templates.in(template) %]
+ [% SET class = "field0" %]
+ [% SET level = template_config.$template.level %]
+ [% IF level > last_level %]
+  [% UNLESS loop.first %]<tr id="level_[% level %]_[% all_templates.size + extra_count %]"><td colspan="5" class="header0">&nbsp;</td></tr>[% SET extra_count = extra_count + 1 %][% END %]
+  <tr id="level_[% level %]_[% all_templates.size + extra_count %]" [% 'style="display: none"' IF level > browse_level %]>
+  <td class="header2" colspan="5">
+  [% SWITCH level %]
+   [% CASE 1 %]basic templates
+   [% CASE 2 %]intermediate templates
+   [% CASE 3 %]advanced templates
+  [% END %]
+  </td></tr>
+  [% SET extra_count = extra_count + 1 %]
+  <tr [% 'style="display: none"' IF level > browse_level %] id="level_[% level %]_[% all_templates.size + extra_count %]">
+   <td class="header">template </td>
+   <td class="header">active</td>
+   <td class="header">transfer</td>
+   <td class="header">sandbox</td>
+   <td class="header">description</td>
+  </tr>
+  [% SET last_level = level %]
+  [% SET extra_count = extra_count + 1 %]
+ [% END %]
+ 
+ <tr id="level_[% level %]_[% loop.count %]" [% 'style="display: none"' IF level > browse_level %]>
+
+ <td class="[% class %]">[% template %]</td>
+
+ <td class="[% class %]" align="center">
+ [% IF active_template_exists %]
+  <a href="?state=local_view_template&type=active&template=[% template %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="12" border="0">
+ [% END %]
+
+ [% IF active_template_exists %]
+  <a href="?state=local_delete_template&type=active&template=[% template %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_template_exists %]
+  <a href="?state=local_transfer_template&template=[% template %]"><img src="images/transfer-button.gif" alt="transfer" title="transfer" width="12" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/transfer-button-inactive.gif"  alt="transfer (inactive)" title="transfer (inactive)" width="12" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_template_exists %]
+  <a href="?state=local_view_template&type=sandbox&template=[% template %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="11" border="0">
+ [% END %]
+
+ <a href="?state=local_edit_template&type=sandbox&template=[% template %]"><img src="images/edit-button.gif" alt="edit" title="edit" width="15" height="12" border="0"></a>
+
+ [% IF sandbox_template_exists %]
+  <a href="?state=local_delete_template&type=sandbox&template=[% template %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+ 
+ <td align="left" class="[% class %]">
+  [% template_config.$template.description.substr(0,100) %]
+  [% IF template_config.$template.description.length > 101 %]
+   <a class="display-more" target="template_descriptions" href="?state=local_template_description&template=[% template %]" title="[% template_config.$template.description %]">... more</a>
+  [% END %]
+ </td>
+
+ </tr>
+ 
+
+[% END %]
+</table>

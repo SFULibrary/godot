@@ -1,0 +1,19 @@
+<div id="request-other-error">
+[% FOREACH message = page.messages  %]
+        <span id="request-other-error-message">[% message %]</span> 
+[% END  %]
+<p>
+Please click the back button, and try your request again. 
+If the error persists, contact your library for assistance.
+</p>
+
+<div id="request-other-error-links">
+<ul id="request-other-error-links">
+[% FOREACH button = page.buttons  %]
+        <li><A HREF="[% button.link(page, 'request_other_error_screen') %]">[% button.label %]</A></li>
+[% END  %]
+</ul>
+</div>
+
+</div>
+

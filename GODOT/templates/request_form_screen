@@ -1,0 +1,59 @@
+[% DEFAULT  
+        size = 40
+        maxlength = 40
+        submit = 'Send Request'
+%]
+
+[% PROCESS config_request_form_fields  %]
+[% PROCESS get_form_element_info  %]
+
+<div id="request-form">
+
+[% INCLUDE skipped_main text = 'To continue, please fill in the information requested below.' %]
+[% INCLUDE request_form_text %]
+
+
+<TABLE CLASS="request-form-table">
+[% FOREACH field = config_request_form_fields  %]
+        [% SET name = 'PATR_' _ field.name _ '_FIELD'; %]
+        [% NEXT UNLESS form_elements.exists(name) %]
+
+        [% SET element = form_elements.$name  %]
+
+        [% IF NOT field.section.aws  %]
+                <TR>
+                <TD></TD><TD CLASS="request-form-section">[% field.section %]</TD>
+                </TR>
+        [% END %]
+        <TR>
+        <TD CLASS="request-form-label">[% field.label %]</TD>
+        <TD CLASS="request-form-field">[% INCLUDE form_element element = element %]</TD>
+        <TD CLASS="request-form-note">[% field.note %]</TD>
+        </TR>
+[% END  %]
+
+<TR>
+<TD CLASS="request-form-submit" COLSPAN="4">
+<INPUT TYPE="SUBMIT" NAME="[% page.buttons.first.action %][% page.buttons.first.param  %]" VALUE="[% submit %]"/>
+</TD>
+</TR>
+
+
+</TABLE>
+
+
+[% INCLUDE citation_display %]
+
+</div>
+
+[% BLOCK get_form_element_info  %]
+        [% SET form_elements = {}; %]
+        [% FOREACH elem = page.form_input %]
+                [% SET name = elem.name  %]
+                [% form_elements.$name = elem  %]
+        [% END %]
+[% END  %]
+
+
+
+

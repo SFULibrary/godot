@@ -1,0 +1,9 @@
+No holdings information is available.
+
+[%#
+    To modify this template to allow for different messages depending on the
+    type of request and whether it was a request from a blank form or a GODOT
+    link from a database, check the 'message' variable for values:
+
+      'blank_journal', 'journal', 'blank_non_journal, 'non_journal'
+%]

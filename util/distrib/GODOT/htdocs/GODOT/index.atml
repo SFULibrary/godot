@@ -1,0 +1,28 @@
+<HTML>
+
+<HEAD>
+<TITLE>GODOT Installation Testing</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>GODOT Installation Testing</H1>
+<P>
+Test the public interface:
+<UL>
+<LI><A HREF="example_citations.html">Example Citations</A></LI>
+<LI><A HREF="citation_form.html">Blank Citation Form</A></LI>
+</UL>
+</P>
+
+<P>
+Test the <A HREF="[% config_url %]">configuration tool</A>.
+</P>
+
+
+</BODY>
+</HTML>
+
+
+
+

@@ -1,0 +1,27 @@
+[% DEFAULT 
+        element = {}
+        size = 40   
+        maxlength = 40                 
+%]
+
+[% SWITCH element.type  %]
+[% CASE 'TEXTFIELD' %]
+        <INPUT TYPE="TEXT" NAME="[% element.name %]" VALUE="[% element.value %]" SIZE="[% size %]" MAXLENGTH="[% maxlength %]" />    
+[% CASE 'PASSWORD' %]
+        <INPUT TYPE="PASSWORD" NAME="[% element.name %]" VALUE="[% element.value %]" SIZE="[% size %]" MAXLENGTH="[% maxlength %]" />
+[% CASE 'POPUP' %]
+        <SELECT NAME="[% element.name %]">
+        [% FOREACH choice = element.choices %]
+                 [% SET selected = (element.selected == choice) ? 'SELECTED="SELECTED"' : '' %]
+                 <OPTION [% selected %] VALUE="[% choice %]">[% choice  %]</OPTION>                              
+        [% END %]
+        </SELECT>                        
+[% CASE 'RADIO' %]
+        [% FOREACH choice = element.choices.keys %]
+                [% SET checked = (element.selected == choice) ? ' CHECKED="CHECKED"' : '' %]
+                <INPUT TYPE="RADIO" NAME="[% element.name %]" VALUE="[% choice %]" $checked />[% element.choices.$choice %]
+        [% END  %]
+[% CASE 'DISPLAY_ONLY' %]
+        [% element.value %]
+[% END  %]     
+

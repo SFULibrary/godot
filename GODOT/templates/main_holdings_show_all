@@ -1,0 +1,8 @@
+[% FOREACH record = page.show_all_records %]
+	<div id="main-holdings-show-all" class="results-display">
+	[% FOREACH button = record.buttons %]
+		Not all libraries are shown above.  If you want to, you can see
+		<a href="[% button.link(page, 'main_holdings_screen') %]">all</a> of them.
+	[% END %]
+	</div>
+[% END %]

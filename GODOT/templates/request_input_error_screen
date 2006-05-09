@@ -1,0 +1,17 @@
+<div id="request-input-error">
+[% FOREACH message = page.messages  %]
+        <span id="request-input-error-message">[% message %]</span> 
+[% END  %]
+<p>
+Please make sure you have filled in the request form correctly.
+</p>
+
+<div id="request-input-error-links">
+<ul id="request-input-error-links">
+[% FOREACH button = page.buttons  %]
+        <li><A HREF="[% button.link(page, 'request_input_error_screen') %]">[% button.label %]</A></li>
+[% END  %]
+</ul>
+</div>
+
+</div>

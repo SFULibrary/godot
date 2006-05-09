@@ -1,0 +1,23 @@
+<span class="heading">[% site.name %]</span> &nbsp;&nbsp;<a href="[% url %]?state=admin_edit_site&site_id=[% site.id %]">edit</a> | <a href="[% url %]?state=admin_delete_site&site_id=[% site.id %]"  onclick="return confirmDelete()">delete</a>
+<br><br>
+<table border=0 cellspacing="0" cellpadding=0><tr><td>
+<div class="table-border">
+<table border=0 cellspacing="0" cellpadding=0 width="100%">
+<tr><td class="heading-bar" align="left" valign="top" colspan="2">general settings</td></tr>
+<tr><td class="label0" align="right">key</td><td class="field0">[% site.key %]</td></tr>
+<tr><td class="label1" align="right">email</td><td class="field1">[% site.email %]</td></tr>
+<tr><td class="label0" align="right">active</td><td class="field0">[% site.active ? 'yes' : 'no' %]</td></tr>
+<tr><td class="label1" align="right">modified</td><td class="field1">[% site.modified.substr(0, 19) %]</td></tr>
+<tr><td class="label0" align="right">created</td><td class="field0">[% site.created.substr(0, 19) %]</td></tr>
+</table></div>
+</td></tr>
+<tr><td><br></td></tr>
+<tr><td><div class="table-border">
+<table border=0 cellspacing="0" cellpadding=0 width="100%"> 
+<tr><td class="heading-bar" align="left" valign="top" colspan="2">associated accounts</td></tr>
+[% FOREACH account = site.accounts -%]
+ [% SET class = 'field' _ ((loop.count+1) mod 2) %]
+<tr><td class="[% class %]"><a href="[% url %]?state=admin_view_account&account_id=[% account.id %]">[% account.name %]</a></td></tr>
+[%- END %]
+</table></div>
+</td></tr></table>

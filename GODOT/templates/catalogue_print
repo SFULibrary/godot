@@ -1,0 +1,41 @@
+[% DEFAULT  
+       request_link = 'Request this item'
+%]
+
+[% IF page.holdings_records.size %]
+
+    [% FOREACH record = page.holdings_records %]
+
+        <span class="results-from-resource">[% record.description.escapeHTML %]</span>
+        <div class="results-not-hidden">
+
+        [% FOREACH button = record.buttons  %]
+
+            [% label = (button.label == 'REQ') ? request_link : 'Link'  %]
+
+            [% url = button.link(page, 'catalogue_screen')  %]
+
+            [% text = text _ "<a href=\"$url\">$request_link</a>"  %]
+
+        [% END %]
+
+        [% text  %]
+
+        [% IF not text.aws %]
+            <br />
+        [% END  %]
+
+        [%
+        string = record.text;
+        string = string.replace('(?gi)<br><p>', '<br>');        
+        string = string.replace('(?gi)<p>', '<br>');        
+        string = string.replace('(?gi)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');        
+        string = string.replace('(?gi)<table>', '<table class="results-hidden">');        
+        %]
+
+        [% string  %]
+
+        </div>
+
+    [% END %]
+[% END %]

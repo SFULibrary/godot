@@ -1,0 +1,6 @@
+[% SET link = 'Citation Manager' %]
+[% FOREACH record = page.citation_manager_records  %]
+	[% text = '<a target="_blank" href="' _ record.url _ '">' _ link _ '</a>' _' <span style="font-size: 8pt"><a href="http://www.lib.sfu.ca/researchtools/citationmanager/citationmanagerhelp.htm">(more info)</a></span>' %]
+	[% items.push(text) %]
+[% END  %]
+

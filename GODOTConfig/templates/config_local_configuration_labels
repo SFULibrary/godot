@@ -1,0 +1,200 @@
+[%#  PROCESS local_configuration_option_text %]
+[%# SET option = local_configuration_option_text  %]
+
+[% SET text.journal  = 'journal' %]
+[% SET text.non_journal = 'non-journal' %]
+
+[% SET config_local_configuration_labels = {
+
+'parallel_server_msg'            => 'Display parallel server error messages only',
+'display_citation_capture_links' => 'Display citation manager links',
+'display_command_links'          => 'Display Back to Database link',
+'display_related_info_links'     => 'Display Internet search engine links',
+'expand_fulltext_by_default'     => 'Expand fulltext by default',
+'expand_holdings_by_default'     => 'Expand holdings by default',
+
+'request_msg_date_format'        => 'Date format for incoming request messages',
+
+'ill_nuc'                                => 'National Union Code (eg. BVAS)',
+'group'                                  => 'Groups of which your site is a member',
+'ill_fax'                                => 'ILL department FAX number',
+'openurl_cookie_pusher_image'            => 'URL for image for OpenURL link',
+'use_javascript'                         => 'Use javascript popup window for messages',
+'contact'                                => 'Contact note (for staff use only)',
+
+'error_not_parseable'                    => 'Message when no parser exists for source containing GODOT link',
+
+'use_856_links'                          => 'Search for links in MARC 856 field',
+'use_fulltext_links'                     => 'Query CUFTS for full text links',  
+'link_from_cat_name'                     => 'Be this site for MARC 856 searches', 
+'link_name'                              => 'Be this site for CUFTS searches',
+
+
+
+'rank'                                   => 'Ranking for journals',
+'other_rank'                             => 'Search sites not specified in journal ranking',
+'other_rank_display_group'               => 'Default display group for journals',
+'other_rank_search_group'                => 'Default search group for journals',
+'rank_non_journal'                       => 'Ranking for non-journals',
+'other_rank_non_journal'                 => 'Search sites not specified in non-journal ranking',
+'other_rank_non_journal_display_group'   => 'Default display group for non-journals',
+'other_rank_non_journal_search_group'    => 'Default search group for non-journals',
+'skip_main_holdings_screen_if_no_holdings' => 'If there are no holdings, then just skip to the next screen',
+
+'auto_req'                               => 'Turn on automatic requesting feature for journals',
+'other_auto_req_show'                    => 'If auto requesting is turned on, should journal holdings be displayed?',
+'auto_req_non_journal'                   => 'Turn on automatic requesting feature for non-journals',
+'other_auto_req_show_non_journal'        => 'If auto requesting is turned on, should non-journal holdings be displayed?',
+
+'eric_coll_avail'                        => 'You own the ERIC microfiche collection',
+'eric_coll_text'                         => 'Text describing location of the ERIC microfiche collection',
+'mlog_coll_avail'                        => 'You own the Canadian Research Index microfiche collection',
+'mlog_coll_text'                         => 'Text describing location of the CRI microfiche collection',
+
+'blocking_holdings'                      => 'Use instead of site code for blocking',
+'include_fulltext_as_holdings'           => 'Fulltext are holdings for blocking',
+'blocking'                               => 'Blocking',
+
+
+
+
+'no_holdings_req'                        => 'Display link when journal not found',
+'no_holdings_req_non_journal'            => 'Display link when non-journal not found',
+'ill_req_form'                           => 'When journal found',
+'ill_req_form_non_journal'               => 'When non-journal found',
+'ill_req_form_limit_text'                => 'ILL request link text',
+'ill_req_form_limit'                     => 'Limit messages for each type of patron',
+
+
+'from_name'                              => '\'From\' name for messages sent',
+'from_email'                             => '\'From\' email address for messages sent',
+'ill_local_system'                       => 'Message format',
+'ill_local_system_email'                 => 'Email address',
+'ill_local_system_host'                  => 'Local ILL system host name',
+'ill_copy_to_local_system'               => 'Copy requests to other sites to your local system',
+'ill_id'                                 => 'ID used in some message formats',
+'ill_local_system_date_format'           => 'Date format for borrowing requests',
+'holdings_list'                          => 'Only \'can borrow from\' sites in holdings list',
+
+
+
+'request'                                => 'Type of journal requesting allowed',
+'other_request'                          => 'Default journal request type',
+'request_non_journal'                    => 'Type of non-journal requesting allowed',
+'other_request_non_journal'              => 'Default non-journal request type',
+
+
+'ill_max_cost'                           => 'Maximum cost to request',
+'ill_account'                            => 'Configure account numbers',
+'use_request_confirmation_screen'        => 'Request confirmation screen',
+'use_request_acknowledgment_screen'      => 'Request acknowledgment screen',
+'ill_email_ack_msg'                      => 'Send patron an acknowledgment email',
+'ill_email_ack_msg_text'                 => 'Text for acknowledgment email',
+
+
+'lend'                                   => 'Does this site lend?',
+'request_msg_fmt'                        => 'Format of request email message',
+'request_msg_email'                      => 'Email address for lending requests',
+'same_nuc_email'                         => 'If lending & borrowing sites have the same NUC',
+
+'ill_cache_patron_info'                  => 'Enable server-side caching of patron info',
+'patr_last_name'                         => 'Last name',
+'patr_first_name'                        => 'First name',
+'patr_library_id'                        => 'Library ID',
+'patr_library_id_def'                    => 'Default text for \'library ID\'',
+'patr_patron_type'                       => 'Patron type',
+'patr_patron_type_edit_allowed'          => 'Allow user to edit the patron type',
+'patr_patron_type_disp'                  => 'Display patron type',  
+'patr_patron_type_choice'                => 'Patron type choices',
+'patr_not_req_after'                     => 'Need by',
+'request_form_date_type'                 => 'Date type for \'need by\' date',
+'patr_prov'                              => 'Province',
+'patr_department'                        => 'Department',
+'patr_department_choice'                 => 'Choices for department.',
+'patr_patron_email'                      => 'Patron email address',
+'patr_pickup'                            => 'Pickup location',
+'patr_pickup_choice'                     => 'Pickup location choices',
+'patr_phone'                             => 'Phone',
+'patr_phone_work'                        => 'Work phone',
+'patr_building'                          => 'Building',
+'patr_patron_noti'                       => 'How to notify patron',
+'patr_street'                            => 'Street',
+'patr_city'                              => 'City',
+'patr_postal_code'                       => 'Postal Code',
+'patr_rush_req'                          => 'Rush requested',
+'patr_paid'                              => 'Paid by',
+'patr_paid_choice'                       => 'Paid by choices',
+'patr_account_no'                        => 'Account number',
+'patr_note'                              => 'Note',
+'patr_fine_limit'                        => 'Allowed fines. Use \'0.00\' format with no \'$\'',  
+
+
+'patron_email_pattern'                   => 'Perl regex for matching patron email address',
+'patron_email_no_match_text'             => 'Text when patron email address does not match',
+
+'use_blank_citation_form'                => 'Enable blank citation form', 
+
+'use_patron_api'                         => 'Use patron API',
+'patron_api_type'                        => 'Type',
+'patron_api_host'                        => 'Server',
+'patron_api_port'                        => 'Port',
+'patron_need_pin'                        => 'PIN required',
+
+'password_needed'                        => 'Password required to request?',
+'password_value'                         => 'Password value',
+'skip_required_if_password'              => 'No check for \'required\' fields if using a password',
+
+
+'use_site_holdings'                      => 'Are there holdings associated with this site?',
+'abbrev_name'                            => 'Site name to appear next to holdings',
+'disable_holdings_statement_display'     => '<b>No</b> holdings statement for brief journal display',
+'disable_item_and_circulation_display'   => '<b>No</b> item records for brief journal display'
+'disable_journal_details'                => '<b>No</b> \'check detailed holdings\' link for journals',
+'disable_non_journal_details'            => '<b>No</b> \'check detailed holdings\' link for non-journals',
+'catalogue_source_journal'               => 'Catalogue for journal for brief display',
+'catalogue_source_non_journal'           => 'Catalogue for non-journals for brief display',
+'catalogue_source_default'               => 'Default catalogue',
+
+
+'source_name'                            => 'Target name',
+'system_type'                            => 'System type',
+'strip_apostrophe_s'                     => 'Strip apostrophe-s from search term words',
+
+'use_z3950'                              => 'Use Z39.50 to search', 
+'zhost'                                  => 'Host',
+'zport'                                  => 'Port',
+'zdbase'                                 => 'Database name',
+'zid'                                    => 'ID',
+'zpassword'                              => 'Password',
+'zsysid_search_avail'                    => 'Searchable system ID field',
+'zuse_att_sysid'                         => 'System id use attribute',
+'zuse_att_isbn'                          => 'ISBN use attribute',
+'zuse_att_issn'                          => 'ISSN use attribute',
+'zuse_att_title'                         => 'Title use attribute',
+'zuse_att_journal_title'                 => 'Journal title use attribute',
+
+'zpos_att_sw_title'                      => 'Position for single word title searches',
+'zpos_att_title'                         => 'Position for title searches',
+'zpos_att_sw_journal_title'              => 'Position for single word journal searches',
+'zpos_att_journal_title'                 => 'Position for journal searches',
+'zstruct_att_sw_title'                   => 'Structure for single word title searches',
+'ztrunc_att_sw_title'                    => 'Truncation for single word title searches',
+'zcompl_att_sw_title'                    => 'Completeness for single word title searches',
+'zstruct_att_title'                      => 'Structure for title searches',
+'ztrunc_att_title'                       => 'Truncation for title searches',
+'zcompl_att_title'                       => 'Completeness for title searches',
+
+'zstruct_att_sw_journal_title'           => 'Structure for single word journal searches',
+'ztrunc_att_sw_journal_title'            => 'Truncation for single word journal searches',
+'zcompl_att_sw_journal_title'            => 'Completeness for single word journal searches',
+
+'zstruct_att_journal_title'              => 'Structure for journal searches',
+'ztrunc_att_journal_title'               => 'Truncation for journal searches',
+'zcompl_att_journal_title'               => 'Completeness for journal searches',
+
+
+
+    }
+%]
+
+

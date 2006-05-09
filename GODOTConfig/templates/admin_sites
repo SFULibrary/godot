@@ -1,0 +1,14 @@
+[% INCLUDE results %]
+<a href="[% url %]?state=admin_new_site">New Site</a> |<br>
+<br>
+<div class="table-border">
+<table border="0" cellspacing="0" cellpadding="2">
+<tr><td class="heading">&nbsp;</td><td class="heading">key</td><td class="heading">name</td></tr>
+[% FOREACH site = sites.sort('name') %]
+ [% SET class = (site.active ? 'active-field' : 'inactive-field') _ ((loop.count+1) mod 2) %]
+ <tr><td class="[% class %]"><a href="[% url %]?state=admin_view_site&site_id=[% site.id %]">view</a> | <a href="[% url %]?state=admin_edit_site&site_id=[% site.id %]">edit</a> | <a href="[% url %]?state=admin_delete_site&site_id=[% site.id %]" onclick="return confirmDelete()">delete</a></td>
+ <td class="[% class %]">[% site.key %] </td>
+ <td class="[% class %]">[% site.name %] </td>
+ </tr>
+[% END %]
+</table></div>

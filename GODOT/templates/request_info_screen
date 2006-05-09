@@ -1,0 +1,18 @@
+<div id="request-info">
+
+[% INCLUDE skipped_main %]
+
+[% INCLUDE request_info_text %]
+
+<div id="request-info-links">
+<ul id="request-info-links">
+[% IF page.instructions.back_to_dbase %]
+        <li><a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a></li>        
+[% END %]
+</ul>
+</div>
+
+
+</div>
+
+

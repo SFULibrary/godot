@@ -1,0 +1,68 @@
+[%# Citation data for example_citation.atml.
+
+ Subset of OpenURL fields found in 'citations' below:
+
+             {
+                genre   => '',
+                aulast  => '', 
+                aufirst => '',
+                auinit  => '',
+                title   => '',
+                stitle  => '',
+                atitle  => '',
+                issn    => '',
+                isbn    => '',
+                volume  => '',
+                issue   => '',
+                pages   => '',
+                spage   => '',
+                epage   => '',
+                date    => ''                
+              }
+%]
+
+[%
+
+citations = [ { genre   => 'article',
+                atitle  => 'The Consequences of Insufficient Sleep for Adolescents: Links Between Sleep and Emotional Regulation.',
+                title   => 'Phi Delta Kappan',
+                issn    => '0031-7217',
+                volume  => '80',
+                issue   => '5',
+                pages   => '354',
+                date    => '1999-01-01'                
+              },
+              { genre   => 'journal',
+                title   => 'Phi Delta Kappan',
+                issn    => '0031-7217'
+              }, 
+              {
+                genre   => 'book',
+                aulast  => 'Lindeman', 
+                aufirst => 'David',
+                title   => 'Alzheimer\'s day care : a basic guide',
+                isbn    => '0891161066',
+                date    => '1991'
+              },
+              {
+                genre   => 'bookitem',
+                aulast  => 'Schofield', 
+                auinit  => 'C.J.',
+                title   => 'Medical Insects and Arachnids',
+                atitle  => 'Bedbugs and kissing-bugs (bloodsucking Hemiptera)',
+                spage   => '483',
+                epage   => '516',
+                date    => '1993'                
+              },
+              {
+                genre   => 'preprint',
+                id      => 'oai:arXiv:astro-ph/9707278',
+                artnum  => '043504',
+                spage   => '043504',
+                part    => 'D',
+                date    => '1998',
+                volume  => '58',
+                issue   => '4'
+              }             
+            ]
+%]

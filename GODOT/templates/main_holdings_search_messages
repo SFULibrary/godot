@@ -1,0 +1,3 @@
+[% UNLESS page.search_messages.aws %]
+	<div id="search-messages">[% page.search_messages %]</div>
+[% END %]

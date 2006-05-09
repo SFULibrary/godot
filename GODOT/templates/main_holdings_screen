@@ -1,0 +1,44 @@
+[% PROCESS setup_variables %]
+[% INCLUDE citation_display %]
+
+[%INCLUDE main_holdings_search_messages %]
+
+<div id="results">
+[% INCLUDE config_holdings_text %]
+
+[% IF page.scrno == 1 %]
+        [% IF fulltext_available %]
+                [% INCLUDE main_holdings_cufts %]
+                [% INCLUDE main_holdings_marc_856 %]
+                [% INCLUDE main_holdings_preprint  %]
+        [% ELSE %]
+                [% INCLUDE config_no_fulltext_available_text %]
+        [% END %]
+[% END %] 
+
+[% INCLUDE main_holdings_print # request_link = '' 
+                               # check_link   = ''    
+                               groups         = {'1' = 'Check our library catalogue:',
+                                                 '2' = 'Check other library catalogues:'} 
+%]
+                                
+[% INCLUDE main_holdings_no_holdings %]
+[% INCLUDE main_holdings_search_all %]
+[% INCLUDE main_holdings_show_all %]
+
+[% IF page.scrno == 1 %]
+	[% INCLUDE main_holdings_scrno heading = 'Not available locally?' 
+                                   link    = 'Check other library catalogues or request an Interlibrary Loan'
+                                   scrno   = 2
+	%]
+[% ELSIF page.scrno == 2 %]
+	[% INCLUDE main_holdings_ill_form link = 'Place an Interlibrary Loan Request' %]
+	[% INCLUDE main_holdings_auto_req link = 'Place an Interlibrary Loan Request' %]
+[% END %]
+
+[% INCLUDE main_holdings_related_info %]
+[% INCLUDE main_holdings_citation_capture %]
+[% INCLUDE main_holdings_contact_us %]
+[% INCLUDE main_holdings_command_links %]
+
+</div>

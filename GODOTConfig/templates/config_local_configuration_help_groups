@@ -1,0 +1,37 @@
+[% SET config_local_configuration_help_groups = [
+
+        { name=> 'general',       label=> 'general'},       
+
+        { name=> 'display',           label=> 'display'},       
+        { name=> 'holdings',          label=> 'holdings'},
+        { name=> 'blocking',          label=> 'blocking'},      
+        { name=> 'ill_form',          label=> 'ILL request link'},      
+
+        { name=> 'borrowing_message',        label=> 'borrowing message'},            
+        { name=> 'borrowing_relationships',  label=> 'borrowing relationships'},            
+        { name=> 'borrowing',                label=> 'borrowing miscellaneous'},            
+
+        { name=> 'lending',       label=> 'lending'},              
+
+        { name=> 'request_form',  label=> 'request form'},  
+        { name=> 'patron_email',  label=> 'patron email'},
+
+        { name=> 'errors',        label=> 'error'},         
+        { name=> 'fulltext',      label=> 'fulltext'},      
+
+        { name=> 'blank_citation', label => 'blank citation form'},
+        
+        { name=> 'system',        label=> 'system'},        
+
+        { name=> 'patron_api',        label=> 'patron API'},        
+
+        { name=> 'z3950',             label=> 'z3950'},        
+        { name=> 'request_password',  label=> 'request password'},         
+        { name=> 'collections',  label=> 'collections'},         
+
+        { name=> 'site_holdings',  label=> 'site holdings'},         
+
+    ]
+
+%]
+

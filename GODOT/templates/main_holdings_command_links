@@ -1,0 +1,9 @@
+[% RETURN UNLESS config.display_command_links %]
+[% DELIMITER = ' | ' %]
+
+<div id="command-links">
+[% IF page.instructions.back_to_dbase %]
+   [% use_delimiter ? DELIMITER : '' %] 
+   <a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a>
+[% END %]
+</div>

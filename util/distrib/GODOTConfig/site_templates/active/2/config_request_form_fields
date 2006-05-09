@@ -1,0 +1,26 @@
+[% SET config_request_form_fields = [
+
+        { name=> 'LAST_NAME',     label => 'Last name:'         , note=> '' , section => 'Borrower information'}, 
+        { name=> 'FIRST_NAME',    label => 'First name:'        , note=> '' },
+        { name=> 'LIBRARY_ID',    label => 'Barcode, e.g. 29345000123456:' , note=> '' },
+        { name=> 'PIN',           label => ''                   , note=> '' },
+        { name=> 'PATRON_TYPE',   label => 'Status:'            , note=> '' },
+        { name=> 'DEPARTMENT',    label => 'Department<BR>(Undergrads use NA):',         note=> '' },
+        { name=> 'PATRON_EMAIL',  label => 'Email address<br>(eg. <i>jdoe@sfu.ca</i>):', note=> '' },
+        { name=> 'PROV',          label => ''                   , note=> '' },
+        { name=> 'PHONE',         label => ''                   , note=> '' },
+        { name=> 'PHONE_WORK',    label => ''                   , note=> '' },
+        { name=> 'BUILDING',      label => ''                   , note=> '' }, 
+        { name=> 'STREET',        label => ''                   , note=> '' },
+        { name=> 'CITY',          label => ''                   , note=> '' },
+        { name=> 'POSTAL_CODE',   label => ''                   , note=> '' },
+        { name=> 'NOT_REQ_AFTER', label => 'Item no longer required<br> after (<i>dd/mm/yy</i>):' , note=> '' , section => 'Document pickup information'},
+        { name=> 'PATRON_NOTI',   label => ''                   , note=> '' },
+        { name=> 'PICKUP',        label => 'Pickup location:'   , note=> ''},
+        { name=> 'RUSH_REQ',      label => ''                   , note=> '' },
+        { name=> 'PAID',          label => ''                   , note=> '' },
+        { name=> 'ACCOUNT_NO',    label => ''                   , note=> '' },
+        { name=> 'NOTE',          label => 'Notes:'             , note=> '' }
+    ]
+
+%]

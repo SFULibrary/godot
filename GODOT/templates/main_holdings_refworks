@@ -1,0 +1,8 @@
+[% PROCESS config_main_holdings_refworks %]
+[% FOREACH record = page.citation_manager_records  %]
+        [% SET parts = record.url.split('&DBASE=')  %]
+        [% SET rw_url = 'rw_export.cgi?state=import&id=' _ page.session_id.escape _ '&proxy=' _ proxy.escape _ '&DBASE=' _ parts.1 %]
+	[% text = '<a target="RefWorksMain" href="' _ rw_url _ '">' _ link _ '</a>' %]
+	[% items.push(text) %]
+[% END  %]
+

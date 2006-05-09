@@ -1,0 +1,7 @@
+[% UNLESS template_data.defined %]
+This template has not been created for this site.
+[% ELSE %]
+<pre class="view-template">
+[% template_data | html %]
+</pre>
+[% END %]

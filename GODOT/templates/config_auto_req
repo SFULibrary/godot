@@ -1,0 +1,2 @@
+[% config_auto_req.heading = BLOCK %]Request this item:[% END %]
+[% config_auto_req.link = BLOCK %]Place an Interlibrary Loan Request[% END %]

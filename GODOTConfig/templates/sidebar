@@ -1,0 +1,4 @@
+[% FOREACH menu_item = menu -%]
+<div class="sidebar-item" onmouseover="this.className='sidebar-item-active'" onmouseout="this.className='sidebar-item'" onclick="window.location.href='[% menu_item.1 %]'"><a href="[% menu_item.1 %]" class="sidebar">[% menu_item.0 %]</a></div>
+[%- UNLESS loop.last %]<div class="sidebar-divider"><img src="images/spacer.gif" alt=""></div>[% END %]
+[%- END %]

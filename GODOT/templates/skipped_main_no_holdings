@@ -1,0 +1,32 @@
+[% DEFAULT  
+        text = ''
+%]
+
+[% RETURN UNLESS page.instructions.skipped_main_no_holdings %]
+
+[% IF (NOT page.search_messages.aws) AND config.display_search_messages %]
+        <div id="skipped-main-search-messages">[% page.search_messages %]</div>
+[% END %]
+
+<div id="skipped-main-no-holdings" class="results-display">
+	[% PROCESS get_no_holdings_text %]
+        <P>
+        [% text %]          
+</div>
+
+[% BLOCK get_no_holdings_text %]
+	[% IF citation.is_journal %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			[% INCLUDE config_skip_if_no_holdings_text message = 'blank_journal' %]
+		[% ELSE %]
+			[% INCLUDE config_skip_if_no_holdings_text message = 'journal' %]
+		[% END %]
+	[% ELSE %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			[% INCLUDE config_skip_if_no_holdings_text message = 'blank_non_journal' %]
+		[% ELSE %]
+			[% INCLUDE config_skip_if_no_holdings_text message = 'non_journal' %]
+		[% END %]
+	[% END %]
+[% END %]
+

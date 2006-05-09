@@ -1,0 +1,35 @@
+[% SET holdings = 0; PROCESS check_holdings; RETURN IF holdings %]
+
+<div id="main-holdings-no-holdings" class="results-display">
+	[% PROCESS get_no_holdings_text %]
+</div>
+
+[% BLOCK get_no_holdings_text %]
+	[% IF citation.is_journal %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			[% INCLUDE config_no_holdings_text message = 'blank_journal' %]
+		[% ELSE %]
+			[% INCLUDE config_no_holdings_text message = 'journal' %]
+		[% END %]
+	[% ELSE %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			[% INCLUDE config_no_holdings_text message = 'blank_non_journal' %]
+		[% ELSE %]
+			[% INCLUDE config_no_holdings_text message = 'non_journal' %]
+		[% END %]
+	[% END %]
+[% END %]
+
+[% BLOCK check_holdings %]
+	[% IF page.has_get_link ||
+	      page.link_from_cat_records.size ||
+	      page.holdings_records.size ||
+	      page.preprint_records.size || 
+	      page.has_hidden_record ||
+	      citation.is_preprint ||
+	      page.ill_form_records.size %]
+		[% SET holdings = 1 %]
+	[% ELSE %]
+		[% SET holdings = 0 %]
+	[% END %]
+[% END %]

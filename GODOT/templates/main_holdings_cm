@@ -1,0 +1,15 @@
+[% RETURN UNLESS config.display_citation_capture_links %]
+[% RETURN UNLESS page.citation_manager_records.size %]
+[% DEFAULT
+	link = 'Citation Manager'
+%]
+<div id="main-holdings-cm" class="results-display">
+
+Export citation/reference to:
+[% SET items = [] %]
+[% FOREACH record = page.citation_manager_records  %]
+	[% text = '<a target="_blank" href="' _ record.url _ '">' _ link _ '</a>' %]
+	[% items.push(text) %]
+[% END  %]
+[% INCLUDE main_holdings_items items = items %]
+</div>

@@ -1,0 +1,16 @@
+[% IF page.preprint_records.size %]
+        [% SET items = [] %]
+	<div id="main-holdings-preprint" class="results-display">
+
+	<span class="results-from">Check <span class="results-from-resource">e-Print archive</span> for a link to article online:</span>
+	
+	[% FOREACH record = page.preprint_records  %]
+		[% SET text = '<a target="_blank" href="' _ record.url _ '">' _ record.description _ '</a>' %]
+
+		[% items.push(text) %]
+	[% END %]
+	[% INCLUDE main_holdings_items items = items %]
+
+	</div>
+[% END  %]
+

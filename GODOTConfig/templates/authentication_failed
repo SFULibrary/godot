@@ -1,0 +1,6 @@
+<div class="authentication_failed">
+The password for account <B><I>[% account_key %]</I></B> was not recognized.
+Please check that you have entered the correct login name and password.
+If you are still having problems, please contact your GODOT administrator.
+</div>
+<br />

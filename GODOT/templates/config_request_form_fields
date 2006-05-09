@@ -1,0 +1,26 @@
+[% SET config_request_form_fields = [
+
+        { name=> 'LAST_NAME',     label => 'Last name'          , note=> '' , section => 'Borrower information'}, 
+        { name=> 'FIRST_NAME',    label => 'First name'         , note=> '' },
+        { name=> 'LIBRARY_ID',    label => 'Library ID'         , note=> '' },
+        { name=> 'PIN',           label => 'PIN'                , note=> '' },
+        { name=> 'PATRON_TYPE',   label => 'Patron Type'        , note=> '' },
+        { name=> 'DEPARTMENT',    label => 'Department'         , note=> '' },
+        { name=> 'PATRON_EMAIL',  label => 'Email'              , note=> '' },
+        { name=> 'PROV',          label => 'Province'           , note=> '' },
+        { name=> 'PHONE',         label => 'Phone'              , note=> '' },
+        { name=> 'PHONE_WORK',    label => 'Work Phone'         , note=> '' },
+        { name=> 'BUILDING',      label => 'Building'           , note=> '' }, 
+        { name=> 'STREET',        label => 'Street'             , note=> '' },
+        { name=> 'CITY',          label => 'City'               , note=> '' },
+        { name=> 'POSTAL_CODE',   label => 'Postal Code'        , note=> '' },
+        { name=> 'NOT_REQ_AFTER', label => 'Not required after' , note=> '' , section => 'Document pickup information'},
+        { name=> 'PATRON_NOTI',   label => 'Notification'       , note=> '' },
+        { name=> 'PICKUP',        label => 'Pickup'             , note=> '' },
+        { name=> 'RUSH_REQ',      label => 'Rush Request?'      , note=> '' },
+        { name=> 'PAID',          label => 'Payment'            , note=> '' },
+        { name=> 'ACCOUNT_NO',    label => 'Account Number'     , note=> '' },
+        { name=> 'NOTE',          label => 'Note'               , note=> '' }
+    ]
+
+%]

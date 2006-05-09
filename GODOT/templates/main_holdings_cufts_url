@@ -1,0 +1,7 @@
+[%# Alters URLs from CUFTS as required.  SFU uses this to send the user to a statistics
+    logging script before redirecting them to the fulltext URL.  
+%]
+[%
+   SET cufts_url = cufts_url.replace('\$bccampus_id\$', page.local.bccampus_id);
+   SET cufts_url = cufts_url.replace('\$bccampus_pw\$', page.local.bccampus_pw);
+%]

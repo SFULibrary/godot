@@ -1,0 +1,14 @@
+[% mono_text =  BLOCK %] [% INCLUDE config_request_mono_info_text %] [% END  %]
+
+<div id="request-info-text">
+
+[% IF citation.is_mono and mono_text.not_empty %]
+        [% INCLUDE config_request_mono_info_text %]
+[% ELSE  %]
+        [% INCLUDE config_request_info_text  %]
+[% END  %]
+
+</div>
+
+
+

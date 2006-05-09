@@ -1,0 +1,70 @@
+[% DEFAULT  
+        size = 40
+        submit = 'Continue'
+        text   = ''
+%]
+
+[% PROCESS config_request_form_fields %]
+[% PROCESS labels %]
+
+<div id="check-patron-form">
+
+[% INCLUDE skipped_main %]
+
+<div id="check-patron-text">
+[% INCLUDE config_check_patron_text %]
+</div>
+
+
+<TABLE CLASS="check-patron-form-table">
+[% SET element = {
+           name = 'PATR_LIBRARY_ID_FIELD'
+           type = 'PASSWORD'
+   }
+%]
+<TR>
+<TD CLASS="check-patron-form-label">[% library_id_label %]</TD>
+<TD CLASS="check-patron-form-field">[% config.patr_library_id_def %][% INCLUDE form_element element = element %]</TD>
+</TR>
+
+[% IF config.patron_need_pin  %]
+        [% SET element = {
+                  name = 'PATR_PIN_FIELD'
+                  type = 'PASSWORD'
+           }
+        %]
+        <TR>
+        <TD CLASS="check-patron-form-label">pin_label</TD>
+        <TD CLASS="check-patron-form-field">[% INCLUDE form_element element = element %]</TD>
+        </TR>
+[% END %]
+
+<TR>
+<TD CLASS="check-patron-form-submit" COLSPAN="2">
+<INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="[% submit %]" /><INPUT TYPE="HIDDEN" NAME="[% page.buttons.first.action %][% page.buttons.first.param %]" VALUE="[% submit %]" />
+</TD>
+</TR>
+
+</TABLE>
+
+[% IF page.instructions.back_to_dbase %]
+   <div id="check-patron-links">
+   <ul id="check-patron-links">
+   <li><A HREF="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</A></li>
+   </ul>
+   </div>
+[% END %]
+
+</div>
+
+[% BLOCK labels  %]
+        [% FOREACH field = config_request_form_fields %]
+                [% SWITCH field.name  %]
+                [% CASE 'LIBRARY_ID' %]
+                        [% SET library_id_label = field.label  %]
+                [% CASE 'PIN' %]
+                        [% SET pin_label = field.label  %]
+                [% END  %]
+        [% END  %]
+[% END  %]
+

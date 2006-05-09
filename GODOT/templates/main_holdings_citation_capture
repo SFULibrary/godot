@@ -1,0 +1,11 @@
+[% RETURN UNLESS config.display_citation_capture_links %]
+[% RETURN UNLESS page.citation_manager_records.size %]
+
+<div id="main-holdings-export" class="results-display">
+
+Export citation/reference to:
+[% SET items = [] %]
+[% PROCESS main_holdings_cm_link  %]
+[%# PROCESS main_holdings_refworks  %]
+[% INCLUDE main_holdings_items items = items %]
+</div>

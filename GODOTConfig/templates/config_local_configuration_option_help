@@ -1,0 +1,795 @@
+[% PROCESS local_configuration_option_text %]
+[% SET option = local_configuration_option_text  %]
+
+[%# General %]
+
+[% config_local_configuration_option_help.abbrev_name = BLOCK %]
+User name abbreviation (eg. SFU) that will appear next to holdings for that site. 
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_nuc = BLOCK %]
+National Union Code (eg. BVAS for SFU).
+[% END %]
+
+
+[% config_local_configuration_option_help.group = BLOCK %]
+Groups of which your site is a member (eg. ELN, COPPUL).
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_fax = BLOCK %]
+ILL department FAX number.
+[% END %]
+
+[% config_local_configuration_option_help.display_citation_capture_links = BLOCK %]
+Enable this if your library has access to Citation Manager or RefWorks.
+[% END %]
+
+[% config_local_configuration_option_help.display_command_links = BLOCK %]
+This will create a 'Back to Database' link on your GODOT screen whenever the GODOT screen is NOT generated from a popup window (i.e. within the same browser window as the original database).
+[% END %]
+
+[% config_local_configuration_option_help.display_related_info_links = BLOCK %]
+This will allow for links to Internet search engines to appear. Use the main_holdings_related_info template from the main screen content template group to configure different search engines. Google and Teoma are provided by default.
+[% END %]
+
+[% config_local_configuration_option_help.expand_fulltext_by_default = BLOCK %]
+Enabling this option will expand the fulltext options from CUFTS by default (i.e. issue-level, journal-level, database-level links).
+[% END %]
+
+[% config_local_configuration_option_help.expand_holdings_by_default = BLOCK %]
+Enabling this option will expand the detailed holdings information from library catalogues by default.
+[% END %]
+
+[% config_local_configuration_option_help.openurl_cookie_pusher_image = BLOCK %]
+Image for OpenURL link if it was enabled using the 'cookie pusher' method. 
+[% END %]
+
+
+[% config_local_configuration_option_help.use_javascript = BLOCK %]
+Use a javascript popup window ('Working ...') to display information and error messages.
+[% END %]
+
+
+[% config_local_configuration_option_help.contact = BLOCK %]
+Contact person(s) note (for staff use ONLY). Please add the name or names of the staff responsible for your GODOT profile.
+[% END %]
+
+
+
+[%# Blank ILL Form %]
+
+
+[%# Errors %]
+
+[% config_local_configuration_option_help.error_not_parseable = BLOCK %]
+This error message will appear when a database is not searchable by GODOT. You may want to add contact information to allow for error reporting (eg. The holdings/requesting option for this database is currently under development. Contact lib-help@sfu.ca for further information). 
+[% END %]
+
+
+
+[%# Holdings Table %]
+
+[% config_local_configuration_option_help.auto_req = BLOCK %]
+Turn on automatic requesting feature for <b>journals</b>. Automatic requesting replaces the individual request links next to each library with a single request link on the GODOT screen. The request will be sent to the highest ranked library with holdings.
+[% END %]
+
+
+[% config_local_configuration_option_help.rank = BLOCK %]
+Library/branch ranking for <B>journals</B> (currently this only controls the GODOT screen display).
+<p>This section will allow you to specify which library catalogues GODOT should search.</p>
+<p><strong>Site:</strong> NUC code for the libraries<br />
+<strong>Display Group:</strong> It is possible to group libraries on the GODOT screen. For example, you may wish to have your own library in its own group, and one or two nearby libraries also listed on the first GODOT screen, but in a group separate from your own library. To do this, your own library would be ranked as '1', and the other libraries ranked as '2'.<br />
+<strong>Search Group:</strong> Controls the order of searching - generally set the same as the display group.<br />
+<strong>Auto Requesting:</strong> If you have auto-requesting activated, you will need to set this to 'SHOW' if you'd like to display the holdings to your users.
+</p>
+
+<p>In most cases, libraries set both the Display and Search Groups to '1' for their own library, and leave all other libraries blank (this will force all of those libraries to only appear on the second GODOT screen).</p>
+
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank = BLOCK %]
+Use libraries not specified in <B>journal</B> rank list. Enabling this option will allow GODOT to search other libraries when no holdings are found in your ranked libraries (configured in the previous section).
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank_display_group = BLOCK %]
+Default display group. In most cases, this is left blank.
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank_search_group = BLOCK %]
+Default search group. In most cases, this is left blank.
+[% END %]
+
+
+[% config_local_configuration_option_help.other_auto_req_show = BLOCK %]
+If <B>auto requesting</B> is turned on, should holdings be displayed? Because automatic requesting removes the individual 'request' links, you may wish to <b>HIDE</b> the holdings of individual libraries to minimize information on the GODOT screen. Some libraries prefer to continue to <b>SHOW</b> remote library holdings for those users that may choose to travel to a nearby location rather than placing a request.
+[% END %]
+
+
+[% config_local_configuration_option_help.auto_req_non_journal = BLOCK %]
+Turn on automatic requesting feature for <B>monographs</B>.
+[% END %]
+
+
+[% config_local_configuration_option_help.rank_non_journal = BLOCK %]
+Library/branch ranking for <B>monographs</B> (currently this only controls the GODOT screen display).
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank_non_journal = BLOCK %]
+Use libraries not specified in <B>monograph</B> rank list. See the explanation of the configuration table above.
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank_non_journal_display_group = BLOCK %]
+Default display group for <B>monographs</B>. In most cases, this is left blank.
+[% END %]
+
+
+[% config_local_configuration_option_help.other_rank_non_journal_search_group = BLOCK %]
+Default search group for <B>monographs</B>. In most cases, this is left blank.
+[% END %]
+
+
+[% config_local_configuration_option_help.other_auto_req_show_non_journal = BLOCK %]
+If <B>auto requesting</B> is turned on, should <B>monograph</B> holdings be displayed?
+[% END %]
+
+
+[% config_local_configuration_option_help.parallel_server_msg = BLOCK %]
+Display all parallel server (remote catalogue searching) messages or just the error messages on the GODOT screen. 
+[% END %]
+
+
+[% config_local_configuration_option_help.skip_main_holdings_screen_if_no_holdings = BLOCK %]
+If there are no holdings, then don't display the first GODOT screen, just skip to the next screen.
+[% END %]
+
+
+[% config_local_configuration_option_help.eric_coll_avail = BLOCK %]
+Select this option if you own the ERIC microfiche collection.<p>EDRS E*Subscribe only:  Use if your ERIC document collection consists only of online access via EDRS E*Subscribe.
+[% END %]
+
+
+[% config_local_configuration_option_help.eric_coll_text = BLOCK %]
+If the previous message is true, enter the location of the ERIC microfiche collection (eg. 7th Floor - Main Library).
+[% END %]
+
+
+[% config_local_configuration_option_help.mlog_coll_avail = BLOCK %]
+Select this option if you own the Canadian Research Index (Microlog) microfiche collection. 
+[% END %]
+
+
+[% config_local_configuration_option_help.mlog_coll_text = BLOCK %]
+If the previous message is true, enter the location of the Canadian Research Index (Microlog) microfiche collection (eg. 7th Floor - Main Library). 
+[% END %]
+
+
+
+[%# Fulltext - General %]
+
+[% config_local_configuration_option_help.link_from_cat_name = BLOCK %]
+For the purpose of checking the catalogue for links in the MARC 856 field, pretend that you are this user.
+[% END %]
+
+
+[% config_local_configuration_option_help.link_name = BLOCK %]
+For the purpose of checking the catalogue for CUFTS links, pretend that you are this user.
+[% END %]
+
+
+
+[%# Fulltext - GODOTjake %]
+
+
+[%# Link Templates %]
+
+
+[%# Borrowing %]
+
+[% config_local_configuration_option_help.from_name = BLOCK %]
+Name you want attached to messages sent.
+[% END %]
+
+
+[% config_local_configuration_option_help.from_email = BLOCK %]
+Email address you want attached to messages sent.
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_local_system = BLOCK %]
+Format of email message for mediated requests (or copies of unmediated requests). <B>AVISO_4 is for Aviso 4 and over.</B>
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_local_system_email = BLOCK %]
+Email address to which mediated requests (or copies of unmediated requests) should be sent.
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_copy_to_local_system = BLOCK %]
+Send copy of any requests to other libraries to [% option.ill_local_system_email %].
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_id = BLOCK %]
+Value for <B>HomeLib</B> in <B>RSS_FORM_2</B> format.
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_max_cost = BLOCK %]
+Maximum cost to request (eg. $20.00).
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_account = BLOCK %]
+Configure account numbers.
+[% END %]
+
+
+[% config_local_configuration_option_help.holdings_list = BLOCK %]
+Do you want the holdings site list included with request messages to include all sites or only those from which 
+patrons can borrow? <p>If your [% option.ill_local_system  %] is <b>RSS_FORM</b>, <b>RSS_FORM_2</b> or 
+any system that forwards automatically based on the list, then you may want to set to <b>CAN_BORROW_ONLY</b>.
+[% END %]
+
+
+[% config_local_configuration_option_help.blocking_holdings = BLOCK %]
+If filled in, this value is used instead of site code in blocking logic.  Not a commonly used option.  Could
+be used in the case where there is a site that does not have holdings of its own but is associated with
+a site that does.
+[% END %]
+
+
+[% config_local_configuration_option_help.include_fulltext_as_holdings = BLOCK %]
+Consider fulltext links to be holdings in blocking logic.
+[% END %]
+
+
+[% config_local_configuration_option_help.blocking = BLOCK %]
+T: cannot order from <B>another library</B>, if available at your library. <p>F: can order from <B>another library</B>, even if available at your library. <p>F_MEDIATED: if available at your library, you may order from <B>another library</B>, but will get a warning indicating that this is the case.  All requests which would ordinarily be direct are changed to mediated. <p>F_MEDIATED_NO_WARNING: if available at your library, you may order from <B>another library</B>, but all requests which would ordinarily be direct are changed to mediated. You will not get a warning.<p>F_WARNING: if available at your library, you will get a warning indicating that this is the case. Other than that, your request will be processed normally.
+[% END %]
+
+
+[% config_local_configuration_option_help.no_holdings_req = BLOCK %]
+Applies when <B>no holdings are found</B>.<p>T: include an ILL request link when no journal holdings are found. 
+[% END %]
+
+
+[% config_local_configuration_option_help.no_holdings_req_non_journal = BLOCK %]
+Applies when <B>no holdings are found</B> for <B>monographs</B>.<p>T: include an ILL request link when no monograph holdings are found. 
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_req_form = BLOCK %]
+Applies <B>when journal holdings are found</B>. <p>T: always include an ILL request link.<p>T_NO_REQ_AVAIL: only include the link when none of the holdings can be requested. <p>F: never include the ILL request link. 
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_req_form_non_journal = BLOCK %]
+Applies <B>when holdings are found</B> for <B>monographs</B>. <p>T: always include an ILL request link.<p>T_NO_REQ_AVAIL: only include the link when none of the holdings can be requested. <p>F: never include the ILL request link. 
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_req_form_limit_text = BLOCK %]
+Text next to the ILL request link.
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_req_form_limit = BLOCK %]
+Specify limit messages for each type of patron.
+[% END %]
+
+
+[% config_local_configuration_option_help.request = BLOCK %]
+Type of requesting allowed. D=direct (GODOT sends requests directly to remote library with holdings), M=mediated (GODOT sends requests to your ILL staff), N=not allowed (requests are not permitted).
+<p>The order of libraries chosen will be the order of libraries searched. Libraries that you prefer to borrow from should be higher on the list.</p>
+[% END %]
+
+
+[% config_local_configuration_option_help.other_request = BLOCK %]
+Default request type (D=direct, M=mediated, N=not allowed).
+[% END %]
+
+
+[% config_local_configuration_option_help.request_non_journal = BLOCK %]
+Type of requesting <B>monograph</B> allowed (D=direct, M=mediated, N=not allowed).
+[% END %]
+
+
+[% config_local_configuration_option_help.other_request_non_journal = BLOCK %]
+Default <B>monograph</B> request type (D=direct, M=mediated, N=not allowed).
+[% END %]
+
+
+[% config_local_configuration_option_help.use_request_confirmation_screen = BLOCK %]
+Do you want an ILL form confirmation screen?
+[% END %]
+
+
+[% config_local_configuration_option_help.use_request_acknowledgment_screen = BLOCK %]
+Do you want an ILL form acknowledgment screen?
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_email_ack_msg = BLOCK %]
+Send patron an email acknowledging that an ILL request has been submitted.
+[% END %]
+
+[% config_local_configuration_option_help.ill_email_ack_msg_text = BLOCK %]
+Text for email acknowledging that an ILL request has been submitted.
+[% END %]
+
+
+
+[%# Lending %]
+
+[% config_local_configuration_option_help.lend = BLOCK %]
+Does this library/branch lend?
+[% END %]
+
+
+[% config_local_configuration_option_help.request_msg_fmt = BLOCK %]
+Format of request email message (GENERIC_SCRIPT = National Library Generic Script).
+[% END %]
+
+
+[% config_local_configuration_option_help.request_msg_email = BLOCK %]
+Email address to which to send requests to borrow.
+[% END %]
+
+
+[% config_local_configuration_option_help.same_nuc_email = BLOCK %]
+If the lending and borrowing sites have the same [% option.ill_nuc  %] and the request is direct, then only send to 
+one of these addresses. This is useful when branches (ie. users) use a central ILL department. 
+<p><b>R</b> = only send to lending system ([% option.request_msg_email %])<br><b>L</b> = only send to local 
+system <B>([% option.ill_local_system_email %])</B><br><b>N</b> = nothing special is done if the [% option.ill_nuc %] values
+are the same
+[% END %]
+
+
+
+[%# Patron - General %]
+
+[% config_local_configuration_option_help.ill_cache_patron_info = BLOCK %]
+Enable server-side caching of patron info. This caching relies on a database session 
+ID being passed as part of the link to Godot.  This is only available in some of the
+older non-OpenURL links to Godot.   Generally the session ID is not 
+passed in the newer OpenURL links.
+[% END %]
+
+
+[% config_local_configuration_option_help.skip_required_if_password = BLOCK %]
+Do not check that 'required' fields are filled in if request was protected by password. See 
+[% option.password_needed %].
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_last_name = BLOCK %]
+Use 'last name' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_first_name = BLOCK %]
+Use 'first name' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_library_id = BLOCK %]
+Use 'library ID' field on ILL form. <b>User input will appear as stars.</b>
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_library_id_def = BLOCK %]
+Default text for [% option.patr_library_id %].
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_type = BLOCK %]
+Use 'patron type' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_type_edit_allowed = BLOCK %]
+Should the user be allowed to edit the patron type?  In most cases, you would only want this to be F if patron type was available via the patron API.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_type_disp = BLOCK %]
+Display on ILL form.  Overrides [% option.patr_patron_type_edit_allowed %].<p>(You may not want to display it, 
+if it is a code, instead of an English description, and is from a patron record.)
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_type_choice = BLOCK %]
+<b>Will not be used if patron type is being retrieved from patron record.</b>
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_not_req_after = BLOCK %]
+Use 'not required after' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_prov = BLOCK %]
+Use 'province' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_department = BLOCK %]
+Use 'department' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_department_choice = BLOCK %]
+Choices for department.  If none are specified, user will be given a blank text field.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_email = BLOCK %]
+Use 'patron email address' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_email_pattern = BLOCK %]
+<b>ONLY CHANGE THIS IF YOU KNOW PERL REGULAR EXPRESSION SYNTAX.  TEST AFTER MAKING ANY CHANGES.</b>
+Perl regular expression for matching [% option.patr_patron_email %]. Can be used, for instance, 
+to force patrons to use their school email address and not that of a commercial ISP. 
+(eg. sfu.ca$)<p>You do not need to worry about leading and trailing white space 
+as this will be stripped off before match is done. <p>
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_email_no_match_text = BLOCK %]
+Text when patron email address does not match [% option.patron_email_pattern %].
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_pickup = BLOCK %]
+Use 'pickup location' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_pickup_choice = BLOCK %]
+
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_phone = BLOCK %]
+Use 'phone' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_phone_work = BLOCK %]
+Use 'work phone' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_building = BLOCK %]
+Use 'building' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_patron_noti = BLOCK %]
+Use 'how to notify patron' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_street = BLOCK %]
+Use 'street' name field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_city = BLOCK %]
+Use 'city' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_postal_code = BLOCK %]
+Use 'postal code' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_rush_req = BLOCK %]
+Use 'rush requested' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_paid = BLOCK %]
+Use 'paid by' field on ILL form.
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_paid_choice = BLOCK %]
+
+[% END %]
+
+
+[% config_local_configuration_option_help.patr_account_no = BLOCK %]
+Use 'account number' field on ILL form.
+[% END %]
+
+[% config_local_configuration_option_help.patr_note = BLOCK %]
+Use 'note' field on ILL form.
+[% END %]
+
+
+
+[%# Patron - Authorization and Authentication %]
+
+[% config_local_configuration_option_help.patr_fine_limit = BLOCK %]
+Allowed fines.  Anything over this amount will prevent a patron from requesting items. Use the following format '0.00'.  Do not include the '$' sign.
+[% END %]
+
+
+
+[%# System and Z39.50 %]
+
+[% config_local_configuration_option_help.source_name = BLOCK %]
+Name for catalogue target used in status messages (eg. SFU Catalogue).
+[% END %]
+
+[% config_local_configuration_option_help.system_type = BLOCK %]
+Type of ILS. 
+[% END %]
+
+
+[% config_local_configuration_option_help.use_blank_citation_form = BLOCK %]
+Controls whether 1) user is allowed to run GODOT's blank ILL form generator and 2) whether GODOT will process a request from that or any other form with the database name 'blank'.
+<p><a href="http://stalefish.lib.sfu.ca:7777/godot/blank.cgi?hold_tab_branch=BVAS">Sample blank GODOT form</a></p>
+[% END %]
+
+
+[% config_local_configuration_option_help.use_856_links = BLOCK %]
+OK to check catalogue for links in MARC 856 field. <p><b>If this is T, then make sure that Z39.50 access to the catalogue is configured.</b>
+[% END %]
+
+
+[% config_local_configuration_option_help.use_patron_api = BLOCK %]
+Patron API is available and we want to use it. A patron API is a script that allows GODOT to interact with the patron database of your ILS. Patron APIs currently exist for III and Sirsi.<p><b>If this is T, then make sure there are values for host.</b>
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_api_type = BLOCK %]
+Type of patron API. 
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_api_host = BLOCK %]
+Name of server for patron record interface.  [% option.zhost  %] will be used if not specified.
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_api_port = BLOCK %]
+Port number for patron record interface.
+[% END %]
+
+
+[% config_local_configuration_option_help.patron_need_pin = BLOCK %]
+Does patron authentication require a PIN. 
+[% END %]
+
+
+[% config_local_configuration_option_help.password_needed = BLOCK %]
+Is a password required to request?<p>Specialized usage.  Currently (06-apr-2000) only used for SFU 'Doc Direct' service.
+[% END %]
+
+
+[% config_local_configuration_option_help.password_value = BLOCK %]
+Password if [% option.password_needed  %] is set.<p>Specialized usage.  
+Currently (06-apr-2000) only used for SFU 'Doc Direct' service.
+[% END %]
+
+
+[% config_local_configuration_option_help.use_z3950 = BLOCK %]
+OK to use Z39.50 to check catalogue. <p><b>If this is T, then make sure there are values for port and database.</b>
+[% END %]
+
+
+[% config_local_configuration_option_help.zhost = BLOCK %]
+Name of Z39.50 library catalog server.
+[% END %]
+
+
+[% config_local_configuration_option_help.zport = BLOCK %]
+Port number for Z39.50 library catalog server.
+[% END %]
+
+
+[% config_local_configuration_option_help.zdbase = BLOCK %]
+Z39.50 library catalog database name.
+[% END %]
+
+
+[% config_local_configuration_option_help.zid = BLOCK %]
+Z39.50 id for library catalogue database.
+[% END %]
+
+
+[% config_local_configuration_option_help.zpassword = BLOCK %]
+Z39.50 password for library catalogue database.
+[% END %]
+
+
+[% config_local_configuration_option_help.zsysid_search_avail = BLOCK %]
+If true, then 1) the system id field contains only unique entries and 2) it is possible to do a Z39.50 search on the system id field.
+[% END %]
+
+
+[% config_local_configuration_option_help.zuse_att_sysid = BLOCK %]
+Z39.50 use attribute to use to find records based on database system id field (usually MARC 001 or 035). If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zuse_att_isbn = BLOCK %]
+Z39.50 use attribute to use to find records based on ISBN. If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zuse_att_issn = BLOCK %]
+Z39.50 use attribute to use to find records based on ISSN.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zuse_att_title = BLOCK %]
+Z39.50 use attribute to use to find records based on title.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zuse_att_journal_title = BLOCK %]
+Z39.50 use attribute to use to find records based on journal title.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zpos_att_sw_title = BLOCK %]
+Z39.50 position attribute for <B>single word</B> title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zstruct_att_sw_title = BLOCK %]
+Z39.50 structure attribute for <B>single word</B> title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.ztrunc_att_sw_title = BLOCK %]
+Z39.50 truncation attribute for <B>single word</B> title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zcompl_att_sw_title = BLOCK %]
+Z39.50 completeness attribute for <B>single word</B> title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zpos_att_title = BLOCK %]
+Z39.50 position attribute for title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zstruct_att_title = BLOCK %]
+Z39.50 structure attribute for title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.ztrunc_att_title = BLOCK %]
+Z39.50 truncation attribute for title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zcompl_att_title = BLOCK %]
+Z39.50 completeness attribute for title searches.If not specified, default will be used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zpos_att_sw_journal_title = BLOCK %]
+Z39.50 position attribute for <B>single word</B> journal title searches.If not specified, default will be used. 
+<p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zstruct_att_sw_journal_title = BLOCK %]
+Z39.50 structure attribute for <B>single word</B> journal title searches.If not specified, default will be used.  <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.ztrunc_att_sw_journal_title = BLOCK %]
+Z39.50 truncation attribute for <B>single word</B> journal title searches.If not specified, default will be used. <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zcompl_att_sw_journal_title = BLOCK %]
+Z39.50 completeness attribute for <B>single word</B> journal title searches.If not specified, default will be used.  <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zpos_att_journal_title = BLOCK %]
+Z39.50 position attribute for journal title searches.If not specified, default will be used. <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zstruct_att_journal_title = BLOCK %]
+Z39.50 structure attribute for journal title searches.If not specified, default will be used.  <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.ztrunc_att_journal_title = BLOCK %]
+Z39.50 truncation attribute for journal title searches.If not specified, default will be used.  <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.zcompl_att_journal_title = BLOCK %]
+Z39.50 completeness attribute for journal title searches.If not specified, default will be used.  <p>Used only if [% option.zuse_att_journal_title %] is being used.
+[% END %]
+
+
+[% config_local_configuration_option_help.strip_apostrophe_s = BLOCK %]
+Strip apostrophe-s at the end of search term words before searching (ex. maclean's ===> maclean).
+[% END %]
+
+
+[% config_local_configuration_option_help.disable_journal_details = BLOCK %]
+Do not display link on GODOT screen to check <b>journal</b> holdings in detail (eg. Check detailed holdings).
+[% END %]
+
+
+[% config_local_configuration_option_help.disable_non_journal_details = BLOCK %]
+Do not display link on GODOT screen to check <b>monograph</b> holdings in detail.
+[% END %]
+
+
+[% config_local_configuration_option_help.use_fulltext_links = BLOCK %]
+Query CUFTS for full text links. Make sure your CUFTS account is activated.  
+[% END %]
+
+
+[% config_local_configuration_option_help.ill_local_system_host = BLOCK %]
+RSS server host name.
+[% END %]
+
+
+
+
+
+[% config_local_configuration_option_help.use_site_holdings = BLOCK %]
+There are holdings associated with this site.  This will not be true when the 
+site is for a union catalogue.   
+[% END %]
+
+[% config_local_configuration_option_help.disable_holdings_statement_display = BLOCK %]
+Do not display the holdings statement for the brief display (ie. main screen) for records associated
+with this site. 
+[% END %]
+
+[% config_local_configuration_option_help.disable_item_and_circulation_display = BLOCK %]
+Do not display the item and circulation records for the brief display (ie. main screen) for records associated
+with this site.
+[% END %]
+
+[% config_local_configuration_option_help.catalogue_source_journal = BLOCK %]
+Use a different source for holdings records for journals for the brief display (ie. main screen) 
+than either the default catalogue or the one configured for this site.  
+<p>This source may be a union catalogue or a catalogue for a multiple branch library 
+where each branch has been configured as a separate GODOT site.</p> 
+[% END %]
+
+[% config_local_configuration_option_help.catalogue_source_non_journal = BLOCK %]
+Use a different source for holdings records for non-journals for the brief display (ie. main screen)
+than either the default catalogue or the one defined for this site.  
+<p>This source may be a union catalogue or a catalogue for a multiple branch library 
+where each branch has been configured as a separate GODOT site.</p> 
+[% END %]
+
+[% config_local_configuration_option_help.catalogue_source_default = BLOCK %]
+Specify a different default catalogue.  If none, is specified then the catalogue defined
+for this site will be used. <p>This source might be a union catalogue or a catalogue for a multiple branch library 
+where each branch has been configured as a separate GODOT site.</p>
+[% END %]
+
+
+
+

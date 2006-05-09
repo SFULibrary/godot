@@ -1,0 +1,5 @@
+<div id="error">
+[% FOREACH message = page.messages %]
+        <p>[% message %]</p>
+[% END  %]
+</div>

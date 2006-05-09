@@ -1,0 +1,85 @@
+[% PROCESS config_local_configuration_list_tool  %]
+<div class="form-list-tool">
+<table class="form-list-tool-outer">
+<tr>
+<td class="form-input">
+
+<table class="form-list-tool" align="center">
+
+[% SET name = element.name   %]
+
+<tr>
+[% SET count = 0 %] 
+[% FOREACH choice = element.choices  %]
+        [% SET column_name = choice.0  %]
+        <td class="column-header">
+        [% SET header = config_local_configuration_list_tool_labels.$name.$column_name  %]
+        [% header.replace('\s+', '<br>') %]
+        </td>
+[% END  %]
+</tr>
+<tr>
+[% SET count = 0 %] 
+[% FOREACH choice = element.choices  %]
+        [% SET choice_form_element = 'POPUP' %]
+        [% SET values = choice.1  %]
+        [% SET column_name = choice.0  %]
+        [% IF values == 'ALL_SITES' %]
+                [% SET values = []  %]
+                [% FOREACH all_site = all_sites.sort('key') %]
+                        [% values.push(all_site.key) %]
+                [% END %]
+        [% ELSIF values == 'BOOLEAN' %]
+                [% SET choice_form_element = 'CHECKBOX_BOOL' %]
+        [% ELSIF values == '' %]
+                [% SET choice_form_element = 'TEXTFIELD' %] 
+        [% END %]
+        <td class="column" valign="top">
+        [% SWITCH choice_form_element  %]
+        [% CASE 'POPUP' %]
+                [% SET size = (values.size < 5) ? values.size : 5 %]
+                <select name="[% name %]_[% count %]" size="[% size %]">
+                [% FOREACH value = values %]
+                         <option value="[% value %]">[% value %]</option>
+                [% END %]
+                </select>
+        [% CASE 'CHECKBOX_BOOL' %]
+                <input type="checkbox" name="[% name %]_[% count %]" value="t"/>
+        [% CASE 'TEXTFIELD'  %]                
+                <input type="text" name="[% name %]_[% count %]" SIZE="[% config_local_configuration_list_tool_size.$name.$column_name %]" maxlength="[% config_local_configuration_list_tool_maxlength.$name.$column_name %]" />
+        [% END  %]
+        </td>
+        [% SET count = count + 1 %]
+[% END %]
+</tr>
+<tr>
+<td class="form-input" colspan="[% element.choices.size %]">
+<input type="submit" name="[% name %]_submit_before" value="add before" onClick="add_before('[% name %]'); return false;">
+<input type="submit" name="[% name %]_submit_after"  value="add after"  onClick="add_after('[% name %]'); return false;"> 
+<input type="submit" name="[% name %]_submit_delete" value="delete"     onClick="do_delete('[% name %]'); return false;">
+</td>
+</tr>
+<tr>
+<td class="display-column" colspan="[% element.choices.size %]">
+<div class="form-list-tool-error-message" id="[% name %]_error_message">
+</div>
+<div id="[% name %]_display">
+</div>
+</td>
+</tr>
+</table>
+</td>
+
+</tr>
+
+</table>
+</div>
+
+[% RETURN %]
+
+
+
+
+
+
+

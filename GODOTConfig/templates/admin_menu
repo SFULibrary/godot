@@ -1,0 +1,3 @@
+[% FOREACH menu_item = menu -%]
+<A HREF="[% menu_item.1 %]">[% menu_item.0 %]</A>[% "&nbsp;|&nbsp;" UNLESS loop.last %]
+[%- END %]

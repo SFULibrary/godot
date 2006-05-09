@@ -1,0 +1,788 @@
+/*
+	================================
+	= General settings
+	================================
+*/
+
+body {
+        background: #D0DEED;
+        font-family: Arial, sans-serif;
+	margin: 0px;
+}
+
+span.results-from {
+}
+
+span.results-from-resource {
+        font-weight: bold;
+}
+
+a {
+	text-decoration: none;
+	color: blue;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+div.other-services {
+	display: none;
+}
+
+
+
+/* 
+	================================
+	= Main layout
+	================================
+*/
+
+div#page-header {
+	clear: both;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+}
+
+div#sidebar {
+	left: 0px;
+	z-index: 2;
+}
+
+div#content {
+	position: relative;
+	z-index: 3;
+	padding-left: 10px;
+	padding-top: 10px;
+}
+
+div#page-footer {	
+	text-align: center;
+	font-size: 60%;
+	clear: both;
+}
+
+span#page-title {
+	font-weight: bold;
+	font-size: 120%;
+}
+
+/* ------------------------------------------------------------------------
+
+		TEMPLATE SPECIFIC STYLES
+
+   ------------------------------------------------------------------------ */
+
+
+/* 
+	================================
+	= main_holdings_screen
+	================================
+*/
+
+div#search-messages {
+	border: 1px #222222 solid;
+	margin-top: 1em;
+	margin-right: 10px;
+	background: white;
+}
+
+div#results {
+	padding-left: 5px;
+}
+
+div.results-display {
+	padding-top: 1em;
+}
+
+div#holdings-text {
+	margin-top: 1em;
+}
+
+
+
+/*
+	================================
+	= citation_display
+	================================
+*/
+
+div.citation {
+	margin-top: 15px;
+	margin-left: 15px;
+}
+
+table.citation {
+	padding: 2px;
+	border: 1px #111177 solid;
+	background: white;
+}
+
+tr.citation-row {
+	align: left;
+}
+
+td.citation-label {
+        font-weight: bold;
+        font-size: 80%;
+        padding-right: 5px;
+	text-align: left;
+	vertical-align: top;
+}
+
+td.citation-field {
+        font-size: 80%;
+}
+
+
+
+/*
+	================================
+	= main_holdings_command_links
+	================================
+*/
+
+div#command-links {
+	white-space: nowrap;
+}
+
+ul#command-links {
+	margin-top: 2px;
+	margin-bottom: 0px;
+	list-style-type: none;
+	list-style-image: none;
+}
+
+
+ul#command-links li.first {
+}
+
+ul#command-links li {
+	display: inline;
+	padding-right: 20px;
+	background-image: none;
+}
+
+ul#command-links a {
+}
+
+ul#command-links a:hover {
+}
+
+
+/*
+	================================
+	= main_holdings_cufts
+	================================
+*/
+	
+div#main-holdings-cufts {}
+
+div.other-services {}
+
+span.results-hidden-link {
+        font-size: 70%;
+}
+
+
+
+/*
+	================================
+	= main_holdings_marc_856
+	================================
+*/
+
+div#main-holdings-marc856 {}
+
+
+
+/*
+	================================
+	= main_holdings_marc_preprint
+	================================
+*/
+
+div#main-holdings-preprint {}
+
+
+
+/*
+	================================
+	= main_holdings_print
+	================================
+*/
+
+div#main-holdings-print {}
+
+ul.holdings-print {
+	margin-top: 2px;
+	margin-bottom: 0px;
+	list-style: none;
+	margin-left: 0px;
+	padding-left: 20px;
+}
+ul.holdings-print li {
+	padding-left: 20px;
+	background-image: url(http://godot.lib.sfu.ca:7888/images/bullet1.gif);
+	background-repeat: no-repeat;
+	background-position: 0 .1em;
+}
+ul.holdings-print a {}
+ul.holdings-print a:hover {}
+
+ul.holdings-print-buttons {
+	margin-top: 2px;
+	margin-bottom: 0px;
+	list-style-type: none;
+	list-style-image: none;
+}
+ul.holdings-print-buttons li {
+	display: inline;
+	padding-right: 20px;
+	background-image: none;
+}
+ul.holdings-print-buttons a {}
+ul.holdings-print-buttons a:hover {}
+
+
+
+/*
+	================================
+	= main_holdings_no_holdings
+	================================
+*/
+
+div#main-holdings-no-holdings {}
+
+
+/*
+	================================
+	= main_holdings_search_all
+	================================
+*/
+
+div#main-holdings-search-all {}
+
+
+/*
+	================================
+	= main_holdings_show_all
+	================================
+*/
+
+div#main-holdings-show-all {}
+
+
+
+/*
+	================================
+	= main_holdings_scrno
+	================================
+*/
+
+div#main-holdings-scrno {}
+
+
+
+/*
+	================================
+	= main_holdings_related_info
+	================================
+*/
+
+div#main-holdings-related-info {}
+
+
+
+/*
+	================================
+	= main_holdings_ill_form
+	================================
+*/
+
+div#main-holdings-ill-form {}
+
+ul.holdings-ill-form {
+	margin-top: 2px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding-left: 20px;
+	list-style: none;
+}
+
+
+ul.holdings-ill-form li.first {
+}
+
+ul.holdings-ill-form li {
+	padding-left: 20px;
+	background-image: url(http://godot.lib.sfu.ca:7888/images/bullet1.gif);
+	background-repeat: no-repeat;
+	background-position: 0 .1em;
+}
+
+ul.holdings-ill-form a {
+}
+
+ul.holdings-ill-form a:hover {
+}
+
+
+/*
+	================================
+	= main_holdings_auto_req
+	================================
+*/
+
+div#main-holdings-auto-req {}
+
+
+/*
+	================================
+	= main_holdings_cm
+	================================
+*/
+
+div#main-holdings-cm {}
+
+
+
+/*
+	================================
+	= main_holdings_contact_us
+	================================
+*/
+
+div#main-holdings-contact-us {}
+
+
+
+/*
+	================================
+	= main_holdings_items
+	================================
+*/
+
+ul.holdings-items {
+	margin-top: 2px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding-left: 20px;
+	list-style: none;
+}
+
+
+ul.holdings-items li.first {
+}
+
+ul.holdings-items li {
+	padding-left: 20px;
+	background-image: url(http://godot.lib.sfu.ca:7888/images/bullet1.gif);
+	background-repeat: no-repeat;
+	background-position: 0 .1em;
+}
+
+ul.holdings-items a {
+}
+
+ul.holdings-items a:hover {
+}
+
+div.holdings-item {
+/*	clear: left;*/
+}
+
+/*
+	================================
+	= config_no_fulltext_available
+	================================
+*/
+
+div#config-no-fulltext-available {
+	margin-top: 1em;
+}
+
+/*
+	================================
+	= article_form_screen
+	================================
+*/
+
+div#article-form {
+	text-align: center;
+}
+
+div#article-form-instructions {
+        text-align: left;
+	padding: 10px;
+
+}
+
+table.article-form-table {
+	/* background: #EEEECC;        */
+        /* border: 1px dotted #AAA118; */
+}
+
+td.article-form-message {
+        font-weight: bold;
+        color:  red;
+}
+
+
+td.article-form-label {
+        text-align: right;
+        padding-right: .3em; 
+}
+
+td.article-form-field {
+        text-align: left;
+}
+
+td.article-form-submit {
+        text-align: left;
+        padding-right: .5em;
+        padding-bottom: .2em;
+}
+
+div#article-form-links {
+        text-align: left;
+}
+
+ul#article-form-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+/*
+	================================
+	= article_form_text
+	================================
+*/
+
+div#article-form-text {}
+
+
+/*
+	================================
+	= warning_screen
+	================================
+*/
+
+div#warning {}
+
+div#warning-submit {}
+
+div#warning-links {}
+
+ul#warning-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+/*
+	================================
+	= request_info_screen
+	================================
+*/
+
+div#request-info {}
+
+div#request-info-links {}
+
+ul#request-info-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+/*
+	================================
+	= request_info_text
+	================================
+*/
+
+div#request-info-text {}
+
+/*
+	================================
+	= password_screen
+	================================
+*/
+
+div#password {}
+
+div#password-instructions {
+        font-weight:  bold;
+}
+
+table.password-table {}
+
+td.password-label {}
+
+td.password-field {}
+
+
+td.password-submit {
+        text-align: left;
+        padding-right: .5em;
+        padding-bottom: .2em;
+}
+
+div#password-links {}
+
+ul#password-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+/*
+	================================
+	= password_error_screen
+	================================
+*/
+
+div#password-error {}
+
+
+
+/*
+	================================
+	= check_patron_screen
+	================================
+*/
+
+div#check-patron-form {}
+
+div#check-patron-text {}
+
+
+table.check-patron-form-table {
+	/* background: #EEEECC;        */
+        /* border: 1px dotted #AAA118; */
+}
+
+td.check-patron-form-label {
+        text-align: left;
+        padding-right: .3em; 
+}
+
+td.check-patron-form-field {
+        text-align: left;
+}
+
+td.check-patron-form-submit {
+        text-align: left;
+        padding-right: .5em;
+        padding-bottom: .2em;
+}
+
+div#check-patron-links {
+}
+
+ul#check-patron-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+/*
+	================================
+	= check_patron_error_screen
+	================================
+*/
+
+div#check-patron-error {}
+
+div#bad-patron-message {}
+
+
+
+/*
+	================================
+	= request_form_screen
+	================================
+*/
+
+div#request-form {
+	text-align: center;
+}
+
+table.request-form-table {
+	/* background: #EEEECC;        */
+        /* border: 1px dotted #AAA118; */
+}
+
+td.request-form-section {
+        text-align: left;
+        /* font-weight: bold; */
+}
+
+td.request-form-label {
+        text-align: right;
+        padding-right: .3em; 
+}
+
+td.request-form-field {
+        text-align: left;
+}
+
+td.request-form-note {}
+
+td.request-form-submit {
+        text-align: left;
+        padding-right: .5em;
+        padding-bottom: .2em;
+}
+
+div#request-back-to-dbase {}
+
+
+/*
+	================================
+	= request_form_text
+	================================
+*/
+
+div#request-form-text {}
+
+
+/*
+	================================
+	= request_input_error_screen
+	================================
+*/
+
+div#request-input-error {}
+
+span#request-input-error-message {} 
+
+div#request-input-error-links {}
+
+ul#request-input-error-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+
+/*
+	================================
+	= request_other_error_screen
+	================================
+*/
+
+div#request-other-error {}
+
+span#request-other-error-message {} 
+
+div#request-other-error-links {}
+
+ul#request-other-error-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+
+/*
+	================================
+	= skipped_main_no_holdings
+	================================
+*/
+
+
+div#skipped-main-no-holdings {}
+
+
+div#skipped-main-search-messages {
+	border: 1px #222222 solid;
+	background: white;
+}
+
+/*
+	================================
+	= skipped_main_auto_req
+	================================
+*/
+
+
+div#skipped-main-auto-req {}
+
+
+
+/*
+	================================
+	= request_confirmation_screen
+	================================
+*/
+div#request-confirmation {}
+
+div#request-confirmation-links {}
+
+ul#request-confirmation-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+/*
+	================================
+	= request_confirmation_text
+	================================
+*/
+
+div#request-confirmation-text {}
+
+
+/*
+	================================
+	= request_acknowledgment_screen
+	================================
+*/
+div#request-acknowledgment {}
+
+div#request-acknowledgment-links {}
+
+ul#request-acknowledgment-links li {
+        display: inline;
+        padding-right: 20px;
+        background-image: none;
+}
+
+/*
+	================================
+	= request_acknowledgment_text
+	================================
+*/
+
+div#request-acknowledgment-text {}
+
+
+
+/*
+	================================
+	= permission_denied_screen
+	================================
+*/
+
+div#permission-denied {}
+
+
+/*
+	================================
+	= error_screen
+	================================
+*/
+
+div#error {}
+
+

@@ -1,0 +1,14 @@
+[%#
+
+If you define a sidebar, you should modify the following CSS attributes to
+ensure the content does not overlap the sidebar.
+
+div#sidebar { width: ...; }
+div#content { margin-left: ...;}
+
+The div#content margin-left should be slightly larger than the div#sidebar
+width. As usual, you should try to use relative sizes such as "5em" rather
+than pixel specific sizes unless your sidebar is image driven and does not
+change size with font size changes.
+
+%]

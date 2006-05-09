@@ -1,0 +1,103 @@
+[% USE CGI %]
+[% PROCESS config_local_configuration_form_fields %]
+[% PROCESS config_local_configuration_labels %]
+[% PROCESS config_local_configuration %]
+[% PROCESS get_form_element_info  %]
+[% PROCESS get_section_info  %]
+[%# 
+<script language="javascript" type="text/javascript">
+<!--
+document.write(document.cookie, "<P>")
+
+if (document.cookie == "") {
+    document.write("there are no cookies")
+}
+else {
+    thisCookie = document.cookie.split("; ")
+    for (i=0; i<thisCookie.length; i++) {
+
+        document.write(thisCookie[i].split("=")[0], " = ", thisCookie[i].split("=")[1], "<br>");
+
+    }
+}
+// -->
+</script>
+%]
+<div id="local-configuration-display-options">
+<table class="form" border="0" cellspacing="0" cellpadding="1">
+<tr><td class="form-header" colspan="3">[% section_label %] configuration</td></tr>
+[% FOREACH field = config_local_configuration_form_fields  %]
+     [% NEXT IF section != field.section  %]
+     [% SET name = field.name  %]
+     [% SET help = '<a target="_blank" href="?state=show_help&template=help/local_configuration_options&help_group=' _ field.help _ '#' _ name _ '"><b>?</b></a>'  %] 
+     [% IF form_elements.$name.type == 'TEXTAREA' %]
+             <tr><td class="form-label">[% config_local_configuration_labels.$name  %]: </td>
+             <td></td><td>
+             [% (field.help) ? help : '' %]
+             </td></tr>
+             <tr><td class="form-field" colspan="3">
+             [% INCLUDE local_configuration_form_element element = form_elements.$name %]
+             <input type="hidden" name="local_configuration_option_list" value="[% name %]"/> 
+             </td></tr>
+     [% ELSIF form_elements.$name.type == 'LIST' %]
+             <tr><td class="form-label">[% config_local_configuration_labels.$name  %]: </td>
+             <td>        
+             [% SET show = 'configure'  %]
+             [% SET hide = 'hide'       %]
+             <a href="javascript:void(0)" onclick="toggleLayer('[% name %]', '[% hide %]', '[% show  %]')">
+             <span id="showhide[% name %]">
+             <script language="javascript" type="text/javascript">
+             <!--
+             document.write(toggleLinkText('[% name %]', '[% hide %]', '[% show  %]')); 
+             // -->
+             </script>
+             </span></a>
+             </td>
+             <td>[% (field.help) ? help : '' %]
+             </td></tr>
+             <tr><td class="form-field" colspan="3">
+             [% INCLUDE local_configuration_form_element element = form_elements.$name %]
+             <input type="hidden" name="local_configuration_option_list" value="[% name %]"/> 
+             </td></tr>
+     [% ELSE  %]
+             <tr><td class="form-label">[% config_local_configuration_labels.$name  %]: </td>
+             <td class="form-field">
+             [% INCLUDE local_configuration_form_element element = form_elements.$name %]
+             <input type="hidden" name="local_configuration_option_list" value="[% name %]"/> 
+             </td><td>
+             [% (field.help) ? help : '' %]
+             </td></tr>
+     [% END  %]
+[% END  %]
+<tr><td class="form-input" colspan="3">
+<input type="submit" name="state_local_submit_configuration_options" value="submit"> 
+<input type="submit" name="state_local_configuration" value="cancel">
+<input type="hidden" name="submit_attempt" value="1"></td></tr>
+</table>
+</div>
+[% BLOCK get_form_element_info  %]
+        [% FOREACH field = config_local_configuration_form_fields %]
+                [% NEXT IF section != field.section  %] 
+                [% SET name = field.name       %]      
+                [% SET element = {} %]
+                [% SET element.name = name  %]
+                [% SET element.type = field.type  %]                
+                [% SET element.choices = [] %]
+                [% IF option_config.defined(name) and option_config.$name.defined('choices')  %]
+                        [% SET element.choices = option_config.$name.choices %]
+                [% END %]
+                [% SET element.default = '' %]
+                [% IF option_config.defined(name) and option_config.$name.defined('default')  %]
+                        [% SET element.default = option_config.$name.default %]
+                [% END %]               
+                [% SET element.choice_labels = field.choice_labels %]
+                [% SET element.help = field.help  %] 
+                [% SET form_elements.$name = element  %]
+        [% END %]
+[% END  %]
+[% BLOCK get_section_info  %]
+        [% FOREACH config_section = config_local_configuration_groups  %]               
+                [% NEXT IF section != config_section.name %]
+                [% SET section_label = config_section.label  %]
+        [% END %]
+[% END  %]

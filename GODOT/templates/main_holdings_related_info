@@ -1,0 +1,20 @@
+[% RETURN UNLESS config.display_related_info_links %]
+<div id="main-holdings-related-info" class="results-display">
+Check the web for this item:
+
+[% SET query = citation.parsed('ARTTIT') || citation.parsed('TITLE') %]
+
+[% IF query %]
+	[% SET query  = query.escape %]
+	[% SET google = "http://www.google.com/search?q=%22$query%22"  %]
+	[% SET teoma  = "http://s.teoma.com/search?q=%22$query%22"    %]
+[% ELSE %]
+	[% SET google = "http://www.google.com"  %]
+	[% SET teoma  = "http://www.teoma.com"   %]
+[% END %]
+
+[% SET items = [] %]
+[% text = '<a target="_blank" href="' _ google _ '">Google</a>'; items.push(text) %]
+[% text = '<a target="_blank" href="' _ teoma  _ '">Teoma</a>'; items.push(text) %]
+[% INCLUDE main_holdings_items items = items %]
+</div>

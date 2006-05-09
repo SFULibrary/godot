@@ -1,0 +1,177 @@
+[% PROCESS setup_data %]
+
+<div class="citation">
+<table class="citation" cellspacing="0" cellpadding="0" border="0">
+
+<tr class="citation-row">
+<td class="citation-label">
+[% IF (citation.req_type == 'JOURNAL') %]
+     Journal:
+[% ELSE %]
+     Title:
+[% END %]
+</td>
+
+<td class="citation-field">
+[% IF citation.parsed('TITLE') %]
+     [% citation.parsed('TITLE') %]        
+[% ELSE %]
+     <i>No Title Available</i>
+[% END %]
+
+[% author %]
+
+[% IF source_details %]
+     <br />
+     [% source_details %]
+[% END %]
+</td></tr>
+
+[% IF 0 AND citation.parsed('ISSN') %]
+    <tr class="citation-row"><td class="citation-label">ISSN:</td><td class="citation-field">
+    [% citation.parsed('ISSN')  %]
+    </td></tr>
+[% END %]
+
+[% IF 0 AND citation.parsed('ISBN') %]
+    <tr class="citation-row"><td class="citation-label">ISBN:</td><td class="citation-field">
+    [% citation.parsed('ISBN')  %]
+    </td></tr>
+[% END %]
+
+
+[% IF citation.parsed('ARTTIT')  %]
+    <tr class="citation-row"><td class="citation-label">Article:</td><td class="citation-field">
+    [% citation.parsed('ARTTIT') %]
+    </td></tr>
+[% END %]
+
+[% IF  citation.parsed('ARTAUT') %]
+    <tr class="citation-row"><td class="citation-label">Author(s):</td><td class="citation-field">
+    [% citation.parsed('ARTAUT') %]
+    </td></tr>
+[% END  %]
+
+[% IF citation.parsed('ERIC_NO').match($ERIC_DOC_PATTERN) %]
+    <tr class="citation-row"><td class="citation-label">ERIC Doc No:</td>
+    <td class="citation-field">
+    [% citation.parsed('ERIC_NO') %]
+    </td></tr>
+[% END  %]
+
+[% IF citation.parsed('MLOG_NO') %]
+    <tr class="citation-row"><td class="citation-label">Microlog No:</td>
+    <td class="citation-field">
+    [% citation.parsed('MLOG_NO') %]
+    </td></tr>
+[% END  %]
+
+[% IF citation.parsed('UMI_DISS_NO') %]
+    <tr class="citation-row"><td class="citation-label">UMI Diss No:</td>
+    <td class="citation-field">
+    [% citation.parsed('UMI_DISS_NO') %]
+    </td></tr>
+[% END  %]
+
+
+[% IF citation.parsed('OAI') %]
+    <tr class="citation-row"><td class="citation-label">OAI No:</td>
+    <td class="citation-field">
+    [% citation.parsed('OAI') %]
+    </td></tr>
+[% END  %]
+
+
+[% IF citation.parsed('FTREC') == 'fulltext_rec'  %]
+
+    <tr><td class="citation-label"></td></tr><tr><td class="citation-field" COLSPAN=2>
+
+    [% IF citation.parsed('URL_MSG') %]
+        [% citation.parsed('URL_MSG') %]
+    [% ELSIF citation.parsed('URL') %]
+        Please note that 
+        <A HREF="[% citation.parsed('URL')  %]">a link to the fulltext or a related web page</A>
+        was specified in the database record.
+    [% ELSE  %]
+        Please note that the fulltext of this article is available in the database record.
+    [% END  %]
+
+    </td></tr>
+   
+[% END  %]
+
+</table>
+</div>
+
+
+
+
+
+[% BLOCK setup_data %]
+
+[% ERIC_DOC_PATTERN = '^ed|^ED' %]
+
+[%  IF (citation.req_type == 'BOOK' or citation.req_type == 'BOOK-ARTICLE');
+        IF (citation.parsed('AUT'));
+            author = "/${citation.parsed('AUT')}";
+        END;
+    END;
+
+    IF ((! $citation.parsed('TITLE')) and (author == '') and (citation.req_type == 'PREPRINT')) ;
+         author = '/Preprint';
+    END;
+%]
+
+[%
+    IF (citation.req_type == 'JOURNAL');
+
+        day   = citation.parsed('DAY');
+        month = citation.parsed('MONTH');
+
+        IF (month.match('^[a-zA-Z]+$'));
+            month = month.substr(0, 1).uc _ month.substr(1).lc;
+        END;
+
+        year   = citation.parsed('YEAR');
+        voliss = citation.parsed('VOLISS');
+
+        IF (voliss == '');
+            voliss = citation.parsed('VOL') _ ((citation.parsed('ISS')) ? (" (" _ citation.parsed('ISS') _ ")") : '');
+        END;
+
+        pages = citation.parsed('PGS');
+
+        date = month _
+               ((month.not_empty && day.not_empty) ? ((year.not_empty) ? " $day," : " $day") : '') _
+              " $year";
+
+        date = date.comp_ws.trim; 
+
+        source_details_list = [];
+
+        IF (voliss); 
+            tmp = 'Vol/Issue:' _ ' ' _ voliss;
+            source_details_list.push(tmp); 
+        END;
+
+        IF (date);
+            tmp = 'Date:' _ ' ' _ date;
+            source_details_list.push(tmp);
+        END;
+
+        IF (pages) ;
+            tmp = ((pages.match('^\d+$')) ? 'Page:' : 'Pages:') _ ' ' _ pages;
+            source_details_list.push(tmp);
+        END;
+
+        source_details = source_details_list.join(', ');
+    END
+%]
+
+
+
+[% END %]
+
+
+
+

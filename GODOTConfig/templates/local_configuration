@@ -1,0 +1,64 @@
+[% PROCESS config_local_configuration  %]
+
+<div id="local-configuration">
+
+[% FOREACH group = config_local_configuration_groups  %]
+        [% SET name = group.name %]
+        [% SET config_groups.$name = group %]
+[% END %]
+
+[%#  
+<script language="javascript" type="text/javascript">
+<!-- 
+document.write(document.cookie, "<P>")
+
+if (document.cookie == "") {
+    document.write("there are no cookies")
+}
+else {
+    thisCookie = document.cookie.split("; ")
+    for (i=0; i<thisCookie.length; i++) {
+
+        document.write(thisCookie[i].split("=")[0], " = ", thisCookie[i].split("=")[1], "<br>");
+
+    }
+}
+// -->
+</script>
+%]
+<table id="config" class="local-configuration">
+[% SET grouping_count = 1  %]
+[% FOREACH grouping = config_local_configuration_groupings %]
+        <tr>
+        <td class="header2" colspan="2">        
+        <a class="header2" href="javascript:void(0)" onclick="showGrouping('[% grouping.name %]', '[% grouping.groups.size + 3 %]')">[% grouping.description %]</a> 
+        </td>
+        </tr>
+        <script language="javascript" type="text/javascript">
+        <!--
+        document.write("<tr class=\"header\" id=\"[% grouping.name %].3\" style=\"" + groupingStyleDisplay('[% grouping.name %]') + "\">");        
+        // -->
+        </script>
+        <td class="header">configuration group</td>
+        <td class="header">description</td>
+        </tr>
+        [% SET count = 4  %]
+        [% FOREACH name = grouping.groups %]
+                [% SET group = config_groups.$name %]
+                <script language="javascript" type="text/javascript">
+                <!-- 
+                document.write("<tr id=\"[% grouping.name %].[% count %]\" style=\"" + groupingStyleDisplay('[% grouping.name %]') + "\">");
+                // -->
+                </script>
+                <td class="field1"><a href="?state=local_configuration_options&section=[% group.name %]">[% group.label %]</a></td>
+                <td class="field1">[% group.description %]</td>
+                </tr>
+                [% SET count = count + 1 %]
+        [% END %]
+        [% SET grouping_count = grouping_count + 1  %]
+        
+[% END %]
+</table>
+</div>
+
+

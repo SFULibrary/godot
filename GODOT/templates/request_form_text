@@ -1,0 +1,10 @@
+[% local_text =  BLOCK %] [% INCLUDE config_request_form_local_text %] [% END  %]
+
+<div id="request-form-text">
+[% IF local_text.not_empty and page.is_local_ill_request_type %]
+        [% INCLUDE config_request_form_local_text %]
+[% ELSE  %]
+        [% INCLUDE config_request_form_text  %]
+[% END  %]
+</div>
+

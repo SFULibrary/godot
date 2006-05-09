@@ -1,0 +1,7 @@
+Change current site to: <select name="change_current_site">
+
+[%- FOREACH site = sites.sort('name') -%]
+ <option value="[% site.id %]" [% 'selected="selected"' IF site.id == current_site.id %]>[% site.name %] ([% site.key %])</option>
+[%- END %]
+</select>
+<input type="submit" name="state_general_submit_change_site" value="submit"> <input type="submit" name="state_main" value="cancel">

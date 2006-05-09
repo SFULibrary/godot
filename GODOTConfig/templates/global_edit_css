@@ -1,0 +1,26 @@
+<form method="post" enctype="multipart/form-data">
+<table class="form">
+<tr><td class="form-header">edit css</td></tr>
+<tr><td class="form-field">
+<textarea rows="40" cols="120" name="css_data">
+[%- css_data | html -%]
+</textarea>
+</td></tr>
+<tr><td class="form-input">
+<input type="submit" name="state_global_submit_edit_css" value="submit">
+<input type="submit" name="state_global_csss" value="cancel">
+<input type="hidden" name="css" value="[% css_name %]">
+</td></tr>
+</table>
+
+<br />
+
+<table class="form">
+<tr><td class="form-header">upload css</td></tr>
+<tr><td class="form-field" nowrap="nowrap">
+upload global css:
+<input type="file" name="css_file"> <input type="submit" name="state_global_upload_css" value="upload">
+</td></tr>
+</table>
+
+</form>

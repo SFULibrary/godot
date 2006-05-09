@@ -1,0 +1,27 @@
+[% USE CGI %]
+<span class="heading">New Site</span>
+<br /><br />
+<table border="0" cellspacing="0" cellpadding="0"><tr><td>
+<div class="table-border">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td class="heading-bar" align=left Valign=top COLSPAN=2>general settings</td></tr>
+<tr><td class="label0" align=right>key</td><td class="field0"><input type="text" NAME="site_key" SIZE=50 MAXLENGTH=256 VALUE="[% CGI.params.site_key | html %]"></td></tr>
+<tr><td class="label1" align=right>name</td><td class="field1"><input type="text" NAME="site_name" SIZE=50 MAXLENGTH=256 VALUE="[% CGI.params.site_name | html %]"></td></tr>
+<tr><td class="label0" align=right>email</td><td class="field0"><input type="text" NAME="site_email" SIZE=50 MAXLENGTH=256 VALUE="[% CGI.params.site_email | html %]"></td></tr>
+<tr><td class="label1" align=right>active</td><td class="field1"><input type="checkbox" NAME="site_active" VALUE="1" [% 'checked="checked"' IF CGI.params.site_active %]></td></tr>
+</table></div>
+</td></tr>
+<tr><td><br /></td></tr>
+<tr><td><div class="table-border">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td class="heading-bar" align=left valign=top>associated accounts</td></tr>
+[% FOREACH account = accounts.sort(name) -%]
+ [% SET class = 'field' _ ((loop.count+1) mod 2) %]
+ [% SET active = CGI.params.site_accounts.nin(account.id) ? 'checked="checked"' : '' %]
+ <tr><td class="[% class %]"><input type="checkbox" name="site_accounts" VALUE="[% account.id %]" [% active %]>[% account.name %] ([% account.key %])</td></tr>
+[%- END %]
+</table></div>
+</td></tr>
+
+<tr><td><br /><input type="submit" name="state_admin_submit_new_site" VALUE="submit"> <input type="submit" name="state_admin_sites" value="cancel"></td></tr>
+</table>

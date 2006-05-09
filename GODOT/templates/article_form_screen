@@ -1,0 +1,95 @@
+[% DEFAULT  
+        size = 60
+        maxlength = size + 80
+        submit = 'Continue'
+%]
+
+[% PROCESS config_article_form_fields  %]
+
+<div id="article-form">
+
+[% INCLUDE citation_display %]
+
+[% INCLUDE skipped_main %]
+
+<div id="article-form-instructions">
+
+[% SET verb = (page.citation_is_complete) ? 'confirm' : 'specify' %]
+[% SET skipped_main = (page.instructions.skipped_main_no_holdings or page.instructions.skipped_main_auto_req)  %]
+
+[% SWITCH citation.req_type  %]
+[% CASE 'JOURNAL' %]
+        [% (skipped_main) ? 'To continue, please ' : 'Please '  %]      
+        [% verb  %]
+        the article that you want:
+[% CASE 'CONFERENCE' %]
+        [% (skipped_main) ?  'To continue, please ' _ verb _  ' the following if ' : 'If ' %]
+        an individual paper is required:     
+[% CASE %]
+        [% (skipped_main) ?  'To continue, please ' : 'Please '  %]
+        [% verb  %]
+        the title of the item:
+[% END  %]
+
+</div>
+
+[% INCLUDE article_form_text %]
+
+<TABLE CLASS="article-form-table">
+
+[% FOREACH message = page.messages  %]
+        <TR>
+        <TD></TD>
+        <TD CLASS="article-form-message">[% message %]</TD>
+        </TR>
+[% END  %]
+
+[% FOREACH type = config_article_form_fields.keys  %]
+     
+        [% NEXT UNLESS type == citation.req_type  %]
+
+        [% FOREACH field = config_article_form_fields.$type  %]
+
+                [% SET name = '_ht_' _ field.name.lc %]
+
+                [% SET element = {  
+                           name = name
+                           type = 'TEXTFIELD'
+                           value = citation.parsed(field.name)
+                           size = size
+                           maxlength = maxlength
+                   }
+                %]
+
+                <TR>
+                <TD CLASS="article-form-label">[% field.label %]</TD>
+                <TD CLASS="article-form-field">[% INCLUDE form_element element = element %]</TD>
+                </TR>
+
+        [% END %]
+[% END  %]
+
+<TR>
+<TD CLASS="article-form-submit" COLSPAN="2">
+<INPUT TYPE="SUBMIT" NAME="[% page.buttons.first.action %][% page.buttons.first.param  %]" VALUE="[% submit %]"/>
+</TD>
+</TR>
+</TABLE>
+
+
+<div id="article-form-links">
+<ul id="article-form-links">
+[% IF page.instructions.back_to_dbase %]
+        <li><a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a></li>        
+[% END %]
+</ul>
+</div>
+
+
+
+</div>
+
+
+
+
+

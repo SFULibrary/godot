@@ -1,0 +1,58 @@
+[% INCLUDE results %]
+<table id="local_css" class="tabular">
+<tr>
+ <td class="header">css</td>
+ <td class="header">active</td>
+ <td class="header">transfer</td>
+ <td class="header">sandbox</td>
+</tr>
+[% FOREACH css = all_css.sort %]
+ [% SET active_css_exists = active_css.in(css) %]
+ [% SET sandbox_css_exists = sandbox_css.in(css) %]
+ [% SET class = "field" _ (loop.count mod 2) %]
+ 
+ <tr>
+
+ <td class="[% class %]">[% css %]</td>
+
+ <td class="[% class %]" align="center">
+ [% IF active_css_exists %]
+  <a href="?state=local_view_css&type=active&css=[% css %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="12" border="0">
+ [% END %]
+
+ [% IF active_css_exists %]
+  <a href="?state=local_delete_css&type=active&css=[% css %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_css_exists %]
+  <a href="?state=local_transfer_css&css=[% css %]"><img src="images/transfer-button.gif" alt="transfer" title="transfer" width="12" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/transfer-button-inactive.gif"  alt="transfer (inactive)" title="transfer (inactive)" width="12" height="12" border="0">
+ [% END %]
+ </td>
+
+ <td align="center" class="[% class %]">
+ [% IF sandbox_css_exists %]
+  <a href="?state=local_view_css&type=sandbox&css=[% css %]"><img src="images/view-button.gif" alt="view" title="view" width="15" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/view-button-inactive.gif" alt="view (inactive)" title="view (inactive)" width="15" height="11" border="0">
+ [% END %]
+
+ <a href="?state=local_edit_css&type=sandbox&css=[% css %]"><img src="images/edit-button.gif" alt="edit" title="edit" width="15" height="12" border="0"></a>
+
+ [% IF sandbox_css_exists %]
+  <a href="?state=local_delete_css&type=sandbox&css=[% css %]" onclick="return confirmDelete()"><img src="images/delete-button.gif" alt="delete" title="delete" width="11" height="12" border="0"></a>
+ [% ELSE %]
+  <img src="images/delete-button-inactive.gif" alt="delete (inactive)" title="delete (inactive)" width="11" height="12" border="0">
+ [% END %]
+ </td>
+ 
+ </tr>
+[% END %]
+</table>

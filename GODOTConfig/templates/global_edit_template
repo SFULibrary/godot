@@ -1,0 +1,26 @@
+<form method="post" enctype="multipart/form-data">
+<table class="form">
+<tr><td class="form-header">edit template</td></tr>
+<tr><td class="form-field">
+<textarea rows="40" cols="120" name="template_data">
+[%- template_data | html -%]
+</textarea>
+</td></tr>
+<tr><td class="form-input">
+<input type="submit" name="state_global_submit_edit_template" value="submit">
+<input type="submit" name="state_global_templates" value="cancel">
+<input type="hidden" name="template" value="[% template_name %]">
+</td></tr>
+</table>
+
+<br />
+
+<table class="form">
+<tr><td class="form-header">upload template</td></tr>
+<tr><td class="form-field" nowrap="nowrap">
+upload global template:
+<input type="file" name="template_file"> <input type="submit" name="state_global_upload_template" value="upload">
+</td></tr>
+</table>
+
+</form>

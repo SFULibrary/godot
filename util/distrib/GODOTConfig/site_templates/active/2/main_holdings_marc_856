@@ -1,0 +1,11 @@
+[% IF not page.link_records.size && page.link_from_cat_records.size %]
+	<div id="main-holdings-marc-856" class="results-display">
+	<span class="results-from">This item may be available online: </span>
+	[% SET items = [] %]
+	[% FOREACH record = page.link_from_cat_records  %]
+		[% text = '<a target="_blank" href="' _ record.url _ '">' _ record.text _ '</a>' %]
+		[% items.push(text) %]
+	[% END  %]
+	[% INCLUDE main_holdings_items items = items %]
+	</div>
+[% END  %]

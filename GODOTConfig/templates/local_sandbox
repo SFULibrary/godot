@@ -1,0 +1,54 @@
+<div id="sandbox-save-object">
+
+<table class="form" border="0">
+<tr><td colspan="2" class="form-header">saving sandbox objects</td></tr>
+<tr>
+<td class="form-label">Save sandbox objects? </td>
+
+<td class="form-input"><select name="GODOT_SANDBOX_OBJECT">
+[% FOREACH value = ['', 'save', 'do not save']  %]
+    [% SET selected = (value == cookies.GODOT_SANDBOX_OBJECT) ? 'selected="selected"' : '' %]
+    <option [% selected %] value="[% value %]">[% value %]</option>
+[% END %]
+</select>
+</td>
+</tr>
+
+<tr>
+<td class="form-label">Name for sandbox objects?</td>
+<td class="form-input"><input type="text" name="GODOT_SANDBOX_OBJECT_NAME" value="[% cookies.GODOT_SANDBOX_OBJECT_NAME  %]"></td>
+</tr>
+
+<tr>
+<td class="form-input" colspan="2">
+<input type="submit" name="state_local_submit_sandbox" value="submit">
+<input type="submit" name="state_local_configuration" value="cancel">
+</td>
+</tr>
+
+</table>
+</div>
+
+<p>
+
+<div id="sandbox-instructions">
+You must RELOAD this screen to see new sandbox objects.
+</div>
+
+
+<div id="sandbox-list">
+<ul id="sandbox-list">
+[% FOREACH sandbox = sandboxes.sort %]
+	[% SET sandbox_fields = sandbox.split('\.') %]
+	[% SET screen = sandbox_fields.1 %]
+	[% IF sandbox_fields.size == 4 %]
+ 		[% SET label = sandbox_fields.2 _ ' - page ' _ sandbox_fields.3 %]
+	[% ELSE %]
+		[% SET label = ' page ' _ sandbox_fields.2 %]
+	[% END %]
+        <li><a target="sandbox" href="../GODOT/sandbox.cgi?site_id=[% site_id %]&state=local_run_sandbox&sandbox=[% sandbox %]">
+            [% screen.replace('_', ' ') %] - [% label %]
+            </a></li>
+[% END %]
+</ul>
+</div>

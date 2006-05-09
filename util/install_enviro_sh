@@ -1,0 +1,38 @@
+##
+## 1. Fill in the values appropriate for your site.  GODOT_CUFTS_SERVER_URL
+##    and GODOT_CITATION_MANAGER_URL are optional.
+##
+## 2. Type 'source util/install_enviro_csh'.
+##
+
+
+
+GODOT_ROOT_DIR=/home/kristina/godot
+export GODOT_ROOT_DIR
+
+GODOT_ADMIN_EMAIL=klong@sfu.ca
+export GODOT_ADMIN_EMAIL
+
+GODOT_CGI_DIR=/home/kristina/httpd/htdocs/GODOT
+export GODOT_CGI_DIR
+
+GODOT_CONFIG_CGI_DIR=/home/kristina/httpd/htdocs/GODOTConfig
+export GODOT_CONFIG_CGI_DIR
+
+GODOT_URL=http://proxy2.lib.sfu.ca:8777/GODOT/hold_tab.cgi
+export GODOT_URL
+
+GODOT_CONFIG_URL=http://proxy2.lib.sfu.ca:8777/GODOTConfig/config.cgi
+export GODOT_CONFIG_URL
+
+##
+## If you want to install the demo, then keep these values.  
+## You can later change them to point to your copies.
+##
+GODOT_CUFTS_SERVER_URL=http://cufts2.lib.sfu.ca:8082/Resolver/site/
+export GODOT_CUFTS_SERVER_URL
+
+GODOT_CITATION_MANAGER_URL=http://stalefish.lib.sfu.ca/CitationManager/cm.cgi
+export GODOT_CITATION_MANAGER_URL
+
+

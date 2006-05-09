@@ -1,0 +1,14 @@
+[% DEFAULT  
+        text = ''
+%]
+
+[% RETURN UNLESS page.instructions.skipped_main_auto_req %]
+
+[% IF (NOT page.search_messages.aws) AND config.display_search_messages %]
+        <div id="skipped-main-search-messages">[% page.search_messages %]</div>
+[% END %]
+
+<div id="skipped-main-auto-req" class="results-display">
+        [% text %]          
+</div>
+

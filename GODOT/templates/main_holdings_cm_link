@@ -1,0 +1,6 @@
+[% SET link = 'Citation Manager' %]
+[% FOREACH record = page.citation_manager_records  %]
+	[% text = '<a target="_blank" href="' _ record.url _ '">' _ link _ '</a>' %]
+	[% items.push(text) %]
+[% END  %]
+

@@ -1,0 +1,32 @@
+[% USE CGI %]
+
+[% PROCESS config_local_configuration_form_fields %]
+[% PROCESS config_local_configuration_labels %]
+[% PROCESS config_local_configuration_help_groups %]
+[% PROCESS config_local_configuration_option_help %]
+
+[% SET help_group = CGI.params.help_group %]
+[% PROCESS get_group_info  %]
+
+<h1 class="help-header">[% group_label %] Configuration Help</h1>
+
+[% FOREACH field = config_local_configuration_form_fields  %]
+        [% NEXT IF help_group != field.help %]
+        [% SET name = field.name  %]
+        <div class="help-option">
+        <a name='[% name %]'></a>
+        <h2 class="help-option-heading">[% config_local_configuration_labels.$name %] <span class="help-option-name">([% name %])</span></h2>
+        <p class="help-option-text">
+        [% config_local_configuration_option_help.$name %]
+        </p>
+        </div>
+
+
+[% END  %]
+
+[% BLOCK get_group_info  %]
+        [% FOREACH group = config_local_configuration_help_groups  %]
+                [% NEXT IF help_group != group.name %]
+                [% SET group_label = group.label  %]
+        [% END %]
+[% END  %]

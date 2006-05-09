@@ -1,0 +1,9 @@
+[% RETURN UNLESS page.auto_req_records.size %]
+[% SET config_auto_req = {} %][% PROCESS config_auto_req %]
+<div id="main-holdings-auto-req" class="results-display">
+<span class="results-from">[% config_auto_req.heading %]</span>
+<div class="holdings-items">
+<ul class="holdings-items">
+<li><a href="[% page.auto_req_records.first.buttons.first.link(page, 'main_holdings_screen') %]">[% config_auto_req.link %]</a></li>
+</ul></div>
+</div>

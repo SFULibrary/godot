@@ -1,0 +1,36 @@
+{ 
+ sub make_link { return "<A CLASS=\"heading-underlined\" HREF=\"$_[0]$_[2]\">$_[2]</A> "; };
+ sub ceil { return (int($_[0]) < $_[0]) ? int($_[0] + 1) : int($_[0]) };  # Cheap
+
+
+ $max_page = ceil($count / $display_per_page) || 1;
+ $max_show_page = $page + 5 < $max_page ? $page+5 : $max_page;
+ $min_show_page = int($page) < 5 ? 1 : int($page) - 5;
+ '';
+}
+<TR><TD COLSPAN={ $columns } CLASS="heading" VALIGN=MIDDLE>Page:
+{ make_link($url, $global_resource_id, 1) }
+<A HREF="{$url}1"><IMG BORDER=0  SRC="./images/page_first.gif" ALIGN=MIDDLE></A>
+<A HREF="{$url . ($page-1 || 1)}"><IMG BORDER=0  SRC="./images/page_prev.gif" ALIGN=MIDDLE></A>
+{
+ for my $show_page (1 .. $max_page) {
+        if ($page == $show_page) {
+                $OUT .= "<FONT SIZE=+1>$show_page</FONT> ";
+        } elsif ($show_page > $min_show_page && $show_page < $max_show_page) {
+                $OUT .= make_link($url, $global_resource_id, $show_page);
+	} elsif ($show_page == $min_show_page) {
+		$OUT .= ' ... &nbsp;' unless $show_page == 1;
+		$OUT .= make_link($url, $global_resource_id, $show_page);
+	} elsif ($show_page == $max_show_page) {
+		$OUT .= make_link($url, $global_resource_id, $show_page);
+		$OUT .= ' ...  &nbsp;' unless $show_page == $max_page;
+        } elsif ($show_page % 10 == 0) {
+		$OUT .= make_link($url, $global_resource_id, $show_page);
+	}
+ }
+ 
+}
+<A HREF="{$url . ($page+1 < $max_page ? $page+1 : $max_page)}"><IMG BORDER=0  SRC="./images/page_next.gif" ALIGN=MIDDLE>
+<A HREF="{$url. $max_page}"><IMG BORDER=0  SRC="./images/page_last.gif" ALIGN=MIDDLE></A>
+{ make_link($url, $global_resource_id, $max_page) }
+</TD></TR>

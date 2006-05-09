@@ -1,0 +1,14 @@
+[% IF page.link_records.size || 
+      page.link_from_cat_records.size ||
+      page.preprint_records.size %]
+	[% SET fulltext_available = 1 %]
+[% ELSE %]
+	[% SET fulltext_available = 0 %]
+[% END %]
+
+[% IF page.holdings_records.size %]
+	[% SET print_available = 1 %]
+[% ELSE %]
+	[% SET print_available = 0 %]
+[% END %]
+

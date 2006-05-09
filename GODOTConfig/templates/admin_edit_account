@@ -1,0 +1,33 @@
+[% USE CGI %]
+<span class="heading">[% account.name %]</span><br />
+<br />
+<table border="0" cellspacing="0" cellpadding="0"><tr><td>
+<div class="table-border">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td class="heading-bar" align="left" valign="top" colspan="2">general settings</td></tr>
+<tr><td class="label0" align="right">key</td><td class="field0"><input type="text" name="account_key" size=50 maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_key : account.key | html %]"></td></tr>
+<tr><td class="label1" align="right">name</td><td class="field1"><input type="text" name="account_name" size=50 maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_name : account.name | html %]"></td></tr>
+<tr><td class="label0" align="right">email</td><td class="field0"><input type="text" name="account_email" size=50 maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_email : account.email | html %]"></td></tr>
+<tr><td class="label1" align="right">phone</td><td class="field1"><input type="text" name="account_phone" size=50 maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.account_phone : account.phone | html %]"></td></tr>
+<tr><td class="label0" align="right">password</td><td class="field0"><input type="password" name="account_password" size=50 maxlength="256" value=""></td></tr>
+<tr><td class="label1" align="right">password (again)</td><td class="field1"><input type="password" name="verify_password" size=50 maxlength="256" value=""></td></tr>
+<tr><td class="label0" align="right">administrator access</td><td class="field0"><input type="checkbox" name="account_administrator" value="1" [% 'checked="checked"' IF (CGI.params.submit_attempt ? CGI.params.account_administrator : account.administrator) %]></td></tr>
+<tr><td class="label1" align="right">active</td><td class="field1"><input type="checkbox" name="account_active" value="1" [% 'checked="checked"' IF (CGI.params.submit_attempt ? CGI.params.account_active : account.active) %]></td></tr>
+</table></div>
+</td></tr>
+<tr><td><br /></td></tr>
+<tr><td>
+<div class="table-border">
+<table border="0" cellspacing="0" cellpadding=0 width="100%">
+<tr><td class="heading-bar" align="left" valign="top">supported sites</td></tr>
+[% SET account_sites = CGI.params.account_sites IF CGI.params.submit_attempt %]
+[% FOREACH site = sites.sort('name') %]
+ [% SET class = 'field' _ ((loop.count+1) mod 2) %]
+ [% SET active = account_sites.nin(site.id) ? 'checked="checked"' : '' %]
+ <tr><td class="[% class %]"><input type="checkbox" name="account_sites" value="[% site.id %]" [% active %]>[% site.name %] ([% site.key %])</td></tr>
+[% END %]
+</table></div>
+</td></tr>
+
+<tr><td><br /><input type="submit" name="state_admin_submit_edit_account" value="submit"> <input type="submit" name="state_admin_accounts" value="cancel"><input type="hidden" name="account_id" value="[% account.id %]"><input type="hidden" name="submit_attempt" value="1"></td></tr>
+</table>

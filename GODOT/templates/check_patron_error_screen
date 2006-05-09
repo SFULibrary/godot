@@ -1,0 +1,12 @@
+<div id="check-patron-error">
+[% FOREACH message = page.messages %]
+        [% message %]<P>
+[% END  %]
+</div>
+
+<div id="bad-patron-message">
+[% INCLUDE config_bad_patron_message  %]
+</div>
+
+
+

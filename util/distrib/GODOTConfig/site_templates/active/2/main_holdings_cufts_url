@@ -1,0 +1,12 @@
+[%# Alters URLs from CUFTS as required.  SFU uses this to send the user to a statistics
+    logging script before redirecting them to the fulltext URL.
+%]
+
+[% SET cufts_url = 'http://godot.lib.sfu.ca/cgi-bin/GODOTLogUse' _
+                   '?site='     _ config.site.key.escape _
+                   '&URL='      _ result.url.escape _
+                   '&title='    _ citation.parsed('TITLE').escape _
+                   '&resource=' _ resource.name.escape _
+                   '&provider=' _ resource.provider.escape;
+
+%]

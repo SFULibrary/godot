@@ -1,0 +1,16 @@
+<div id="main-holdings-related-info" class="results-display">
+Check the web for this item:
+
+[% SET query = citation.parsed('ARTTIT') || citation.parsed('TITLE') %]
+
+[% IF query %]
+	[% SET query  = query.escape %]
+	[% SET google = "http://www.google.com/search?q=%22$query%22"  %]
+[% ELSE %]
+	[% SET google = "http://www.google.com"  %]
+[% END %]
+
+[% SET items = [] %]
+[% text = '<a target="_blank" href="' _ google _ '">Google</a>'; items.push(text) %]
+[% INCLUDE main_holdings_items items = items %]
+</div>

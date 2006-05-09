@@ -1,0 +1,43 @@
+[% DEFAULT
+	link = 'Place an Interlibrary Loan request'
+%]
+[% RETURN IF not page.ill_form_records.size %]
+
+<div id="main-holdings-ill-form" class="results-display">
+<span class="results-from">
+[% IF (page.has_get_link or page.has_request_link) %]
+	[% SET example = (citation.is_journal) ? 'missing issues' : 'item is checked out' %]
+
+	[% IF page.has_request_link %]
+		[% IF page.has_get_link %]
+			If item is not available (eg. [% example %]) at any of the libraries listed above and no fulltext is available,
+			then please:
+		[% ELSE %]
+			If item is not available (eg. [% example %]) at any of the libraries listed above,
+			then please:
+		[% END %]
+	[% ELSIF page.has_get_link %]
+		If no fulltext is available, then please:
+	[% END %]
+[% ELSE %]
+	[% IF page.holdings_records.size %]
+		Please:
+	[% ELSE %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			No holdings information is available.
+			Before continuing, please check that the title and ISSN/ISBN (if available) are correct.
+			To continue, please:
+		[% ELSE %]
+			No holdings information is available. Please:
+		[% END %]
+	[% END %]
+[% END %]
+</span>
+[% IF page.ill_form_records.size %]
+	<ul class="holdings-ill-form">
+		<li><a href="[% page.ill_form_records.first.buttons.first.link(page, 'main_holdings_screen') %]">[% link %]</a>
+			[% IF record.text.naws %]<br />[% record.text %][% END %]
+		</li>
+	</ul>
+[% END %]
+</div>

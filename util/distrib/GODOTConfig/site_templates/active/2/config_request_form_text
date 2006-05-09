@@ -1,0 +1,11 @@
+[%# Text for the top of the request information form page.  %]
+<SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
+function newWindow(url) {
+    PopUpWindow = window.open(
+                   url, 
+                   "PopUpWin", 
+                   "width=300,height=300,resizable=no,scrollbars=no,toolbar=no")
+
+    PopUpWindow.focus()
+}
+</SCRIPT>

@@ -1,0 +1,7 @@
+[% DEFAULT
+        text = ''
+%]
+
+[% INCLUDE skipped_main_no_holdings  text = text %]
+[% INCLUDE skipped_main_auto_req     text = text  %]
+

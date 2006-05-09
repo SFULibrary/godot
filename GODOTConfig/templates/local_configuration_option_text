@@ -1,0 +1,20 @@
+[% PROCESS config_local_configuration_form_fields  %]
+[% PROCESS config_local_configuration  %]
+
+[% FOREACH group = config_local_configuration_sections  %]               
+         [% SET name = group.name  %]
+         [% SET groups.$name = group.label %]
+[% END %]
+
+
+[% FOREACH field = config_local_configuration_form_fields %]
+    [% SET name = field.name  %]
+    [% SET group = field.section  %]
+    [% SET local_configuration_option_text.$name = '<span class="help-option-name">\'' _ groups.$group  _ ' | ' _ name _ '\'</span>' %]
+[% END %]
+
+[% RETURN  %]
+
+
+
+

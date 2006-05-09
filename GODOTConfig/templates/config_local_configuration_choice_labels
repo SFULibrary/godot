@@ -1,0 +1,89 @@
+[% SET config_local_configuration_choice_labels = {
+
+        'SITE_GROUPS' => {'COPPUL'         => 'COPPUL',
+                          'ELN'            => 'ELN',  
+                          'COPPUL_AND_ELN' => 'COPPUL and ELN',  
+                          'OCUL'           => 'OCUL',
+                          'NEOS'           => 'NEOS', 
+                          'NOVANET'        => 'NOVANET',  
+                          'OTHER'          => 'OTHER'},
+
+ 
+        'ILL_LOCAL_SYSTEM' => {'AVISO_3'        => 'Aviso 3',
+                               'AVISO_4'        => 'Aviso 4', 
+                               'CISTI'          => 'Cisti', 
+                               'GENERIC_SCRIPT' => 'National Library Generic Script',
+                               'OPENILL'        => 'OpenILL',
+                               'RSS_FORM'       => 'RSS CGI Form',
+                               'RSS_FORM_2'     => 'RSS CGI Form 2'
+                              },
+
+
+
+        'REQUEST_MESSAGE_FORMATS' => { 'CISTI'          => 'CISTI', 
+                                       'GENERIC_SCRIPT' => 'National Library Generic Script', 
+                                       'ISO_EMAIL'      => 'RSS ISO Email '
+                                     },
+
+        'BLOCKING' => {'T'                     => 'cannot order from another, if available at your site', 
+                       'F'                     => 'can order from another, even if available at your site',
+                       'F_WARNING'             => 'can order, but with warning'
+                       'F_MEDIATED'            => 'can order, but with warning; direct changed to mediated',
+                       'F_MEDIATED_NO_WARNING' => 'can order, but no warning; direct changed to mediated'
+                      },
+
+        'ERIC_COLL_AVAIL' => {'T'                  => 'yes',
+                              'F'                  => 'no',
+                              'T_IF_FULLTEXT_LINK' => 'EDRS E*Subscribe only',
+                             },
+
+
+        'ILL_REQ_LINK' => {'T'              => 'include an ILL request link', 
+                           'T_NO_REQ_AVAIL' => 'only include when no holdings can be requested',  
+                           'F'              => 'never include the ILL request link'
+                          },
+
+        'REQUEST_FORM_FIELD' => {'N' => 'Do not use',
+                                 'U' => 'Use but not required', 
+                                 'R' => 'Use and required'},
+
+        'SAME_NUC_EMAIL' => {'N' => 'nothing special is done', 
+                             'L' => 'only send to local system', 
+                             'R' => 'only send to lending system'},
+
+        'PATRON_API' => {'III_HTTP'     => 'III HTTP', 
+                         'DEFAULT'      => 'Default', 
+                         'DEFAULT_HTTP' => 'Default HTTP'},
+
+        'PASSWORD_NEEDED' => {'ALL'     => 'For all requests',
+                              'JOURNAL' => 'For journal requests',
+                              'MONO'    => 'For non-journal requests'},
+
+        'Z3950_POSITION'     => {'1' => '1 - find term if first in field',  
+                                 '2' => '2 - find term if first in subfield', 
+                                 '3' => '3 - any position in field'},
+
+        'Z3950_STRUCTURE'    => {'1'   => '  1 - phrase', 
+                                 '2'   => '  2 - single word',
+                                 '4'   => '  4 - year',
+                                 '5'   => '  5 - date (normalized)',
+                                 '101' => '101 - name (normalized)'},
+
+        'Z3950_TRUNCATION'   => {'1'   => '  1 - right truncate the search term',
+                                 '100' => '100 - do not truncate the search term', 
+                                 '101' => '101 - wildcard: process \'#\' in search term'},
+
+        'Z3950_COMPLETENESS' => {'1' => '1 - incomplete subfied', 
+                                 '3' => '3 - complete subfield'},
+
+
+
+
+}
+
+%]
+
+
+
+
+

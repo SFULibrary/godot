@@ -1,0 +1,23 @@
+<html>
+<head>
+[% INCLUDE html_header %]
+</head>
+<body leftmargin="0" rightmargin="0" onload="" topmargin="0" marginwidth="0" marginheight="0">
+
+[% INCLUDE page_header %]
+[% INCLUDE sidebar %]
+
+<div id="content">
+<span id="page-title">[% page.title %]</span>
+<form method="post" action="[% page.form_url %]">
+
+[% page.hidden_fields %]
+
+[% INCLUDE $screen %]
+
+</form>
+</div>
+[% INCLUDE page_footer %]
+
+</body>
+</html>

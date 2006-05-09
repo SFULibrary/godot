@@ -1,0 +1,1 @@
+<div id="config-no-fulltext-available">No online full-text [% UNLESS print_available %] or print copies[% END %] available at the SFU Library</div>

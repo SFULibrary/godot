@@ -1,0 +1,55 @@
+<HTML>
+
+<HEAD>
+<TITLE>GODOT Citation Form</TITLE>
+</HEAD>
+
+<BODY>
+<H1>GODOT Citation Form</H1>
+
+
+[% SET size = 60        %]
+[% SET maxlength = 120  %]
+
+[% fields = ['genre', 'atitle', 'title', 'issn', 'isbn', 'aulast', 'aufirst', 'volume', 
+             'issue', 'part', 'pages', 'spage', 'epage', 'date', 'id', 'artnum'];
+
+   genres = ['journal', 'book', 'conference', 'article', 'preprint', 'proceeding', 'bookitem']
+%]
+
+<FORM METHOD="POST" ACTION="[% local_godot_url %]">
+<INPUT TYPE="HIDDEN" NAME="sid" VALUE="[% sid %]">
+
+<TABLE WIDTH="100%">
+<TR>
+<TD></TD>
+<TD><B>[% local_godot_url %]</B></TD>
+</TR>
+
+[% FOREACH field = fields %]
+    <TR>
+    <TD ALIGN="RIGHT"><B>[% field %]:</B></TD>
+    [% IF field == 'genre' %]
+        <TD>
+        <SELECT NAME="[% field %]">
+        [% FOREACH genre = genres %]
+                 <OPTION VALUE="[% genre %]">[% genre  %]</OPTION>
+        [% END %]
+        </SELECT>
+        </TD>
+    [% ELSE  %]
+        <TD><INPUT TYPE="TEXT" NAME="[% field %]" SIZE="[% size %]" MAXLENGTH="[% maxlength %]" /></TD>
+    [% END %] 
+    </TR>
+[% END %]
+<TR>
+<TD></TD>
+<TD><INPUT TYPE=SUBMIT VALUE="Submit">&nbsp;<INPUT TYPE=RESET VALUE="Clear"></TD>
+</TR>
+</TABLE>
+
+</FORM>
+
+</BODY>
+
+</HTML>

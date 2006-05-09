@@ -1,0 +1,5 @@
+[% IF page.scrno == 2 %]
+<div id="holdings-text">
+Detailed information on <a href="http://sappho.lib.sfu.ca/weekly_stats.html"> delivery time and cost to the library</a> is also available.
+</div>
+[% END %]

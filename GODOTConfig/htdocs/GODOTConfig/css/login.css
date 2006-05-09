@@ -1,0 +1,13 @@
+div.sidebar {	
+	width: 0em;
+}
+
+div.content {
+	margin-left: 1em;
+	margin-top: 1em;
+}
+
+div.form-row span.form-label {
+	width: 6em;
+}
+

@@ -1,0 +1,18 @@
+<form action="[% url %]" method="post" name="mainform" enctype="multipart/form-data">
+[% INCLUDE page_header %]
+
+[% IF sidebar.not_empty %]
+<div class="logged-in">
+[%- IF account_name.not_empty %]Logged in as: <b>[% account_name %]</b>[% END -%]
+[%- IF current_site.not_empty %]&nbsp;&nbsp;Active site: <b>[% current_site %]</b>[% END -%]
+</div>
+<div class="sidebar">[% sidebar %]</div>
+[% END %]
+
+<div class="content">
+[%- INCLUDE submission_errors IF errors.size > 0 -%]
+[%- page_content -%]
+</div>
+
+[% INCLUDE page_footer %]
+</FORM>

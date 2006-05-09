@@ -1,0 +1,47 @@
+[% DEFAULT
+	link = 'Place an Interlibrary Loan request'
+%]
+[% RETURN IF not page.ill_form_records.size %]
+
+<div id="main-holdings-ill-form" class="results-display">
+<span class="results-from">
+[% IF (page.has_get_link or page.has_request_link) %]
+	[% SET example = (citation.is_journal) ? 'missing issues' : 'item is checked out' %]
+
+	[% IF page.has_request_link %]
+		[% IF page.has_get_link %]
+			If item is not available (eg. [% example %]) at any of the libraries listed above and no fulltext is available,
+			Faculty and Graduate students may:
+		[% ELSE %]
+			If item is not available (eg. [% example %]) at any of the libraries listed above,
+			Faculty and Graduate students may:
+		[% END %]
+	[% ELSIF page.has_get_link %]
+		If no fulltext is available, Faculty and Graduate students may:
+	[% END %]
+[% ELSE %]
+	[% IF page.holdings_records.size %]
+		Faculty and Graduate students may:
+	[% ELSE %]
+		[% IF citation.get_dbase.is_blank_dbase %]
+			No holdings information is available.
+			Before continuing, please check that the title and ISSN/ISBN (if available) are correct.
+			To continue, please:
+		[% ELSE %]
+			No copies available in Western Canada. Faculty and Graduate students may:
+		[% END %]
+	[% END %]
+[% END %]
+</span>
+[% IF page.ill_form_records.size %]
+	<ul class="holdings-ill-form">
+	[% FOREACH record = page.ill_form_records   %]
+		[% FOREACH button = record.buttons %]
+			<li><a href="[% button.link(page, 'main_holdings_screen') %]">[% link %]</a><br />
+			[% record.text %]</li>
+		[% END %]
+		</li>
+	[% END %]
+	</ul>
+[% END %]
+</div>

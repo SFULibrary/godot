@@ -1,0 +1,81 @@
+[% SET config_local_configuration_groups = [
+
+        { name=> 'general',           label=> 'general',           description => 'General configuration'}, 
+        { name=> 'display',           label=> 'display',           description => 'Display options'}, 
+        { name=> 'fulltext',          label=> 'fulltext',          description => 'Configuration for CUFTS and 856 links'}, 
+        { name=> 'holdings',          label=> 'holdings screen',   description => 'Holdings screen configuration'}, 
+        { name=> 'auto_requesting',   label=> 'auto requesting',   description => 'Auto-requesting configuration'}, 
+        { name=> 'ill_form',          label=> 'request link',      description => 'ILL request link configuration'}, 
+        { name=> 'request_form',      label=> 'request form',      description => 'Request form configuration'}, 		
+        { name=> 'blocking',          label=> 'blocking',          description => 'Request blocking configuration'}, 
+        { name=> 'borrowing_relationships', label=> 'borrowing options',  description => 'Borrowing option configuration'}, 
+        { name=> 'borrowing_message',       label=> 'borrowing message',        description => 'Borrowing message configuration'}, 
+        { name=> 'borrowing',               label=> 'request confirmation', description => 'Request confirmation and acknowledgment'}, 
+        { name=> 'lending',           label=> 'lending',           description => 'Lending configuration'}, 
+        { name=> 'errors',            label=> 'errors',            description => 'Error message configuration'}, 
+	{ name=> 'blank_citation',    label=> 'blank citation form', description => 'Blank citation form configuration (optional)'}, 
+        { name=> 'collections',       label=> 'collections',       description => 'ERIC and CRI microfiche (optional)'}, 
+        { name=> 'system',            label=> 'general catalogue', description => 'General catalogue configuration'}, 
+        { name=> 'z3950',             label=> 'z3950',             description => 'Z39.50 configuration'}, 
+        { name=> 'patron_api',        label=> 'patron API',        description => 'Patron API (optional)'}, 
+        { name=> 'patron_email',      label=> 'patron email',      description => 'Patron email check (optional)'}, 
+        { name=> 'request_password',  label=> 'request password',  description => 'Used for SFU Doc Direct service (optional)'}, 
+        { name=> 'site_holdings',     label=> 'site holdings',     description => 'Site holdings configuration'},     
+    ]
+
+%]
+
+
+[%# 'blank_citation' %]
+
+
+[% SET config_local_configuration_groupings = [
+
+        { name        => 'all',       
+          label       => 'all',          
+          description => 'all sites',       
+          groups      => ['general'] 
+        }, 
+
+        { name        => 'users',     
+          label       => 'godot users',  
+          description => 'sites that use godot',  
+          groups      => ['display', 
+		          'fulltext',
+		          'holdings',
+			  'blocking',
+			  'borrowing_relationships',
+			  'auto_requesting',
+			  'ill_form',
+			  'request_form',
+			  'borrowing',
+			  'borrowing_message',
+			  'errors', 
+			  'patron_api'
+                          'patron_email', 
+                          'request_password', 
+                          ] 
+        },      
+
+        { name        => 'lenders',   
+          label       => 'lenders',
+          description => 'sites that lend',              
+          groups      => ['lending'] 
+        }, 
+
+        { name        => 'site_holdings',
+          label       => 'site holdings',
+          description => 'site holdings',
+          groups      => ['site_holdings', 
+                          'collections']
+        },
+
+        { name        => 'catalogue', 
+          label       => 'catalogue',
+          description => 'site catalogue',           
+          groups      => ['system', 
+                          'z3950'] 
+        } 
+    ]
+
+%]

@@ -1,0 +1,96 @@
+[% 
+    SERVICE_TEXT = {'fulltext'          = 'Fulltext of the article is available online from ', 
+                    'table of contents' = 'Table of contents for the issue is available online from ', 
+                    'journal'           = 'The journal is available online from ', 
+                    'database'          = 'The article may be available online by searching in ', 
+                    'holdings'          = 'Check for holdings in ', 
+                    'web search'        = 'Search the web using '};
+
+    SERVICE_TEXT_2 = {'fulltext'          = 'fulltext of the article', 
+                      'table of contents' = 'table of contents for the issue', 
+                      'journal'           = 'journal home page or a list of articles in the journal', 
+                      'database'          = 'database of articles', 
+                      'holdings'          = 'check for holdings', 
+                      'web search'        = 'search the web'};
+%]
+
+[% RETURN UNLESS page.link_records.size %]
+
+<div id="main-holdings-cufts" class="results-display">
+
+[% FOREACH record = page.link_records  %]
+
+	[% SET resource = record.fulltext %]
+	[%# -we only want CUFTS records, not GODOTjake ones %]
+	[% NEXT UNLESS resource %]
+	
+	[% layer_id = "cufts." _ loop.count %]
+	[% SET holdings_items = [] %]
+	
+	[% FOREACH service = resource.services.sort_by_service  %]
+	
+		[% SET service_name = service.name %]
+		
+		[% IF loop.first %]
+		
+			<span class="results-from">
+		
+			[% IF SERVICE_TEXT.defined(service_name)%]
+				[% SERVICE_TEXT.$service_name %]
+			[% ELSE  %]
+				unrecognized service from
+			[% END %]
+			
+			<span class="results-from-resource">[% resource.name %]</span>: </span>
+			
+			[% IF (resource.services.size > 1) %]
+				<a href="javascript:void(0)" onclick="toggleServicesLayer('[% layer_id %]', '(hide options)', '(show options)')">
+				<span id="showhide[% layer_id %]" class="results-hidden-link">([% config.expand_fulltext_by_default ? 'hide' : 'show' %] options)</span></a>
+			[% END %]
+			
+			[% FOREACH result = service.results;
+			   
+			   IF result.title.naws;
+			   	text = result.title _ '<!--reqtitle-->';
+			   ELSIF citation.parsed('ARTTIT').naws;
+			   	text = citation.parsed('ARTTIT') _ '<!--arttitle-->';
+			   ELSIF citation.parsed('TITLE').naws;
+			   	text = citation.parsed('TITLE') _ '<!--cittitle-->';
+			   ELSE;
+			   	IF SERVICE_TEXT_2.defined(service_name);
+			   		text = SERVICE_TEXT_2.$service_name;
+			   	ELSE;
+			   		text = 'unrecognized service';
+			   	END;
+			   END;
+			   
+			   text = '<a target="_blank" href="' _ result.url _ '">' _ text _ '</a>';
+			   holdings_items.push(text);
+			
+			END %]
+			
+		[% ELSE %]
+		
+			[%-
+				##
+				## Prepare hidden layer contents for services other than the best one
+				##
+				
+				FOREACH result = service.results;
+					text = SERVICE_TEXT_2.defined(service_name) ? SERVICE_TEXT_2.$service_name : 'unrecognized service';
+					text = '<a target="_blank" href="' _ result.url _ '">' _ text _ '</a>';
+					holdings_items.push({'text' => text, 'hidden' => 1});
+				END;
+			-%]
+			
+		[% END  %]
+
+	[% END  %]
+
+	[% INCLUDE main_holdings_items 
+		items = holdings_items 
+		hidden_div = "<span class=\"other-services\"" _ (config.expand_fulltext_by_default ? '' : 'style="display: none" ') _  "id=\"others$layer_id\">"
+	%]
+	
+[% END %]
+</div>

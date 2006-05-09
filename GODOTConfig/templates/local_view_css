@@ -1,0 +1,7 @@
+[% UNLESS css_data.defined %]
+This css has not been created for this site.
+[% ELSE %]
+<pre class="view-css">
+[% css_data | html %]
+</pre>
+[% END %]

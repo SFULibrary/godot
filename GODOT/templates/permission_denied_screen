@@ -1,0 +1,5 @@
+<div id="permission-denied">
+[% FOREACH message = page.messages %]
+        [% message %]<P>
+[% END  %]
+</div>

@@ -1,0 +1,9 @@
+[% RETURN UNLESS page.search_all_records.size %]
+<div id="main-holdings-search-all" class="results-display">
+[% FOREACH record = page.search_all_records %]
+	[% FOREACH button = record.buttons %]
+		This search has stopped before checking all libraries.
+		You can search <a href="[% button.link(page, 'main_holdings_screen') %]">all</a> of them.
+	[% END %]
+[% END %]
+</div>

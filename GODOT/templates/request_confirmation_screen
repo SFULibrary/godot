@@ -1,0 +1,23 @@
+<div id="request-confirmation">
+[% INCLUDE request_confirmation_text %]
+	
+<div id="request-confirmation-links">
+<ul id="request-confirmation-links">
+[% FOREACH button = page.buttons  %]
+        <li><A HREF="[% button.link(page, 'request_confirmation_screen') %]">[% button.label %]</A></li>
+[% END  %]
+
+[% IF page.instructions.back_to_dbase %]
+        <li><a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a></li>        
+[% END %]
+
+</ul>
+</div>
+
+</div>
+
+
+	
+
+
+

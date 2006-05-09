@@ -1,0 +1,27 @@
+[% USE CGI %]
+<span class="heading">[% site.name %]</span><br />
+<br />
+<table border="0" cellspacing="0" cellpadding="0"><tr><td>
+<div class="table-border">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td class="heading-bar" align="left" valign="top" colspan="2">general settings</td></tr>
+<tr><td class="label0" align="right">key</td><td class="field0"><input type="text" name="site_key" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.site_key : site.key | html %]" /></td></tr>
+<tr><td class="label1" align="right">name</td><td class="field1"><input type="text" name="site_name" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.site_name : site.name | html %]" /></td></tr>
+<tr><td class="label0" align="right">email</td><td class="field0"><input type="text" name="site_email" size="50" maxlength="256" value="[% CGI.params.submit_attempt ? CGI.params.site_email : site.email | html %]" /></td></tr>
+<tr><td class="label1" align="right">active</td><td class="field1"><input type="checkbox" name="site_active" VALUE="1" [% 'checked="checked"' IF (CGI.params.submit_attempt ? CGI.params.site_active : site.active) %] /></td></tr>
+</table></div>
+</td></tr>
+<tr><td><br /></td></tr>
+<tr><td><div class="table-border">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td class="heading-bar" align="left" valign="top">associated accounts</td></tr>
+[% SET site_accounts = CGI.params.site_accounts IF CGI.params.submit_attempt %]
+[% FOREACH account = accounts.sort('name') %]
+ [% SET class = 'field' _ ((loop.count+1) mod 2) %]
+ [% SET active = site_accounts.nin(account.id) ? 'checked="checked"' : '' %]
+ <tr><td class="[% class %]"><input type="checkbox" name="site_accounts" value="[% account.id %]" [% active %] />[% account.name %] ([% account.key %])</td></tr>
+[% END %]
+</table></div>
+</td></tr>
+<tr><td><br /><input type="submit" name="state_admin_submit_edit_site" value="submit" /> <input type="submit" name="state_admin_sites" value="cancel"><input type="hidden" name="site_id" value="[% site.id %]" /><input type="hidden" name="submit_attempt" value="1" /></td></tr>
+</table>

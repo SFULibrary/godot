@@ -1,0 +1,11 @@
+<div id="request-acknowledgment">
+[% INCLUDE request_acknowledgment_text %]
+<div id="request-acknowledgment-links">
+[% IF page.instructions.back_to_dbase %]
+        <ul id="request-acknowledgment-links">
+        <li><a href="[% page.instructions.back_to_dbase %]">[% INCLUDE config_back_to_database %]</a></li>        
+        </ul>
+[% END %]
+</div>
+</div>
+

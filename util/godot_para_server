@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Startup script for the GODOT parallel server 
+#
+# chkconfig: 345 20 80
+# description: GODOT parallel search server.
+# processname: godot_para_server
+#
+
+
+PERL="/usr/local/bin/perl"
+
+GODOT_PATH="/home/kristina/godot_ni"
+
+PROG="$GODOT_PATH/GODOT_ORIG/para_server.pl"
+LOG_FILE="$GODOT_PATH/GODOT/logs/godot_para_server.log"
+PID_FILE="$GODOT_PATH/GODOT/logs/godot_para_server.pid"
+
+RETVAL=0
+
+start() {
+
+	echo -n $"Starting $PROG: "
+        echo
+        
+        su kristina -c "$PERL $PROG -p $PID_FILE < /dev/null >& $LOG_FILE" &
+       
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+
+stop() {
+	echo -n $"Stopping $PROG: "
+        
+        kill `/bin/cat $PID_FILE`
+
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f $PID_FILE
+}
+
+# See how we were called.
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  *)
+	echo $"Usage: $prog {start|stop}"
+	exit 1
+esac
+
+exit $RETVAL
+
+
+
+
+
+
+
+

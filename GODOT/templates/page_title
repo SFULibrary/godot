@@ -1,0 +1,2 @@
+[% template = 'config_' _ screen.replace('_screen$', '_title') %]
+[% INCLUDE $template %]

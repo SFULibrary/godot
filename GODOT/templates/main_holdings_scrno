@@ -1,0 +1,18 @@
+[% DEFAULT  
+   heading = 'Not available at your library?'
+   link    = 'Check other library catalogues or request an Interlibrary Loan'
+   scrno   = 1
+%]
+
+<div id="main-holdings-scrno" class="results-display">
+[% heading %]
+
+[% SET items = [] %]
+[% FOREACH record = page.another_scrno_records %]
+	[% FOREACH button = record.buttons %]
+		[% SET text = '<a href="' _ button.link(page, 'main_holdings_screen', [ scrno ]) _ '">' _ link _ '</a>' %]
+		[% items.push(text) %]
+	[% END %]
+[% END %] 
+[% INCLUDE main_holdings_items items = items %]
+</div>

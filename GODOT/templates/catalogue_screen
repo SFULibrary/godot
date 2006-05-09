@@ -1,0 +1,47 @@
+<p>
+
+<table width="100%">
+<tr>
+<td>
+[% INCLUDE citation_display %] 
+</td>
+<td align="right" valign="bottom>
+
+<div class="command-links">
+[% INCLUDE main_holdings_command_links %]
+</div>
+
+</td></tr>
+</table>
+
+<br />
+
+<div class="search-messages">
+[% page.search_messages  %]
+</div>
+
+</p><p>
+
+<div class="results-block">
+
+</p><p>
+
+[% ##
+   ## If you want to change the default link text for the 'REQ' link then you may pass 'request_link' below
+   ##
+%]
+
+[% INCLUDE catalogue_print # request_link = 'request this item'  %]
+[% INCLUDE main_holdings_no_holdings %]
+[% INCLUDE main_holdings_contact_us  %]
+
+</p>
+</div>
+
+
+
+
+
+
+
+
