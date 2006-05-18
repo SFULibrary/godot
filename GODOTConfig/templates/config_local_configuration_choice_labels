@@ -14,6 +14,7 @@
                                'CISTI'          => 'Cisti', 
                                'GENERIC_SCRIPT' => 'National Library Generic Script',
                                'OPENILL'        => 'OpenILL',
+                               'RELAIS'         => 'Relais',
                                'RSS_FORM'       => 'RSS CGI Form',
                                'RSS_FORM_2'     => 'RSS CGI Form 2'
                               },
