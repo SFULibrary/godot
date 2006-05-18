@@ -590,6 +590,8 @@ sub ill_req_form_message {
             return trim_beg_end($obj->message); 
         } 
     }
+
+    return undef;
 }
 
 sub pickup_locations {
