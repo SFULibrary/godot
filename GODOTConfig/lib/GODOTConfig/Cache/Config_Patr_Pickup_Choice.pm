@@ -2,14 +2,16 @@ package GODOTConfig::Cache::Config_Patr_Pickup_Choice;
 
 use strict;
 
-use base 'Class::Accessor';
-
 use GODOTConfig::DB::Sites;
-use GODOT::Debug;
 
+##
+## -do not import 'location' method from GODOT::Debug in order to avoid overriding 'location' method created
+##  by 'Class::Accessor'
+##
+use GODOT::Debug qw(!location);
 
+use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(GODOTConfig::DB::Config_Patr_Pickup_Choice->columns);
-
 
 sub convert {
     my($self, $field, $config_obj) = @_;
@@ -20,8 +22,6 @@ sub convert {
 
     return $value;
 }
-
-
 
 1;
 
