@@ -68,11 +68,6 @@ sub process_local_configuration_options {
                                   'option_config' => {%GODOTConfig::Config::GODOT_OPTION_CONFIG}
                                  }, 
                                  $self->get_append_content);
-
-
-
-
-
 	return 'complete';
 }
 
@@ -286,7 +281,7 @@ sub _patr_patron_type_choice_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->patr_patron_type_choice) {
- 	push @current_htr, "'" . $elem->type . "'";		
+ 	push @current_htr, "'" . &js_escape($elem->type) . "'";		
     }
     return join(',', @current_htr);
 }
@@ -311,7 +306,7 @@ sub _patr_pickup_choice_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->patr_pickup_choice) {
- 	push @current_htr, "'" . $elem->location . "'";		
+ 	push @current_htr, "'" . &js_escape($elem->location) . "'";		
     }
     return join(',', @current_htr);
 }
@@ -335,7 +330,7 @@ sub _patr_department_choice_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->patr_department_choice) {
- 	push @current_htr, "'" . $elem->department . "'";		
+ 	push @current_htr, "'" . &js_escape($elem->department) . "'";		
     }
     return join(',', @current_htr);
 }
@@ -359,7 +354,7 @@ sub _patr_paid_choice_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->patr_paid_choice) {
- 	push @current_htr, "'" . $elem->payment_method . "'";
+ 	push @current_htr, "'" . &js_escape($elem->payment_method) . "'";
         push @current_htr, "'" . ($elem->input_box ? 't' : '') . "'";
     }
     return join(',', @current_htr);
@@ -385,8 +380,8 @@ sub _ill_req_form_limit_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->ill_req_form_limit) {
- 	push @current_htr, "'" . $elem->patron_type . "'";
-        push @current_htr, "'" . $elem->message . "'";
+ 	push @current_htr, "'" . &js_escape($elem->patron_type) . "'";
+        push @current_htr, "'" . &js_escape($elem->message) . "'";
     }
     return join(',', @current_htr);
 }
@@ -412,7 +407,7 @@ sub _ill_account_init_string {
     my @current_htr;
 
     foreach my $elem ($self->current_site->ill_account) {
- 	push @current_htr, "'" . $elem->account_site->key . "'";
+ 	push @current_htr, "'" . &js_escape($elem->account_site->key) . "'";
         push @current_htr, "'" . $elem->number . "'";
     }
     return join(',', @current_htr);
@@ -431,6 +426,15 @@ sub _ill_account_record {
            };
 }
 
+##
+## escape for javascript
+##
+sub js_escape {
+    my($string) = @_;
+  
+    $string =~ s#'#\\'#g;
+    return $string;
+}
 
 
 
