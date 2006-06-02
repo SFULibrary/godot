@@ -9,6 +9,9 @@ package GODOT::Config;
 use GODOT::Constants;
 use strict;
 
+my $TRUE = 1;
+my $FALSE = 0;
+
 # Database Mappings
 
 use vars qw (
@@ -715,8 +718,6 @@ use vars qw(%MAILLIST_HASH);
 );
 
 
-use vars qw(%DEV_URL_HASH);
-
 use vars qw($PARA_SERVER_TIMEOUT $PARA_SERVER_QUERY_TIMEOUT $Z3950_TIMEOUT);
 
 ##
@@ -788,6 +789,9 @@ use vars qw(%GENRE_TO_REQTYPE_HASH);
 use vars qw(@DISS_ABS_ISSN_ARR);
 @DISS_ABS_ISSN_ARR = ('04194209', '04194217', '00993123', '00959154', '0420073X', '0420073x', '08989095');
 
+
+use vars qw($REDIRECTION_ALLOWED); 
+$REDIRECTION_ALLOWED = $FALSE;
 
 
 1;
