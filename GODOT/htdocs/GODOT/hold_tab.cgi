@@ -139,9 +139,12 @@ sub main {
     ##  we link to godot
     ## 
 
-    if (((@dev_machine_arr) = grep {remote_host() eq $_} (keys %GODOT::Config::DEV_URL_HASH)) && (-e "/tmp/$dev_machine_arr[0]")) {
-        
-        print redirect(-location=>&hold_tab::dev_copy_url($GODOT::Config::DEV_URL_HASH{$dev_machine_arr[0]}), -nph=>0, -method=>'GET');
+    use GODOT::Redirect;
+    
+    debug 'redirect....  ', GODOT::Redirect::redirect_url;
+
+    if (my $redirect_url = GODOT::Redirect::redirect_url) {
+        print redirect(-location=>&hold_tab::dev_copy_url($redirect_url), -nph=>0, -method=>'GET');
         return;
     }
 
