@@ -12,8 +12,20 @@ use CGI qw(:escape);
 
 use strict;
 
+##
+## (02-feb-2006 kl) - they have separate machines for Z39.50 and the web interface
+##
+
+sub cat_url {
+    my($self, $host) = @_;
+    
+    return $self->SUPER::cat_url('webcat1.library.ubc.ca');
+}
+
 
 #### sub only_circ_in_short_journal_rec { return $TRUE; }
+
+
 
 sub location_to_site {
     my($self, $location) = @_;

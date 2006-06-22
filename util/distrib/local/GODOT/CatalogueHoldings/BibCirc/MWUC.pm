@@ -15,9 +15,9 @@ use strict;
 sub holdings_from_cat_rec {
     my($self, $record, $marc) = @_;
 
-    my $key = ($self->citation->is_journal) ? '850' : '853';
+    my $tag = ($self->citation->is_journal) ? '850' : '853';
 
-    my @fields = $marc->field($key);
+    my @fields = $marc->field($tag);
     return $FALSE unless scalar @fields;
 
     $self->_holdings_found_if_holdings;
@@ -36,7 +36,6 @@ sub _call_number_field {
 
 sub _call_number_subfield {
     return qw(a b);
-
 }
 
 

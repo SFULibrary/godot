@@ -20,6 +20,16 @@ sub call_number_text {
 }
 
 
+##
+## -as this point in processing, a title alone is not enough to assume SFU holdings (of print)
+## -catalogue has separate records for print and electronic copies
+##
+sub _holdings_found_if_title {
+    my($self) = @_;
+    ## do nothing
+}
+
+
 sub circ_location_to_site {
     my($self, $location) = @_;
  
