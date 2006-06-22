@@ -7,7 +7,6 @@ use Data::Dumper;
 
 use GODOTConfig::Config;
 use GODOTConfig::Exceptions;
-use GODOTConfig::Debug;
 
 use GODOTConfig::Cache::Sites;
 use GODOTConfig::Cache::Config_Ill_Account;
@@ -24,9 +23,9 @@ use GODOTConfig::Cache::Config_Rank_Non_Journal;
 use GODOTConfig::Cache::Config_Request;
 use GODOTConfig::Cache::Config_Request_Non_Journal;
 
-
 use GODOT::String;
 use GODOT::Debug;
+use GODOTConfig::Debug;
 
 use strict;
 
@@ -489,7 +488,7 @@ sub search_group {
     my $max_search_group = $self->max_search_group;
     my $other_rank_search_group = $self->other_rank_search_group;
 
-    my $search_group = $self->_search_group($rank_list, $other_rank_search_group, $max_search_group);
+    my $search_group = $self->_search_group($search_site, $rank_list, $other_rank_search_group, $max_search_group);
 
     return $search_group;
 }
@@ -501,23 +500,27 @@ sub search_group_non_journal {
     my $max_search_group = $self->max_search_group_non_journal;
     my $other_rank_search_group = $self->other_rank_non_journal_search_group;
 
-    my $search_group = $self->_search_group($rank_list, $other_rank_search_group, $max_search_group);
+    my $search_group = $self->_search_group($search_site, $rank_list, $other_rank_search_group, $max_search_group);
 
     return $search_group;
 }
 
 
 sub _search_group {
-    my($self, $rank_list, $other_group_field, $max_search_group) = @_;
+    my($self, $search_site, $rank_list, $other_group_field, $max_search_group) = @_;
+
+    debug join('--', location, $rank_list, $other_group_field, $max_search_group);
 
     my $default = (naws($other_group_field)) ? $other_group_field : $max_search_group; 
     $default = '' if $default == 0;     
 
     return $default unless defined $rank_list;
 
-    my $search_site = $self->site->key;
+    debug join('--', location, $default);
 
     foreach my $obj (@{$rank_list}) {
+
+        debug Dumper($obj);
 
         if ($obj->rank_site eq $search_site) {             
             if (aws($obj->search_group) || ($obj->search_group == 0)) { return $default;           }
@@ -597,14 +600,11 @@ sub ill_req_form_message {
 sub pickup_locations {
     my($self) = @_;
 
-    debug "---------------------";
-    debug Dumper($self);
-    debug "---------------------";
-
     my @list;
     foreach my $obj (sort sort_by_rank @{$self->patr_pickup_choice}) {
         push @list, $obj->location;
     }
+
     return @list;
 }
 
