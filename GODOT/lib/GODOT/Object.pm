@@ -322,13 +322,6 @@ sub dump {
     return Dumper($self);
 }
 
-sub dump_ordered {
-    my($self) = @_;
-
-    use Data::Dumper;
-    return Dumper($self);
-}
-
 
 1;
 
