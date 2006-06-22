@@ -373,10 +373,6 @@ sub url_link_format  {
     $self->title($title);
     $self->marc_title($marc_title);
     $self->cat_url($db_config->zhost);
-
-    debug ".......2.......", Dumper($self);
-
-
 }
 
 
@@ -389,10 +385,6 @@ sub values_from_cat_rec {
     use MARC::Record;
     my $marc = MARC::Record->new_from_usmarc($record->bibliographic->rawdata());
 
-    #### debug "1 .........................................";
-    #### debug Dumper($marc);
-    #### debug "2 .........................................";
-   
     foreach my $field_name (@field_names) {    
         my $func = $field_name . '_from_cat_rec';
 	no strict 'refs';
@@ -741,8 +733,6 @@ sub divide_holdings {
         my $location = $ref->site;
             
         my $site = $self->location_to_site(uc(trim_beg_end($location)));    
-
-        #### debug "........ here in divide_holdings:  $location -- $site";
 
         ##
         ## (17-jun-2005 kl)
