@@ -164,9 +164,9 @@ sub parse_citation {
 			$citation->parsed('NOTE', $citation->parsed('NOTE') . $citation->parsed('TITLE'));
 			$citation->parsed('TITLE', $citation->parsed('ARTTIT'));
 			$citation->parsed('ARTTIT', '');
-			$citation->parsed('VOLUME', '');
-			$citation->parsed('ISSUE', '');
-			$citation->parsed('PAGES', '');
+			$citation->parsed('VOL', '');
+			$citation->parsed('ISS', '');
+			$citation->parsed('PGS', '');
 			$citation->parsed('ISSN', '');
 		}		
 	}
