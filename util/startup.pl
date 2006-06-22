@@ -35,17 +35,5 @@ use GODOT::Config;
 use GODOTConfig::Configuration;
 use GODOTConfig::Cache;
 
-## !!!!!!!!!!!!!!!! shouldn't need this any more !!!!!!!!!!!!!!!!!!!!!!
-##
-## For now, easiest way to set up virtual methods for detail fields....  
-## Otherwise will get error message along lines of:
-##
-## Can't locate object method "use_fulltext_links" via package 
-## "Class::DBI::Relationship::HasDetails::Details::GODOTConfig::DB::Site_Config
-## 
-## my $config = new GODOTConfig::Configuration($GODOT::Config::DEFAULT_SITE);
-## my $junk = $config->abbrev_name;
-
-#### warn Dumper($config);
 
 1;
