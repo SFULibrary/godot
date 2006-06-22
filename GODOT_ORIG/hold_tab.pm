@@ -117,7 +117,8 @@ $SEARCH_GROUP_FIELD       = 'search_group_field';
 
 $HIDDEN_COMPLETE_FIELD    = 'hold_tab_hidden_complete';
 
-$LINK_FROM_CAT_URL_FIELD       = 'link_from_cat_url';
+$LINK_FROM_CAT_URL_FIELD  = 'link_from_cat_url';
+
 
 use vars qw(%WARNING_DEFAULT_TEXT_HASH $YOUR_BRANCH_HAS_WARNING_TYPE);
 
@@ -711,11 +712,35 @@ sub main_holdings_screen {
         ## -no point displaying the main holdings screen if all that is on it is an [ILL] button
         ##
 
+        ##
+        ## (16-jun-2006 kl) 
+        ##
+        ## Add another condition so that the holdings screen is only skipped if
+        ## if we have just searched for the maximum '$search_group'. Otherwise not all
+        ## configured sites will get searched.
+        ##
+        ## $max_search_group may be one greater than any site has been assigned, so check whether we 
+        ## have any sites in this group.  If not, assume that there are no more sites to search, for
+        ## the purpose of the logic below.
+        ## 
+        my $max_search_group = ($citation->is_journal) ? $config->max_search_group : $config->max_search_group_non_journal; 
+
+        my @sites_to_search;
+        &get_rank_list($config, \@sites_to_search, $citation, $max_search_group) || &glib::send_admin_email("$0: Unable to get rank list ($user).");             
+        my $no_more_sites_to_search = ($search_group eq $max_search_group) || 
+                                      (($search_group eq ($max_search_group-1)) && (! scalar(@sites_to_search)));
+                     
+        # debug ">>>>>>>>> $search_group $max_search_group";
+        # debug ">>>>>>>>> ", join('--', $config->skip_main_holdings_screen_if_no_holdings, 
+        #                                (defined $tab_comp_hash{$GODOT::Page::ILL_FORM_COMP}));
+        # debug ">>>>>>>>> ", join('--', $hold_found, $page->has_get_link, $num_cat_link), '--';
+        
         if (($config->skip_main_holdings_screen_if_no_holdings) && 
             (defined $tab_comp_hash{$GODOT::Page::ILL_FORM_COMP}) && 
             (! $hold_found) && 
             (! $page->has_get_link) && 
-            (! $num_cat_link)) {
+            (! $num_cat_link) &&
+            ($no_more_sites_to_search)) {
 
             ##
             ## -leave third parameter (warning type) null as it currently only gets set
@@ -1587,7 +1612,7 @@ sub request_form_screen {
 		$elem->name($field);
                 $elem->type('POPUP');
                 my @choices;
-
+                
 	        foreach ($pickup->available_locations) {
 
                     $elem->selected($_) if ($_ eq $ill_fields{'PATR_PICKUP_FIELD'});
@@ -1877,7 +1902,6 @@ sub get_act_for_password_button {
 ##
 ## (03-nov-1998 kl) - now returns $TRUE/$FALSE for success/failure
 ##
-
 sub print_hold_tab  {
     my($cgi, 
        $action, 
@@ -2681,7 +2705,7 @@ sub print_hold_tab  {
         defined ${$tab_comp_hash_ref}{$GODOT::Page::ERIC_COLL_COMP}       ||
         defined ${$tab_comp_hash_ref}{$GODOT::Page::MLOG_COLL_COMP})            {
 
-        #### debug "hold_found:  $hold_found";
+        debug "hold_found:  $hold_found";
 
         if ($hold_found) {
 
@@ -3193,6 +3217,14 @@ sub print_result_row {
 
     $fmt = (($reqtype eq $JOURNAL_TYPE)  && ($screen eq $MAIN_HOLD_SCR)) ? $catalogue::SHORT_FMT : $catalogue::LONG_FMT;
   
+##here99
+
+    #### debug "----------------------------------------------------------------------------------------";
+    #### debug Dumper($config);
+    #### debug "----------------------------------------------------------------------------------------";
+
+
+
     foreach $hold_ref (@{$table_jrdb_arr_ref})  { 
         
         @hold_branch_arr = @{$hold_ref};  
@@ -3232,7 +3264,6 @@ sub print_result_row {
  
                 if (${$warning_type_hash_ref}{$location} ne '') { $param_str .= "=${$warning_type_hash_ref}{$location}"; }
                 if ($next_action ne '')                         { $param_str .= "=$next_action";                         }
-
 
                 my $button_text = &generic_request_button_text(); 
 
@@ -3282,6 +3313,8 @@ sub print_result_row {
 
 
             report_time_location;
+
+            debug "........................... $location";
 
             ##
             ## (05-mar-2004 kl) - determine this site's display group 
@@ -4989,20 +5022,14 @@ sub ill_process_request  {
             param(-name=>'PATR_LIBRARY_ID_FIELD', '-values'=>[$ill_fields{'PATR_LIBRARY_ID_FIELD'}]);  
         }
 
-
-
         ##
         ## -get request number and subject line
         ##
 
         my $ill_reqno;
-
+	
         if ($result) {
 
-            ##
-            ## -returns null on failure
-            ##
-            
             $ill_reqno = &ill_get_reqno($config->ill_nuc, "G", $GODOT::Config::INSTALLATION_ID);
 
             if ($ill_reqno eq '')  { $result = $FALSE; }
@@ -5031,8 +5058,6 @@ sub ill_process_request  {
 
         $message_to_copy->lender_email($lender_config->request_msg_email);             
 
-        #### debug "__________ just before message_to_copy logic:  ", $ill_fields{$HOLDINGS_SITE_FIELD}, "\n";
-
         $message_to_copy->holdings_site($ill_fields{$HOLDINGS_SITE_FIELD});             
 
         my %hold_hash = param($HOLDINGS_FIELD);					 
@@ -5055,7 +5080,6 @@ sub ill_process_request  {
 
         my $error_msg;
 
-
         ##
         ## -send main request message 
         ##
@@ -5066,19 +5090,7 @@ sub ill_process_request  {
        
                 my $dispatch_site = ($sent_to_local_system) ? $config->name : $lender_config->name;
 
-                ##
-                ## !!!!!!!!!!!!!!!!!! debug !!!!!!!!!!!!!!!!!!
-                ##
-                #### $msg_fmt = 'GENERIC_SCRIPT';
-                ##
-
                 my $message = GODOT::ILL::Message->dispatch({'type' => $msg_fmt, 'dispatch_site' => $dispatch_site});
-
-                ##
-                ## !!!!!!!!!!! 2nd debug !!!!!!!!!!!!
-                ##
-                #### $message->email('klong@sfu.ca');
-                ##
 
                 $message->copy($message_to_copy);
 
@@ -5224,6 +5236,8 @@ sub ill_get_reqno  {
         while (-e $lockfile) {
             $count++;
             sleep(1);
+
+            &glib::send_admin_email("$0:  unable to lock request number ($lockfile)");             
 
             if ($count==20) {  return ''; }       ## -unable to 'lock' request numbers, so return failure  
         }
