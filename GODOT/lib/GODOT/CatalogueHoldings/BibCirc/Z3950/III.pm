@@ -29,7 +29,7 @@ sub cat_url {
 }
 
 sub holdings_from_cat_rec {
-    my($self, $rec) = @_;
+    my($self, $record, $marc) = @_;
     return $FALSE;
 }
 
