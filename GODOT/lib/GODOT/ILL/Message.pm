@@ -8,7 +8,6 @@ use GODOT::String;
 use GODOT::Object;
 use GODOT::ILL::Site;
 
-
 use base qw(GODOT::Object);
 
 use strict;
@@ -201,12 +200,19 @@ sub send_by_http {
 
     my $ua = new LWP::UserAgent;
 
-    $url .= '?' . $self->format($reqno);
+    ##
+    ## (05-jun-2006 kl) - added logic to check for existing '?' in URL (an issue for the III URL)
+    ##
+
+    $url .= (($url =~ m#\?#) ? '&' : '?') . $self->format($reqno);
 
     if (defined $self->error_message) { return $FALSE; }
 
     $self->_log_ill_message($self->_split_on_ampersand($url), 'input');
     
+    ## !!!!!!!!!!!!!!!!!!!!!!!!!! temporary test setup !!!!!!!!!!!!!!!!!!!!
+    #### return $TRUE;
+
     my $request = new HTTP::Request 'GET' => $url;
     my $res = $ua->request($request);
 
@@ -216,12 +222,18 @@ sub send_by_http {
         return $FALSE;
     }
 
-
     $self->_log_ill_message($res->content, 'output');
 
     unless ($self->check_http_return($res->content)) {
         error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
-        $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
+
+        ##
+        ## -don't overwrite current error message
+        ##
+        if (aws($self->error_message)) {
+            $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
+        }
+
         return $FALSE;
     }
 
@@ -562,11 +574,15 @@ sub _log_ill_message {
     log_message_to_file(join('.', 'ill_message', $self->type, $id), $message);   
 }
 
+##
+## -split on ampersand and question mark
+##
 sub _split_on_ampersand {
     my($self, $string) = @_;
 
     use CGI qw(:unescape);
 
+    $string =~ s#\?#\n?#g;
     $string =~ s#\046#\n\046#g;    ## -ampersand is '\046'
     return unescape($string);
 }
