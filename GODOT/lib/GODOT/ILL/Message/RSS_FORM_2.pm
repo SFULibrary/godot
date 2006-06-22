@@ -137,7 +137,6 @@ sub format {
     ## th - RSS will choke if the NeedBefore is not of DD/MM/YY format, so catch it now
     ## Date string contains the error message if it failed.
     ##
-    my $date_str;
 
     unless ($self->valid_date) { return ''; }
 
