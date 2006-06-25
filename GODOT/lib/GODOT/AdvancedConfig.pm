@@ -235,7 +235,8 @@ use vars qw (
 	'ebscohost.Health Source - Consumer Edition' => 'hsce', 
 	'ebscohost.Health Source: Consumer Edition'  => 'hsce', 
 	'ebscohost.Health Source: Nursing/Academic Edition' => 'hsnae',
-	'ebscohost.Hospitality & Tourism Index' => 'eb-hti',
+	'ebscohost.Hospitality & Tourism Index'    => 'eb-hti',
+	'ebscohost.Hospitality & Tourism Complete' => 'eb-hti',
         'ebscohost.International Political Science Abstracts' => 'eb-ipsa',
         'ebscohost.Library Reference Center'    => 'eb-libref',
         'ebscohost.Library, Information Science & Technology Abstracts' => 'eb-libista',
@@ -405,7 +406,7 @@ use vars qw (
 	'eb-eric'	=> {'fullname' =>  'ERIC on EbscoHOST',  'type' => 'ebsco'},
 	'eb-georef'	=> {'fullname' =>  'GeoRef on EbscoHOST',  'type' => 'ebsco'},
 	'eb-glblhealth'	=> {'fullname' =>  'Global Health on EbscoHOST',  'type' => 'ebsco'},
-	'eb-hti'	=> {'fullname' =>  'Hospitality and Tourism Index on EbscoHOST',  'type' => 'ebsco'},
+	'eb-hti'	=> {'fullname' =>  'Hospitality and Tourism Complete on EbscoHOST',  'type' => 'ebsco'},
 	'eb-ipsa'       => {'fullname' =>  'International Political Science Abstracts on EbscoHOST',  'type' => 'ebsco'},
 	'eb-libref'     => {'fullname' =>  'Library Reference Center on EbscoHOST', 'type' => 'ebsco'},
 	'eb-libista'    => {'fullname' =>  'Library, Information Science & Technology Abstracts on EbscoHOST', 'type' => 'ebsco'},
@@ -698,6 +699,7 @@ use vars qw(@NO_BACK_TO_DATABASE_DBASE_ARR @NO_BACK_TO_DATABASE_DBASE_TYPE_ARR);
                                        'Refworks',
                                        'LC',
                                        'HWW',
+                                       'OVID',
                                        'SFX');
 
 
