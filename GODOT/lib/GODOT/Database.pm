@@ -198,7 +198,7 @@ sub init_dbase {
                             my $type = &openurl::openurl_dbase_type();
                             my $local = &openurl::openurl_dbase_local();
                         
-                            debug "..............", CGI::param('rfr_id'), "....................";
+                            #### debug "..............", CGI::param('rfr_id'), "....................";
 
                             if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
                                 $type = 'ISI';
@@ -235,6 +235,12 @@ sub init_dbase {
 	    }
 	}
 
+	#### debug "---------------------------------------------";
+	#### debug "syntax:  ", $self->dbase_syntax;
+	#### debug "type:  ", $self->dbase_type;
+	#### debug "local:  ", $self->dbase_local;
+	#### debug "---------------------------------------------";
+
 	if (defined($self->dbase_syntax())) { ## Succeed
 	    return $TRUE;
 	} else { ## Failed
@@ -265,13 +271,15 @@ sub check_dbase {
 	    return $FALSE;
 	}
 
+        ##
 	## Both dbase_local and dbase_type have value.
+        ##
+
 	if (!(grep {$self->dbase_type() eq $_} @GODOT::Constants::DBASE_TYPE_ARR)) {
 	    ${$message_ref} = "Field $GODOT::Constants::DBASE_TYPE_FIELD (" . $self->dbase_type() . ") was invalid.";  
 	    return $FALSE;
 	}
        
-
 	##
 	## determine %DBASE_LOCAL_HASH key, ex. 'erl.BI'
 	##
@@ -312,6 +320,15 @@ sub check_dbase {
 	    $self->dbase($GODOT::Config::DBASE_LOCAL_MAPPING{$key});
 	}
         ##
+        ## (24-jul-2006 kl) - added so that we do not need to maintain a list of all ebscohost databases,
+        ##                    only those that require special parsing logic 
+        ##
+        elsif ($self->dbase_type() eq 'ebscohost') {
+            my $dbase_local = $self->dbase_local();
+            $dbase_local =~ s#\s+#-#g;
+            $self->dbase($self->dbase_type() . ':' . $dbase_local);            
+        }
+        ##
         ## (06-feb-2002 kl) - added so that we do not need to add a list of all databases that contain openurl links
         ##
         elsif ($self->dbase_syntax() eq $GODOT::Constants::OPENURL_SYNTAX) {
@@ -328,6 +345,14 @@ sub check_dbase {
 	    $self->dbase_fullname($GODOT::Config::DBASE_INFO_HASH{$self->dbase()}->{'fullname'});
 	    return $TRUE;
 	}
+
+        ##
+        ## (24-jul-2006 kl) - see comment above from same date
+        ##
+        elsif ($self->dbase_type() eq 'ebscohost') {
+            $self->dbase_fullname('Ebscohost ' . $self->dbase_local());            
+            return $TRUE;
+        }
         ##
         ## (06-feb-2002 kl) - just use dbase name for fullname - also see above 
         ##
