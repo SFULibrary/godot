@@ -29,7 +29,6 @@ use vars qw (
 # 'database' => 'XXX::parser'  --- map database to subclassed parser under GODOT/Parser/XXX
 # 'database' => { 'erl' => 'parser1', 'brs' => 'parser2' }   --- takes the database "type" into consideration when mapping the database to a parser
 
-
 %DBASE_PARSER_MAPPING = (
         ##
 	## EBSCOhost databases
@@ -538,7 +537,7 @@ use vars qw(@DISS_ABS_ISSN_ARR);
 @DISS_ABS_ISSN_ARR = ('04194209', '04194217', '00993123', '00959154', '0420073X', '0420073x', '08989095');
 
 use vars qw($REDIRECTION_ALLOWED); 
-$REDIRECTION_ALLOWED = $TRUE;
+$REDIRECTION_ALLOWED = $FALSE;
 
 
 1;
