@@ -165,7 +165,7 @@ use vars qw(
 	'spage' => ['spage', 'rft.spage'],
 	'epage' => ['epage', 'rft.epage'],
 	'artnum' => ['artnum', 'rft.artnum'],
-	'date' => ['date', 'rft.date'],
+	'date' => ['date', 'rft.date', 'rft.year'],
 	'ssn' => ['ssn', 'rft.ssn'],
 	'quarter' => ['quarter', 'rft.quarter']
 );
