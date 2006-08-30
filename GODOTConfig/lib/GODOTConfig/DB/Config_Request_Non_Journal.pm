@@ -19,7 +19,7 @@ __PACKAGE__->columns(All => qw(
 ));                                                                                                        
 
 __PACKAGE__->columns(Essential => __PACKAGE__->columns);
-__PACKAGE__->sequence('config_request_non_journ_id_seq');
+__PACKAGE__->sequence('config_request_non_journal_id_seq');
 
 __PACKAGE__->has_a('site' => 'GODOTConfig::DB::Sites');
 __PACKAGE__->has_a('request_site' => 'GODOTConfig::DB::Sites');
