@@ -18,7 +18,7 @@ __PACKAGE__->columns(All => qw(
 ));                                                                                                        
 
 __PACKAGE__->columns(Essential => __PACKAGE__->columns);
-__PACKAGE__->sequence('config_patr_patron_type_id_seq');
+__PACKAGE__->sequence('config_patr_patron_type_choice_id_seq');
 
 
 1;
