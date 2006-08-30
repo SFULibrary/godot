@@ -19,7 +19,7 @@ __PACKAGE__->columns(All => qw(
 ));                                                                                                        
 
 __PACKAGE__->columns(Essential => __PACKAGE__->columns);
-__PACKAGE__->sequence('config_ill_req_form_limi_id_seq');
+__PACKAGE__->sequence('config_ill_req_form_limit_id_seq');
 
 
 1;
