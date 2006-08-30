@@ -17,7 +17,7 @@ __PACKAGE__->columns(All => qw(
 ));                                                                                                        
 
 __PACKAGE__->columns(Essential => __PACKAGE__->columns);
-__PACKAGE__->sequence('config_patr_pickup_choic_id_seq');
+__PACKAGE__->sequence('config_patr_pickup_choice_id_seq');
 
 
 1;
