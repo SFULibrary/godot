@@ -3536,6 +3536,7 @@ sub get_other_coll   {
         }
 
         &catalogue::fill_bib_circ(\%bib_circ_hash, $catalogue::BIB_CIRC_DB, $lender);
+        &catalogue::fill_bib_circ(\%bib_circ_hash, $catalogue::BIB_CIRC_USER, $lender);
 
 
         ##
@@ -5099,12 +5100,13 @@ sub ill_process_request  {
                 $message->request_type($ill_fields{'hold_tab_msg_req_type'});             
                 $message->email($msg_email) if naws($msg_email);
                 $message->host($msg_host) if naws($msg_host);
+                
+                $result = $message->send($ill_reqno);
 
-                #### debug "before 'main request' message send:";
+                #### debug "result after 'main request' message send:  $result";
                 #### debug $message->dump;
                 #### debug "----------------------------------------------";
                 
-                $result = $message->send($ill_reqno);
                 $error_msg = $message->error_message;
         }
 
@@ -5123,18 +5125,21 @@ sub ill_process_request  {
                 $message->email($config->ill_local_system_email) if naws($config->ill_local_system_email);
                 $message->host($msg_host) if naws($msg_host);
                          
-                #### debug "________ before 'copy to local ill system' message->send";
-
                 $result = $message->send($ill_reqno);
                 $error_msg = $message->error_message;
+
+                #### debug "________ result after 'copy to local ill system' message->send:  $result";
         }
+
+	#### debug join('--', "before patron ack email: ",  $result, $config->ill_email_ack_msg, $ill_fields{'PATR_PATRON_EMAIL_FIELD'});
+
 
         ##
         ## send copy to patron
         ##
+
         if ($result   &&  $config->ill_email_ack_msg && (naws($ill_fields{'PATR_PATRON_EMAIL_FIELD'})))
         {
-
                 my $message = GODOT::ILL::Message->dispatch({'type' => 'PATRON', 'dispatch_site' => $site});
                 $message->copy($message_to_copy);
                 $message->lender_site($lender_config->name);
@@ -5145,10 +5150,10 @@ sub ill_process_request  {
                          
 		$message->additional_text($config->ill_email_ack_msg_text);         
 
-                #### debug "________ before 'send copy to patron' message send";
-
                 $result = $message->send($ill_reqno);
                 $error_msg = $message->error_message;
+
+                #### debug "________ result after 'send copy to patron' message send:  $result";
         }
 
         ##
