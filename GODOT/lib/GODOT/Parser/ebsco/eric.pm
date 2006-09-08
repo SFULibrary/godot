@@ -32,14 +32,6 @@ sub parse_citation {
 
 	    #### $citation->parsed('FTREC', $citation->pre('FT'));
 
-
-	    # if ($citation->pre('MON') =~ /(\d{4})\d{4}/) {
-	    # 	$citation->parsed('YYYYMMDD', $citation->pre('MON'));
-	    # 	if (!defined($citation->parsed('YEAR'))) {
-	    #	    $citation->parsed('YEAR', $1);
-	    #	}
-	    # }
-
         } else {
 	    $self->SUPER::parse_citation($citation);
         }
