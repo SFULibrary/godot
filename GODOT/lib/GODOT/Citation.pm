@@ -81,7 +81,7 @@ use vars qw(
 	'MON'  => ['hold_tab_mon', 'mon'],
 	'PUB'  => 'hold_tab_pub',
 
-	'AN'   => 'hold_tab_an',
+	'AN'   => ['hold_tab_an', 'an'],
 	'LV'   => 'hold_tab_lv',
 
 	'NT'   => 'hold_tab_nt',
