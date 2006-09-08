@@ -3,6 +3,7 @@ package GODOT::Parser::ebsco::eric;
 use GODOT::Config;
 use GODOT::Constants;
 use GODOT::Debug;
+use GODOT::String;
 use GODOT::Parser::ebsco;
 use CGI qw/unescapeHTML/;
 
@@ -50,9 +51,14 @@ sub parse_citation {
 	    $citation->parsed('ISSN', '');
         }
 
-
-	$citation->parsed('SYSID', $citation->pre('SID'));
-	$citation->parsed('ERIC_NO', $citation->pre('SID'));
+        if (naws($citation->pre('SID')))  {
+	    $citation->parsed('SYSID', $citation->pre('SID'));
+	    $citation->parsed('ERIC_NO', $citation->pre('SID'));
+        }
+        else {
+	    $citation->parsed('SYSID', $citation->pre('AN'));
+	    $citation->parsed('ERIC_NO', $citation->pre('AN'));
+        }
 
         ## 
         ## (20-may-2003 kl) - ERIC Availability is not currently passed by the Ebscohost interface.
@@ -85,7 +91,7 @@ sub get_req_type {
 
     my $reqtype = $self->SUPER::get_req_type($citation, $pubtype);
 
-    if ($citation->pre('SID') =~ m#^ed|^ED#)   {
+    if (($citation->pre('SID') =~ m#^ed|^ED#) || ($citation->pre('AN') =~ m#^ed|^ED#))  {
 
         ##
         ## '^' is XOR
