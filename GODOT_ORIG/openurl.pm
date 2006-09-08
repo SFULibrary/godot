@@ -28,7 +28,7 @@ my(@CITN_PRE_OPENURL_ARR) = (
     my($ID_OPENURL_FIELD)      = 'id',         ## GLOBAL-IDENTIFIER-ZONE
     my($PID_OPENURL_FIELD)     = 'pid',        ## LOCAL-IDENTIFIER-ZONE
     my($GENRE_OPENURL_FIELD)   = 'genre',      ## bundles: [ journal | book | conference ]
-                                           ## individual items:  [ article | preprint | proceeding | bookitem ]
+                                               ## individual items:  [ article | preprint | proceeding | bookitem ]
     my($AULAST_OPENURL_FIELD)  = 'aulast',     ## first author's last name
     my($AUFIRST_OPENURL_FIELD) = 'aufirst',    ## first author's first name
     my($AUINIT_OPENURL_FIELD)  = 'auinit',     ## first author's first and middle initials
