@@ -191,28 +191,28 @@ sub init_dbase {
             ## (14-feb-2006 kl) - check whether its OpenURL version 1.0
             ##
 
-		if (!defined($self->dbase_syntax())) {
-		    foreach $param_name (@$param_names_ref) {
-			if ($param_name eq 'url_ver') {
-			    $self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
+	    if (!defined($self->dbase_syntax())) {
+		foreach $param_name (@$param_names_ref) {
+		    if ($param_name eq 'url_ver') {
+			$self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
 
-                            my $type = &openurl::openurl_dbase_type();
-                            my $local = &openurl::openurl_dbase_local();
+                        my $type = &openurl::openurl_dbase_type();
+                        my $local = &openurl::openurl_dbase_local();
                         
-                            #### debug "..............", CGI::param('rfr_id'), "....................";
+                        #### debug "..............", CGI::param('rfr_id'), "....................";
 
-                            if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
-                                $type = 'ISI';
-                                my @arr = split(':', CGI::param('rfr_id'));
-                                $local = $arr[2];
-                            }
+                        if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
+                            $type = 'ISI';
+                            my @arr = split(':', CGI::param('rfr_id'));
+                            $local = $arr[2];
+                        }
                                                         
-			    $self->dbase_type($type);
-			    $self->dbase_local($local);
-			    last;
-			}
+			$self->dbase_type($type);
+			$self->dbase_local($local);
+			last;
 		    }
 		}
+	    }
 
 
             ##
@@ -236,11 +236,11 @@ sub init_dbase {
 	    }
 	}
 
-	#### debug "---------------------------------------------";
-	#### debug "syntax:  ", $self->dbase_syntax;
-	#### debug "type:  ", $self->dbase_type;
-	#### debug "local:  ", $self->dbase_local;
-	#### debug "---------------------------------------------";
+	debug "---------------------------------------------";
+	debug "syntax:  ", $self->dbase_syntax;
+	debug "type:  ", $self->dbase_type;
+	debug "local:  ", $self->dbase_local;
+	debug "---------------------------------------------";
 
 	if (defined($self->dbase_syntax())) { ## Succeed
 	    return $TRUE;
