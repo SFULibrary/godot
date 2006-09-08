@@ -204,6 +204,12 @@ sub post_parse {
             $citation->parsed('DAY', $dd) unless ($dd == 0);
         }
 
+        if (aws($citation->parsed('YEAR'))) {       
+
+            my $year = substr($yyyymmdd, 0, 4);
+            $citation->parsed('YEAR', $year);
+        }
+
         ##
         ## (23-jan-2003 kl)
         ##         
