@@ -4,6 +4,7 @@ use GODOT::Config;
 use GODOT::Constants;
 use GODOT::Debug;
 use GODOT::Date;
+use GODOT::String;
 
 @ISA = "GODOT::Parser";
 
@@ -92,8 +93,10 @@ sub parse_citation {
 		$citation->parsed('YYYYMMDD',  $citation->pre('MON'));
 	}
 
-	$citation->parsed('SYSID', $citation->pre('SID'));
-	
+        (naws($citation->pre('SID'))) ? $citation->parsed('SYSID', $citation->pre('SID')) :
+	                                $citation->parsed('SYSID', $citation->pre('AN'));
+        
+    
 
         ##
         ## (05-sep-2003 kl) - according to a 04-sep-2003 email from Alison Galati at Ebsco
