@@ -77,6 +77,7 @@ $BRANCH_ABBREV_FIELD      = 'htb';           ## (01-dec-2003 kl)
 	't',
 	'isbn',
 	'sici',
+        'an',       # kl - added 2006-09-07.  Use for 'an={AN}' instead of 'sid={AN}' as using 'sid' confuses OpenURL fuzzy matching. 
 	'newwin',
 	'_us.ri',   # th - added 2002-08-08.  New EBSCO field, no clue what it does but it broke GODOT in init_dbase.
 );
