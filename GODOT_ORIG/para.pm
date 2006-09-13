@@ -256,8 +256,9 @@ sub query {
                                                                $parallel->citation);    
         if ($search_res) {
             ##
-            ## -assume for now first one (ie. first url in first bib record) will be URL we want...!!!!!
+            ## -assume for now first one (ie. first url in first bib record) will be URL we want...
             ##
+
             my @cat_url = $bib_circ_arr[0]->cat_url;
             my $url = $cat_url[0]->url;
 
