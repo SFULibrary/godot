@@ -376,7 +376,6 @@ sub url_link_format  {
 }
 
 
-
 sub values_from_cat_rec {
     my($self, $record) = @_;
   
@@ -625,6 +624,11 @@ sub converted {
         push(@{$bib_circ_hash{'bib_circ_note'}}, $note->text); 
     }
 
+    #### use Data::Dumper;
+    #### debug "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
+    #### debug Dumper(%bib_circ_hash);
+    #### debug "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
+
     return %bib_circ_hash;
 }
 
@@ -866,7 +870,14 @@ sub _url {
 
     }
 
-    return (defined $self->{$type}) ? @{$self->{$type}} : ();
+    my @result = (defined $self->{$type}) ? @{$self->{$type}} : ();
+
+    # use Data::Dumper;
+    # debug "<<<_____________________________>>>";
+    # debug Dumper(@result);
+    # debug "<<<_____________________________>>>"; 
+
+    return @result;
 }
 
 
