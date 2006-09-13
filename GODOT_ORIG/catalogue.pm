@@ -283,8 +283,6 @@ sub get_on_fly_holdings {
             ##  -the current location ($nuc_branch) 
             ##
 
-            debug "___________________ ", ref($div_hash{$nuc_branch});
-
             if (grep {$nuc_branch eq $_} @location_arr) { 
 
                 push(@{${$holdings_hash_ref}{$nuc_branch}}, { $div_hash{$nuc_branch}->converted });  
