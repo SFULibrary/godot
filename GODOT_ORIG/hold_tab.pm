@@ -143,9 +143,6 @@ $CAT_INTER_DESC_TEXT       = "Check status and recent holdings.";
 $ILL_REQ_FORM_LIMIT_MSG_DEFAULT_TEXT = "You are not eligible for this service. Please see library staff for assistance.";
 
 
-
-
-
 $ERIC_DOC_PATTERN = '^ed|^ED';     
 
 ##
@@ -3217,13 +3214,9 @@ sub print_result_row {
 
     $fmt = (($reqtype eq $JOURNAL_TYPE)  && ($screen eq $MAIN_HOLD_SCR)) ? $catalogue::SHORT_FMT : $catalogue::LONG_FMT;
   
-##here99
-
     #### debug "----------------------------------------------------------------------------------------";
     #### debug Dumper($config);
     #### debug "----------------------------------------------------------------------------------------";
-
-
 
     foreach $hold_ref (@{$table_jrdb_arr_ref})  { 
         
