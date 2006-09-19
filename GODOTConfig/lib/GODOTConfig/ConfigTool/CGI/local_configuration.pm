@@ -104,7 +104,7 @@ sub process_local_submit_configuration_options {
                                 use strict;
 
                                 use Data::Dumper;
-                                                                                          		                
+
 		                $db_package->create($record) or GODOTConfig::Exception::App::CGI->throw("Unable to create config_${option_name} record.");
 
 		                $count++;
