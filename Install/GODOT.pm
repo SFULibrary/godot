@@ -1,10 +1,16 @@
 package Install::GODOT;
 
+use Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw(printw
+             boxw
+             diew);
 use strict;
 
-use vars qw($CONFIG_FILE $HEADER @CONFIG_VARS @WRITE_TO_DIRECTORIES %CONFIG_VARS_DESC %DEFAULT_VALUES @INCLUDE_DIRS);
+use vars qw($CONFIG_FILE $DISTRIB_DIR $HEADER @CONFIG_VARS @WRITE_TO_DIRECTORIES %CONFIG_VARS_DESC %DEFAULT_VALUES @INCLUDE_DIRS);
 
 $CONFIG_FILE = 'GODOT/BasicConfig.pm';
+$DISTRIB_DIR = 'util/distrib';
 
 $HEADER =<< 'EOF';
 
@@ -84,6 +90,11 @@ EOF
 @INCLUDE_DIRS = qw(local GODOT/lib GODOT_ORIG GODOTConfig/lib);
 
 
+sub printw (@);
+sub boxw (@);
+sub diew (@);
+
+
 sub directories_to_write {
     my($config) = @_;
     
@@ -102,6 +113,57 @@ sub directories_to_write {
     push @dirs, $log_dir;
     return @dirs;
 }
+
+
+##
+## There is some CPAN module to do this I'll bet....
+##
+sub boxw (@) {
+    my(@strings) = @_;
+
+    my $box_char = '#'; 
+
+    my $padding = 4;
+    my $padding_string_start = $box_char . (' ' x ($padding - 1));
+    my $padding_string_end   = (' ' x ($padding - 1)) . $box_char;
+ 
+    use Text::Wrap qw(&wrap $columns);
+    $columns = 75 - ($padding * 2);
+   
+    my $wrapped_text = "\n" . wrap('', '', join('', @strings)) . "\n";
+
+    my @lines = split(/\n/,  $wrapped_text);
+
+    my $max_len;
+    foreach my $line (@lines) {
+        $max_len = length($line) if length($line) > $max_len;        
+    }
+    
+    my $wrapped_text_with_padding;
+
+    foreach my $line (@lines) {
+        my $length = length($line);
+        my $extra_padding = ' ' x ($max_len - $length);
+        $wrapped_text_with_padding .= $padding_string_start . $line .  $extra_padding . $padding_string_end . "\n"; 
+    }
+
+    my $box_top = ($box_char x ($max_len + $padding + $padding));
+    print join('', "\n\n", $box_top, "\n", $wrapped_text_with_padding, $box_top, "\n\n");
+}
+
+sub printw (@) {
+    my(@strings) = @_;
+    use Text::Wrap qw(&wrap $columns);
+    $columns = 75;
+ 
+    print wrap('', '', join('', @strings)), "\n";
+}
+
+sub diew (@) {
+    printw @_;
+    die;
+}
+
 
 
 1;
