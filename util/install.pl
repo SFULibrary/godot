@@ -16,15 +16,12 @@ use CGI qw(:escape);
 use Install::GODOT;
 use Install::GODOTConfig;
 use GODOT::String;
+use GODOT::Debug;
 
 use Term::ReadLine;
 
 use Template;
 use Template::Stash;
-
-sub printw (@);
-sub boxw (@);
-sub diew (@);
 
 my $VERSION = '2.0.0';
 
@@ -47,8 +44,6 @@ my $SFU_GODOT_URL = 'http://godot.lib.sfu.ca:7888/godot/hold_tab.cgi';
 
 my $no_DBI = 0;
 my $no_psql = 0;
-my $skip_db = 0;
-
 
 my @MODULES = qw(Apache::DBI
                  Apache::Session::File
@@ -91,8 +86,6 @@ my @MODULES = qw(Apache::DBI
                  URI::URL);   
 
 
-my $DEMO_DATA_SQL = "$DISTRIB_DIR/sql/demo_data.sql";
-
 $Template::Stash::SCALAR_OPS->{'escapeHTML'} = sub { 
     my $x = shift; 
     return escapeHTML($x);
@@ -111,6 +104,12 @@ $Template::Stash::HASH_OPS->{'url'} = sub {
     return _url_for_citation(@_);
 };
 
+
+##
+## Sets up ownership, etc.
+##
+
+my $term = new Term::ReadLine 'GODOT Installation';
 if (grep {$_ eq '-m'} @ARGV) {
         my $mod_perl_version = &mod_perl_version;
 	check_modules($mod_perl_version, [ @MODULES ]);
@@ -118,11 +117,6 @@ if (grep {$_ eq '-m'} @ARGV) {
 	exit;
 }
 
-##
-## Sets up ownership, etc.
-##
-
-my $term = new Term::ReadLine 'GODOT Installation';
 
 ##
 ##  Introduction
@@ -159,6 +153,7 @@ my $mod_perl_version = &mod_perl_version;
 exit unless &check_modules($mod_perl_version, [ @MODULES ]);
 
 printw "Finished preliminary checks.\n\n";
+ 
 
 ##
 ## Initial directory setup
@@ -236,7 +231,6 @@ foreach my $dir (@dirs) { &make_dir($dir); }
 &directory_permissions([@dirs]);
 my $config_web_dir = &setup_web_tree($godotconfig_config, 'GODOTConfig', $ENV{'GODOT_CONFIG_CGI_DIR'});
 
-
 ##
 ## Write godot_httpd.conf file 
 ##
@@ -250,7 +244,6 @@ my $config_web_dir = &setup_web_tree($godotconfig_config, 'GODOTConfig', $ENV{'G
 
 &site_specific($godot_config, $godotconfig_config);
 
-
 _debug:
 
 ##
@@ -259,7 +252,7 @@ _debug:
 
 &installation_test_pages($godot_config);
 
-printw "\n\nDONE!\n\n";
+printw "\n\nATTENTION:  You are not done yet!  Please run\n\n    perl util/install_db.pl\n\nto set up the configuration profile database and optionally to install demo profile data.\n\nYou may want to run the database install as a different user (ie. postgres) depending on the postgres rights of the current user.\n\n";
 
 
 
@@ -626,43 +619,6 @@ sub directory_permissions {
     }
 }
 
-sub db_exists {
-    my ($config) = @_;
-
-    print "Trying DBI connection...";
-		
-    my $dbh = DBI->connect("dbi:Pg:dbname=$config->{'GODOT_DB'}", $config->{'GODOT_USER'}, $config->{'GODOT_PASSWORD'}, {'PrintError' => 0});
-    if (defined($dbh)) {
-	print " found.\n";
-	return 1;
-    } else {
-	print " not found.\n";
-
-	if ($DBI::errstr =~ /database\s".*"\sdoes\snot\sexist/) {
-	    return 0;
-	}
-
-	if ($DBI::errstr =~ /user\s".*"\sdoes\snot\sexist/) {
-	    diew "The user you entered does not exist in the database. Please add the user before attempting to install, ",
-                 "or skip the automated database installation.\n";
-	}
-		
-	diew "Unexpected DBI error connecting to database: $DBI::errstr\n";
-    }
-}	
-
-
-sub drop_database {
-    my ($config) = @_;
-
-    printw "Dropping database. If you have entered a password above, you will be asked to enter it again.\n";
-    my $pw = defined($config->{'GODOT_PASSWORD'}) && $config->{'GODOT_PASSWORD'} ne '' ? '--password' : '';
-    my $result = `dropdb --username=$config->{'GODOT_USER'} $pw $config->{'GODOT_DB'}`;
-    if ($result !~ /DROP\sDATABASE/) {
-	diew "Error dropping database: $result";
-    }	
-}
-
 sub set_modes {
     my ($mode, @directories) = @_;
 
@@ -807,157 +763,93 @@ EOF
 }
 
 
-sub database_setup {
-    my($config, $package) = @_;
-
-    my $skip_db = 0;
-
-    printw "Directory installation complete. Would you like to install the database?\n";
-    my $input = $term->readline("[Y/n]: ");
-    $input =~ /^\s*n/i and  $skip_db = 1;
-
-    ##
-    ## Check for existing database
-    ##
-
-    unless ($skip_db) {
-	my $db_exists = 0;
-
-	if (db_exists($config)) {
-
-	    printw "A database already exists with the name '$config->{'GODOT_DB'}'. Do you want to drop", 
-                   "this database before continuing with installation?  If you do not drop the database, installation ", 
-                   "will continue without database modifications.\n\n** WARNING: dropping the database will lose any ", 
-                   "content currently stored! **\n\nDrop database?\n";
-
-	    my $input = $term->readline("[y/N]: ");
-		
-	    if ($input =~ /^\s*y/i) { drop_database($config); } 
-            else                    { $db_exists = 1;         }
-	}
-
-	##
-	## Create database
-	##
-
-	unless ($db_exists) {
-	    printw "Creating database. If you have entered a password above, you will be asked to enter it again.\n";
-	    my $pw = defined($config->{'GODOT_PASSWORD'}) && $config->{'GODOT_PASSWORD'} ne '' ? '--password' : '';
-	    my $result = `createdb --username=$config->{'GODOT_USER'} $pw $config->{'GODOT_DB'}`;
-	    if ($result !~ /CREATE\sDATABASE/) {
-		diew "\n\nError creating database: $result\n\nIf the above error is something like FATAL: IDENT auth failed, " . 
-                     "you are trying to create the database as a user other than the one you are currently logged in as, " . 
-                     "and PostgreSQL is set to use 'ident' authentication. See the pg_hba.conf PostgreSQL config file.\n";
-	    }
-
-	    print "Database created.\n\n";
-
-	    ##
-	    ## Create tables
-	    ##
-		
-	    printw "Creating database tables and seeding database. Ignore the NOTICE: lines.\n", 
-                   "You may be asked for the password again.\n";
-
-	    $result = `cat $package/sql/*.sql | psql -q --username=$config->{'GODOT_USER'} $pw $config->{'GODOT_DB'}`;
-
-	    if ($result =~ /ERROR/) {
-		diew "Error creating/seeding database: $result";
-	    }
-	    printw "\n\nDone with basic database setup.\n";
-
-	    printw "\nInitialize the database with demo profiles?\nCaution - this will trash any data you have already loaded. Load data?";
-	    my $input = $term->readline('[y/N]: ');
-
-	    if ($input =~ /^\s*y/i) {
-
-                ##
-                ## Query for demo values for admin account password and for borrowing and lending email addresses.
-                ##
-                    
-                printw "\nWhat password do you want to use for the 'admin' account?  You may change it later using the GODOT configuration tool.";
-
-                my $password;
-
-                foreach my $count (1 .. 3) {
-                    $input = $term->readline('Password []: ');
-                    my $message = check_password($input);
-                    if ($message) { 
-                        printw "\n$message"; 
-                    }
-                    else {
-                        $password = crypt($input, 'admin'); 
-                        last; 
-                    }                        
-                }
-
-                if (aws($password)) {                    
-                    diew "\nYou need to enter a valid password for the 'admin' account.";
-                }
-
-                printw "\nWhat email address do you want to use for the lending and borrowing email options for the demo profiles?  You may change them later using the GODOT configuration tool.";
-                my $email;
-
-		$input = $term->readline('Email [' . $ENV{'GODOT_ADMIN_EMAIL'}  . ']: ');
-                if (aws($input)) {
-                    $email = $ENV{'GODOT_ADMIN_EMAIL'}; 
-                }
-                else {
-                    $email = $input;
-                }
-
-                if (aws($password)) {                    
-                    diew "\nYou need to enter a valid email address for the demo profiles.";
-                }
- 
-                unless (&update_demo_data($DEMO_DATA_SQL, $password, $email)) {
-                    diew "\nUnable to update '$DEMO_DATA_SQL' with specified password and email address.";
-                }
-
-		printw "\nLoading demo data to '$config->{'GODOT_DB'}'.  This may take a while...\n";
-
-		`cat $DEMO_DATA_SQL | psql -q --username=$config->{'GODOT_USER'} $pw $config->{'GODOT_DB'}`;
-
-		print "Done!\n";
-
-                printw "\nUpdating site profile cache ...\n";
-
-                `$base_dir/util/update_cache.pl`;
-	    }
-	}
-    } 
-}
-
 sub site_specific {
     my($godot_config, $godotconfig_config) = @_;
 
+    my $input;
+
     printw "Site specific data/logic is handled in four ways:\n\n",  
-           "    1) site profiles stored in a Postgres database\n",
+           "    1) site profiles stored in a Postgres database\n       (install later with 'perl util/install_db.pl')\n",
            "    2) site specific templates\n",  
            "    3) site specific CSS files\n",
            "    4) site specific modules located in '$godot_config->{'GODOT_ROOT'}/local'\n\n",
            "The site specific profiles, templates and CSS files are managed by the configuration tool.\n";
-       
-    &database_setup($godotconfig_config, 'GODOTConfig'); 
+
+
+    #### printw "Directory installation complete. Would you like to install the database?\n";
+    #### $input = $term->readline("[Y/n]: ");
+    #### unless ($input =~ /^\s*n/i) { &database_setup($godotconfig_config, 'GODOTConfig') unless ($input =~ /^\s*n/i) };
 
     printw "\nWould you like demo data for the site specific templates, CSS files and modules to be installed?";
-    my $input = $term->readline('[Y/n]: ');
+    $input = $term->readline('[Y/n]: ');
 
-    my $site_template_dir = $godotconfig_config->{'GODOT_SITE_TEMPLATE_DIR'};
-    printw "Copying site specific templates to $site_template_dir.\n";
-    if (-d $site_template_dir) { print `cp -R $DISTRIB_DIR/GODOTConfig/site_templates/active $site_template_dir`; }
-    else                       { printw "Directory '$site_template_dir' does not exist.\n";    }
+    unless ($input =~ /^\s*n/i) {
 
-    my $site_css_dir = $godotconfig_config->{'GODOT_SITE_CSS_DIR'};
-    printw "Copying site specific CSS files to $site_css_dir.\n";
-    if (-d $site_css_dir) { print `cp -R $DISTRIB_DIR/GODOT/htdocs/GODOT/css/active $site_css_dir`; }
-    else                  { printw "Directory '$site_css_dir' does not exist.\n";    }
+        my $site_template_dir = $godotconfig_config->{'GODOT_SITE_TEMPLATE_DIR'};
+        printw "Copying site specific templates to $site_template_dir.\n";
+        if (-d $site_template_dir) { print `cp -R $DISTRIB_DIR/GODOTConfig/site_templates/active $site_template_dir`; }
+        else                       { printw "Directory '$site_template_dir' does not exist.\n";    }
 
-    printw "Copying site specific modules to 'local'.\n";
-    if (-d 'local') { print `cp -R $DISTRIB_DIR/local .`; } 
-    else            { printw "Directory 'local' does not exist.\n"; }
+        my $site_css_dir = $godotconfig_config->{'GODOT_SITE_CSS_DIR'};
+        printw "Copying site specific CSS files to $site_css_dir.\n";
+        if (-d $site_css_dir) { print `cp -R $DISTRIB_DIR/GODOT/htdocs/GODOT/css/active $site_css_dir`; }
+        else                  { printw "Directory '$site_css_dir' does not exist.\n";    }
+
+        printw "Copying site specific modules to 'local'.\n";
+        if (-d 'local') { print `cp -R $DISTRIB_DIR/local .`; } 
+        else            { printw "Directory 'local' does not exist.\n"; }
+    }
 }
 
+#
+# (28-aug-2006 kl) - procedure will now be to run install_db.pl directly from the command line
+#                  - reason for this is that the unix 'postgres' user is often installed such that the only
+#                    way to login as that user is via 'su' from root which would require two su commands below and
+#                    gets a bit confusing...
+#
+# sub database_setup {
+#     my($config, $package) = @_;
+#
+#    my $user = getlogin();
+#    printw "What system user do you want to be for setting up the Postgres database that stores site profiles? ",  
+#           "This user must also be a valid Postgres user with the appropriate rights.";
+#
+#    foreach my $count (1 .. 3) {
+#
+#        $input = $term->readline("[$user]: ");
+#        $input = $user if aws($input); 
+#
+#        if ($user eq $input) { last; }
+#
+#        ##            
+#        ## -is user a valid system user?
+#        ##
+#        my($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($input);
+#
+#        if ($name) { last; }
+#
+#        printw "You have not entered a valid system id.  Please enter another.\n";
+#        $input = '';
+#        next;
+#    }    
+#
+#    if (aws($input)) {
+#        print "You have not entered an appropriate user.  No database set up will be done."; 
+#        return;
+#    }
+#
+#    my $install_db_cmd = "$base_dir/util/install_db.pl";
+#
+#    if ($user ne $input) {
+#        $install_db_cmd = "su $input -c \"$install_db_cmd\"";
+#    }
+#
+#    ##
+#    ## -use 'system' instead of backticks, as otherwise STDOUT will only be available at script completion 
+#    ##
+#    system($install_db_cmd);    
+# }
+#
 
 ##
 ## Check for all the modules GODOT uses.
@@ -1002,57 +894,6 @@ sub check_module {
 	
     eval { require $module };
     return $@ =~ /Can't\slocate/ ? 0 : 1;
-}
-
-
-
-sub check_password {
-    my($string) = @_;
-
-    naws($string)      || return "Password cannot be blank."; 
-    ($string !~ m#\s#) || return "Password cannot contain blanks."; 
-                        
-    my $min_length;
-    (length($string) >= $min_length)  || return "Password must be at least $min_length characters long.";                       
-    return '';
-}
-
-sub update_demo_data {
-    my($file, $password, $email) = @_;
-		    
-    my $backup = "$file.backup";
-
-    printw "\nMaking a backup copy of $file in $backup.\n";
-
-    if (-e $backup)  {
-	printw "A copy of $backup already exists. Proceed?";
-	my $input = $term->readline('[y/N]: ');
-	return $FALSE unless $input =~ /^\s*y/i;
-    }
-
-    my $res = `cp '$file' $backup`;
-    printw "$res\n", "\n" if ($res);
-
-
-    use FileHandle;
-    my $fh = new FileHandle "< $file";
-    unless (defined $fh) { diew "Unable to open $file for reading."; }
-    my $content;
-    while (<$fh>) {
-        s#\{\{admin_password\}\}#$password#g;
-        s#\{\{from_email\}\}#$email#g;
-        s#\{\{ill_local_system_email\}\}#$email#g;
-        s#\{\{request_msg_email\}\}#$email#g;
-        $content .= $_;
-    }
-    $fh->close;   
-
-    $fh = new FileHandle "> $file";
-    unless (defined $fh) { diew "Unable to open $file for writing."; }
-    print $fh $content;
-    $fh->close;   
-
-    return $TRUE;
 }
 
 ##
@@ -1142,55 +983,6 @@ sub page {
     $fh->close;
 
     return $text;
-}
-
-##
-## There is some CPAN module to do this I'll bet....
-##
-sub boxw (@) {
-    my(@strings) = @_;
-
-    my $box_char = '#'; 
-
-    my $padding = 4;
-    my $padding_string_start = $box_char . (' ' x ($padding - 1));
-    my $padding_string_end   = (' ' x ($padding - 1)) . $box_char;
- 
-    use Text::Wrap qw(&wrap $columns);
-    $columns = 75 - ($padding * 2);
-   
-    my $wrapped_text = "\n" . wrap('', '', join('', @strings)) . "\n";
-
-    my @lines = split(/\n/,  $wrapped_text);
-
-    my $max_len;
-    foreach my $line (@lines) {
-        $max_len = length($line) if length($line) > $max_len;        
-    }
-    
-    my $wrapped_text_with_padding;
-
-    foreach my $line (@lines) {
-        my $length = length($line);
-        my $extra_padding = ' ' x ($max_len - $length);
-        $wrapped_text_with_padding .= $padding_string_start . $line .  $extra_padding . $padding_string_end . "\n"; 
-    }
-
-    my $box_top = ($box_char x ($max_len + $padding + $padding));
-    print join('', "\n\n", $box_top, "\n", $wrapped_text_with_padding, $box_top, "\n\n");
-}
-
-sub printw (@) {
-    my(@strings) = @_;
-    use Text::Wrap qw(&wrap $columns);
-    $columns = 75;
- 
-    print wrap('', '', join('', @strings)), "\n";
-}
-
-sub diew (@) {
-    printw @_;
-    die;
 }
 
 sub _format_citation {
