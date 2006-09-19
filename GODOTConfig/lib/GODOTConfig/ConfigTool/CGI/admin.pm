@@ -278,9 +278,9 @@ sub process_admin_submit_new_site {
 				warn("Adding account '$account'");
 				$site->add_to_accounts({account => $account});			
 			}
-	
+
 			$site->update;
-		};
+		};   
 		if ($@) {
 			$site->dbi_rollback;
 			if (ref($@) && $@->can('rethrow')) {
@@ -316,7 +316,6 @@ sub process_admin_submit_new_site {
         use GODOTConfig::Cache;
         my $cache = new GODOTConfig::Cache;
         $cache->write_to_cache_store($site_hash->{'key'}) or GODOTConfig::Exception::App::CGI->throw("Unable to write site " . $site_hash->{'key'} . " to cache.");
-
 	
 	param('site_id', $new_site_id);
 	return 'admin_view_site';	
