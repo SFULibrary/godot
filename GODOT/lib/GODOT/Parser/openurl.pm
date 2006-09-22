@@ -131,10 +131,14 @@ sub parse_citation {
 	##
 	## -don't pass blank to &GODOT::Date::date_mm_to_mon or will get 'DEC' -- need to fix date_mm_to_mon !!!!!
 	##
-
-	if ($mm) { $citation->parsed('MONTH', &GODOT::Date::date_mm_to_mon($mm)); }
+   
+        ##
+        ## $mm can be '00', so force numeric comparision instead of string comparison with '=='
+        ##
+	$citation->parsed('MONTH', &GODOT::Date::date_mm_to_mon($mm)) unless ($mm == 0);
 
 	if (! $citation->parsed('MONTH')) { $citation->parsed('MONTH', $citation->pre('ssn'))};
+
 	##
 	## -do we want to put numeric quarter in month field???? 
 	## -possible confusion????
@@ -170,9 +174,6 @@ sub parse_citation {
 			$citation->parsed('ISSN', '');
 		}		
 	}
-
-
-
 
 	##---------------Customized code ends here-------------------##
 
