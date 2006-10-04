@@ -216,7 +216,7 @@ print "\n--- Installing the GODOT package ---";
 my $godot_config = &write_config_for_GODOT;
 @dirs = &Install::GODOT::directories_to_write($godot_config);
 foreach my $dir (@dirs) { &make_dir($dir); }              
-&directory_permissions([@dirs]);
+&set_permissions([@dirs], $term, $TRUE);
 my $web_dir = &setup_web_tree($godot_config, 'GODOT', $ENV{'GODOT_CGI_DIR'});
 
 ##
@@ -228,7 +228,7 @@ print "\n--- Installing the GODOTConfig package ---";
 my $godotconfig_config = &write_config_for_GODOTConfig($godot_config);
 @dirs = &Install::GODOTConfig::directories_to_write($godotconfig_config);
 foreach my $dir (@dirs) { &make_dir($dir); }
-&directory_permissions([@dirs]);
+&set_permissions([@dirs], $term, $TRUE);
 my $config_web_dir = &setup_web_tree($godotconfig_config, 'GODOTConfig', $ENV{'GODOT_CONFIG_CGI_DIR'});
 
 ##
@@ -567,87 +567,6 @@ sub make_dir {
 
 
 
-sub directory_permissions {
-    my($dirs) = @_;
-
-    ##
-    ## Set up directory permissions
-    ##
-
-    printw "\nGODOT needs the web server to be able to write to several directories for\nthings such as logs and request " .
-           "number files. If you have root access you can set these directories to be owned by the web server owner. " . 
-           "If not, they should be set to world writable.\n";
-
-    ##
-    ## Display which directories need to be writable by the web server owner
-    ##
-
-    foreach my $dir (@dirs) {
-        printw $dir;
-    }
-
-
-    if ($> == 0) {
-	printw "\nIt appears you are running as root. Would you like to change ownership of the directories?";
-
-	my $input = $term->readline("[Y/n]: ");
-
-	unless ($input =~ /\s*n/i) {
-            GET_USERNAME:
-	    printw "User which the web server runs as?";
-	    my $input = $term->readline("[nobody]: ");
-	    $input = 'nobody' unless defined($input) && $input ne '';
-	    my $uid = scalar(getpwnam $input);
-	    if (!defined($uid)) {
-		printw "* That user was not found in the password file. Enter another user or Ctrl-C to exit.";
-		goto GET_USERNAME;
-	    }		
-
-	    set_owner($uid, -1, @{$dirs});
-	}
-    } 
-    else {
-	printw "\nIt appears you are NOT running as root. World writable directories are another option, " .  
-               "however world writable directories could be a security concern, depending on your server configuration.\n\n" .  
-               "If you are not sure about this step, skip it and ask your server administrator about your options.\n\n" . 
-               "Would you like to set the directories to world writable?";
-
-	my $input = $term->readline("[y/N]: ");
-	if ($input =~ /\s*y/i) {
-		set_modes(0777, @{$dirs});
-        }
-    }
-}
-
-sub set_modes {
-    my ($mode, @directories) = @_;
-
-    foreach my $dir (@directories) {
-	print "Setting '$dir'... ";
-	if (chmod $mode, $dir) {
-	    print "ok.\n";
-	} else {
-	    print "failed.\n";
-	}
-    }
-    print "\n";
-}
-
-sub set_owner {
-    my ($owner, $group, @directories) = @_;
-
-    foreach my $dir (@directories) {
-        print "Setting '$dir'... ";
-	if (chown $owner, $group, $dir) {
-	    print "ok.\n";
-	} else {
-	    print "failed.\n";
-	}
-    }
-    print "\n";	
-}
-
-
 sub setup_web_tree {
     my ($config, $package, $cgi_dir) = @_;
       
@@ -800,56 +719,6 @@ sub site_specific {
         else            { printw "Directory 'local' does not exist.\n"; }
     }
 }
-
-#
-# (28-aug-2006 kl) - procedure will now be to run install_db.pl directly from the command line
-#                  - reason for this is that the unix 'postgres' user is often installed such that the only
-#                    way to login as that user is via 'su' from root which would require two su commands below and
-#                    gets a bit confusing...
-#
-# sub database_setup {
-#     my($config, $package) = @_;
-#
-#    my $user = getlogin();
-#    printw "What system user do you want to be for setting up the Postgres database that stores site profiles? ",  
-#           "This user must also be a valid Postgres user with the appropriate rights.";
-#
-#    foreach my $count (1 .. 3) {
-#
-#        $input = $term->readline("[$user]: ");
-#        $input = $user if aws($input); 
-#
-#        if ($user eq $input) { last; }
-#
-#        ##            
-#        ## -is user a valid system user?
-#        ##
-#        my($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($input);
-#
-#        if ($name) { last; }
-#
-#        printw "You have not entered a valid system id.  Please enter another.\n";
-#        $input = '';
-#        next;
-#    }    
-#
-#    if (aws($input)) {
-#        print "You have not entered an appropriate user.  No database set up will be done."; 
-#        return;
-#    }
-#
-#    my $install_db_cmd = "$base_dir/util/install_db.pl";
-#
-#    if ($user ne $input) {
-#        $install_db_cmd = "su $input -c \"$install_db_cmd\"";
-#    }
-#
-#    ##
-#    ## -use 'system' instead of backticks, as otherwise STDOUT will only be available at script completion 
-#    ##
-#    system($install_db_cmd);    
-# }
-#
 
 ##
 ## Check for all the modules GODOT uses.
@@ -1051,9 +920,6 @@ sub _url_for_citation {
 
 __END__
 
-TODO:
-
-- change permissions stuff so that the writable directories could be chmod g+w and chgrp to the web server
 
 
 
