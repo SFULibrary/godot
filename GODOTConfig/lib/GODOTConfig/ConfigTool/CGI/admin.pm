@@ -300,6 +300,7 @@ sub process_admin_submit_new_site {
 		GODOTConfig::Exception::App::CGI->throw("Unable to create sandbox user template directory: $GODOTConfig::Config::GODOT_SITE_TEMPLATE_DIR/sandbox/$new_site_id : $!");
 	mkdir "$GODOTConfig::Config::GODOT_SITE_TEMPLATE_DIR/backup/$new_site_id" or
 		GODOTConfig::Exception::App::CGI->throw("Unable to create backup user template directory: $GODOTConfig::Config::GODOT_SITE_TEMPLATE_DIR/backup/$new_site_id : $!");
+
 	mkdir "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/active/$new_site_id" or
 		GODOTConfig::Exception::App::CGI->throw("Unable to create active user css directory: $GODOTConfig::Config::GODOT_SITE_CSS_DIR/active/$new_site_id : $!");
 	mkdir "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/sandbox/$new_site_id" or
