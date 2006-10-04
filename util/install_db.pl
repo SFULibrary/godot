@@ -2,9 +2,6 @@
 ##
 ## GODOTConfig database installation script.
 ##
-## -m    check for required modules and then exit without installing GODOT
-##
-##
 use strict;
 
 use FindBin qw($Bin);
@@ -142,10 +139,6 @@ if ($input =~ /^\s*y/i) {
 
     print "Done!\n";
 
-    printw "\nUpdating site profile cache ...\n";
-
-    `$GODOTConfig::Config::GODOT_ROOT/util/update_cache.pl`;
-
     printw "\n\n";
 }
 
@@ -155,8 +148,6 @@ sub show_introduction {
     printw "This script sets up the configuration profile database and optionally installs demo profile data.\n\nYou may want to run the database install as a different user (ie. postgres) depending on the postgres rights of the current user.\n\n";
 
 }
-
-
 
 sub db_exists {
 
