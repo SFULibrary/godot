@@ -4,7 +4,8 @@ use Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(printw
              boxw
-             diew);
+             diew
+             set_permissions);
 use strict;
 
 use vars qw($CONFIG_FILE $DISTRIB_DIR $HEADER @CONFIG_VARS @WRITE_TO_DIRECTORIES %CONFIG_VARS_DESC %DEFAULT_VALUES @INCLUDE_DIRS);
@@ -112,6 +113,89 @@ sub directories_to_write {
 
     push @dirs, $log_dir;
     return @dirs;
+}
+
+
+sub set_permissions {
+    my($dirs, $term, $display_files) = @_;
+
+    ##
+    ## Set up directory permissions
+    ##
+
+    printw "\nGODOT needs the web server to be able to write to several directories for\nthings such as logs and request " .
+           "number files. If you have root access you can set these directories to be owned by the web server owner. " . 
+           "If not, they should be set to world writable.\n";
+
+    ##
+    ## Display which directories need to be writable by the web server owner
+    ##
+
+    if ($display_files) {
+        foreach my $dir (@{$dirs}) {
+            printw $dir;
+        }
+    }
+
+    if ($> == 0) {
+	printw "It appears you are running as root. Would you like to change ownership of the directories?";
+
+	my $input = $term->readline("[Y/n]: ");
+
+	unless ($input =~ /\s*n/i) {
+            GET_USERNAME:
+	    printw "User which the web server runs as?";
+	    my $input = $term->readline("[nobody]: ");
+	    $input = 'nobody' unless defined($input) && $input ne '';
+	    my $uid = scalar(getpwnam $input);
+	    if (!defined($uid)) {
+		printw "* That user was not found in the password file. Enter another user or Ctrl-C to exit.";
+		goto GET_USERNAME;
+	    }		
+
+	    set_owner($uid, -1, @{$dirs});
+	}
+    } 
+    else {
+	printw "It appears you are NOT running as root. World writable directories are another option, " .  
+               "however world writable directories could be a security concern, depending on your server configuration.\n\n" .  
+               "If you are not sure about this step, skip it and ask your server administrator about your options.\n\n" . 
+               "Would you like to set the directories to world writable?";
+
+	my $input = $term->readline("[y/N]: ");
+	if ($input =~ /\s*y/i) {
+		set_modes(0777, @{$dirs});
+        }
+    }
+}
+
+
+sub set_modes {
+    my ($mode, @directories) = @_;
+
+    foreach my $dir (@directories) {
+	print "Setting '$dir'... ";
+	if (chmod $mode, $dir) {
+	    print "ok.\n";
+	} else {
+	    print "failed.\n";
+	}
+    }
+    print "\n";
+}
+
+sub set_owner {
+    my ($owner, $group, @directories) = @_;
+
+    foreach my $dir (@directories) {
+        print "Setting '$dir'... ";
+	if (chown $owner, $group, $dir) {
+	    print "ok.\n";
+	} else {
+	    print "failed.\n";
+	}
+    }
+    print "\n";	
 }
 
 
