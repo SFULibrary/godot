@@ -78,7 +78,7 @@ printw "\nChanging profile cache ownership and permissions ...\n";
 
 sub show_introduction {
     print "Updating the GODOT Profile File Cache\n";
-    print "==================================\n";
+    print "=====================================\n";
     printw "The public interface to GODOT uses profile cache files instead of making direct calls to the ", 
            "GODOT configuration database.\n\n",
            "This script should be used to update the profile cache ", 
