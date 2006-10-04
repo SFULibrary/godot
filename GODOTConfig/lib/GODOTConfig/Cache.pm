@@ -36,6 +36,7 @@ use vars qw($AUTOLOAD);
 
 __PACKAGE__->mk_accessors('site',                                  
                           'type',
+                          'filename',
 			  GODOTConfig::DB::Sites->config_has_many,
 			  GODOTConfig::DB::Sites->config_columns
                          );
@@ -159,6 +160,8 @@ sub write_to_cache_store {
 
     my $filename = "$GODOTConfig::Config::GODOT_CONFIG_CACHE_DIR/$site";
 
+    use GODOTConfig::Configuration;
+
     my $config = new GODOTConfig::Configuration($site);
     unless (defined $config) {
         error "cannot create GODOTConfig::Configuration object for $site";
@@ -188,7 +191,9 @@ sub write_to_cache_store {
     truncate(DF, tell(DF));
     close(DF);
 
-    debug "wrote $site to cache store";
+    $self->filename($filename);
+
+    debug "wrote $site to cache store ($filename)";
 
     return $self;
 }
