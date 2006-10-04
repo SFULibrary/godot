@@ -33,6 +33,10 @@ my $term = new Term::ReadLine 'GODOT Database Installation';
 
 &show_introduction;
 
+my $input = $term->readline('Continue? [Y/n]: ');
+exit if ($input =~ /^\s*n/i);
+
+
 if (&db_exists) {
 
     printw "A database already exists with the name '", 
@@ -42,7 +46,7 @@ if (&db_exists) {
            "will continue without database modifications.\n\n** WARNING: dropping the database will lose any ", 
            "content currently stored! **\n\nDrop database?\n";
 
-    my $input = $term->readline("[y/N]: ");
+    $input = $term->readline("[y/N]: ");
 		
     if ($input =~ /^\s*y/i) { &drop_database; } 
     else                    { $db_exists = 1; }
@@ -87,7 +91,7 @@ if ($result =~ /ERROR/) {
 printw "\n\nDone with basic database setup.\n";
 
 printw "\nInitialize the database with demo profiles?\nCaution - this will trash any data you have already loaded. Load data?";
-my $input = $term->readline('[y/N]: ');
+$input = $term->readline('[y/N]: ');
 
 if ($input =~ /^\s*y/i) {
     ##
