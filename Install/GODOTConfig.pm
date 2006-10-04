@@ -101,7 +101,11 @@ sub directories_to_write {
     push @dirs, "$config->{'GODOT_SITE_TEMPLATE_DIR'}/backup", 
                 "$config->{'GODOT_SITE_TEMPLATE_DIR'}/active", 
                 "$config->{'GODOT_SITE_TEMPLATE_DIR'}/sandbox", 
-                $config->{'GODOT_SITE_CSS_DIR'}, 
+
+                "$config->{'GODOT_SITE_CSS_DIR'}/backup", 
+                "$config->{'GODOT_SITE_CSS_DIR'}/active", 
+                "$config->{'GODOT_SITE_CSS_DIR'}/sandbox", 
+
                 $config->{'GODOT_CONFIG_TOOL_SESSION_DIR'}, 
                 "$config->{'GODOT_CONFIG_TOOL_SESSION_DIR'}/lock", 
                 $config->{'GODOT_CONFIG_CACHE_DIR'}; 
