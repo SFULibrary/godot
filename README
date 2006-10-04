@@ -8,6 +8,9 @@ Installing GODOT
 
 Changes
 
+    Changes are no longer being added here.  Please see the GODOT development site for
+    the latest changes --  http://cufts2.lib.sfu.ca/trac/godot.
+
     2.0.3 Fixed problem related to using Class::Accessor and 'location' as a field name.  
           Assume this was related to the fact that location is also a subroutine name.
 
@@ -15,11 +18,6 @@ Changes
           GODOTConfig::Cache objects implemented as files in a cache directory.  Removed 
           unnecessary string conversions in GODOT::CatalogueHoldings::Record and 
           GODOT::CatalogueHoldings::BibCirc logic.
-
-
-Note for SFU Developers
-
-    Distribution file created by 'util/make_distrib.pl'.
 
 
 Contributors
