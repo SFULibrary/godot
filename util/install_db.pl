@@ -141,7 +141,7 @@ if ($input =~ /^\s*y/i) {
 
     `cat $DEMO_DATA_SQL | psql -q --username=$GODOTConfig::Config::GODOT_USER $pw $GODOTConfig::Config::GODOT_DB`;
 
-    printw "\n\nATTENTION:  You are not done yet!  Please run\n\n    perl util/update_cache_db.pl\n\nto create the site profile cache files. \n\nYou may want to run the cache update step as a different user (ie. root) depending rights of the current user.\n\n";
+    printw "\n\nATTENTION:  You are not done yet!  Please run\n\n    perl util/update_cache.pl\n\nto create the site profile cache files. \n\nYou may want to run the cache update step as a different user (ie. root) depending rights of the current user.\n\n";
 
     printw "\n\n";
 }
