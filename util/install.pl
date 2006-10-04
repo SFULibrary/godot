@@ -274,6 +274,7 @@ sub show_introduction {
 sub check_DBI {
     print "DBI installed... ";
     my $dbi = 0;
+    my $dbd = 0;
 	
     eval { require DBI; };
     if ($@) {
@@ -289,10 +290,10 @@ sub check_DBI {
 	print "no.\n";
     } else {
 	print "yes.\n";
-	$dbi = 1;
+	$dbd = 1;
     }
 
-    return $dbi;
+    return ($dbi && $dbd);
 }
 
 ##
