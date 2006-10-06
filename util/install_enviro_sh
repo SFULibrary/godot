@@ -2,7 +2,7 @@
 ## 1. Fill in the values appropriate for your site.  GODOT_CUFTS_SERVER_URL
 ##    and GODOT_CITATION_MANAGER_URL are optional.
 ##
-## 2. Type 'source util/install_enviro_csh'.
+## 2. Type 'source util/install_enviro_sh'.
 ##
 
 
