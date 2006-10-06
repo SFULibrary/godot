@@ -8,9 +8,9 @@
 #
 
 
-PERL="/usr/local/bin/perl"
+PERL="/usr/bin/perl"
 
-GODOT_PATH="/home/kristina/godot_ni"
+GODOT_PATH="/usr/local/godot"
 
 PROG="$GODOT_PATH/GODOT_ORIG/para_server.pl"
 LOG_FILE="$GODOT_PATH/GODOT/logs/godot_para_server.log"
@@ -23,7 +23,7 @@ start() {
 	echo -n $"Starting $PROG: "
         echo
         
-        su kristina -c "$PERL $PROG -p $PID_FILE < /dev/null >& $LOG_FILE" &
+        su godot -c "$PERL $PROG -p $PID_FILE < /dev/null >& $LOG_FILE" &
        
 	RETVAL=$?
 	echo
