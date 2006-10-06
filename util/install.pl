@@ -60,6 +60,7 @@ my @MODULES = qw(Apache::DBI
 	         Data::Dumper
 	         Data::Dump
                  DBI
+	         DBD::Pg
                  Error
                  Exception::Class 
                  Exception::Class::DBI 
