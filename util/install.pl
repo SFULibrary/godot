@@ -66,7 +66,6 @@ my @MODULES = qw(Apache::DBI
                  Exporter
 	         File::Basename
                  FileHandle
-                 LWP::Protocol::https
                  LWP::UserAgent
 	         MARC::Record
                  Net::Z3950
