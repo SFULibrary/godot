@@ -139,7 +139,7 @@ INSERT INTO site_config (site, field, value) values (4, 'lend', '1');
 INSERT INTO site_config (site, field, value) values (4, 'request_msg_fmt', 'GENERIC_SCRIPT');
 INSERT INTO site_config (site, field, value) values (4, 'request_msg_email', '{{request_msg_email}}');
 INSERT INTO site_config (site, field, value) values (4, 'use_site_holdings', '1');
-INSERT INTO site_config (site, field, value) values (4, 'abbrev_name', 'SFU Surry');
+INSERT INTO site_config (site, field, value) values (4, 'abbrev_name', 'SFU Surrey');
 INSERT INTO site_config (site, field, value) values (4, 'catalogue_source_default', 'BVAS');
 INSERT INTO site_config (site, field, value) values (4, 'disable_holdings_statement_display', '1');
 
