@@ -325,32 +325,33 @@ sub url_link_format  {
     }
 
     ##
-    ## -fix this logic so takes right ISBN/ISSN if there are two !!!!!
     ##
-    ## -for now just take first one .... also add subfield logic ...
+    ## -for now just take first _good_ ISBN 
     ##
     my $isbn;
     foreach my $field ($rec->field($MARC_ISBN_FIELD)) {
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
             my($code, $data) = @{$subfield};
-            $data =~ m#(\d[\055 ]?\d\d\d\d[\055 ]?\d\d\d\d[\055 ]?\w)#;     ## '?' is zero or one
-	    $isbn = $1;
-            last;
+
+            if (clean_ISBN($data)) {
+                $isbn = $data; 
+                last;
+            }
         } 
-        last;
     }
  
     my $issn;   
     foreach my $field ($rec->field($MARC_ISSN_FIELD)) {
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
-            my($code, $data) = @{$subfield};
-            $data =~ m#(\d\d\d\d[\055 ]?\d\d\d\w)#;
-	    $issn = $1;
-            last;
+            my($code, $data) = @{$subfield};           
+
+            if (clean_ISSN($data)) {
+                $issn = $data; 
+                last;
+            }
         }
-        last;
     }
 
     my $title;
