@@ -948,20 +948,6 @@ sub fmt_bib_circ {
                             $tmp_str = "$tmp_arr_1[0]" . ((trim_beg_end($tmp_arr_1[1]) ne $no_call_number_text) ? 
                                                          " -- $tmp_arr_1[1]" : "")  .  
                                                          ((naws($tmp_arr_1[2])) ? "; $tmp_arr_1[2]" : "");
-
-
-
-                            #### if ($only_circ_in_short_journal_rec) {
-                            ####    $tmp_str = "$tmp_arr_1[0]" . 
-                            ####               ((trim_beg_end($tmp_arr_1[1]) ne $no_call_number_text) ? 
-                            ####                     " -- $tmp_arr_1[1]" : "")  .  
-                            ####               ((naws($tmp_arr_1[2])) ? "; $tmp_arr_1[2]" : "");
-                            ####
-                            #### }
-                            #### else {                      
-                            ####    $tmp_str = strip_trailing_punc_ws(join('</TD><TD>-- ', @tmp_arr_1));                      
-                            ####    $tmp_str = "<TD>$tmp_str</TD>";
-			    #### }
 		        }
 
                         if (naws($tmp_str)) { push(@tmp_arr_html, $tmp_str); }
@@ -972,15 +958,7 @@ sub fmt_bib_circ {
 
                     if    ($field eq $BIB_CIRC_CIRC)   { 
 
-
 			$html_str .= join('<P>', @tmp_arr_html);
-
-			#### if ($only_circ_in_short_journal_rec) {
-                        ####    $html_str .= join('<P>', @tmp_arr_html); 
-                        #### }
-                        #### else {
-                        ####    $html_str .= '<TABLE>' . '<TR>' . join('</TR><TR>', @tmp_arr_html) . '</TR></TABLE>'; 
-                        #### }                        
 
                     }
                     elsif ($field eq $BIB_CIRC_HOLDINGS) { 
