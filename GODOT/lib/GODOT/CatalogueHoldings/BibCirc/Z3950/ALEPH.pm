@@ -21,19 +21,19 @@ use strict;
 sub cat_url {
     my($self, $host) = @_;
 
-    my $url_root = "http://$host:" . $self->cat_url_port . '/F?func=find-b&local_base=MBC01&find_code=';
+    my $url_root = "http://$host" . ((naws($self->cat_url_port)) ? ':' : '') . $self->cat_url_port . '/F?func=find-b&find_code=';
     my $url;
 
     unless (aws($host)) {
 
         if    (naws($self->isbn))   { 
-            $url = 'ISBN&request=' . escape($self->isbn);
+            $url = $self->cat_url_isbn_index . '&request=' . escape($self->isbn);
         }
         elsif (naws($self->issn))   { 
-            $url = 'ISSN&request=' . escape($self->issn);
+            $url = $self->cat_url_issn_index . '&request=' . escape($self->issn);
         }
         elsif (naws($self->title))  { 
-            $url = 'WTI&request=' . escape(remove_leading_article($self->title)) . '&adjacent=Y';
+            $url = $self->cat_url_title_index . '&request=' . escape(remove_leading_article($self->title)) . '&adjacent=Y';
         }
 
         $url = ($url_root . $url) if naws($url);        
@@ -221,5 +221,21 @@ sub _hacd_enum_and_chron_cleanup {
 
 sub cat_url_port {
     my($self) = @_;
-    return '8991';
+    return '';
 }
+
+sub cat_url_isbn_index {
+    my($self) = @_;
+    return 'ISBN';
+}
+
+sub cat_url_issn_index {
+    my($self) = @_;
+    return 'ISSN';
+}
+
+sub cat_url_title_index {
+    my($self) = @_;
+    return 'WTI';
+}
+
