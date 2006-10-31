@@ -19,16 +19,32 @@ sub holdings_from_cat_rec {
     my @fields = $marc->field('9XX');
     return $FALSE unless scalar @fields;
 
-    $self->_holdings_found_if_holdings;
-
     foreach my $field (@fields) {
-        my $string;
-        if ($field->tag eq '950') { $string = $self->_keep_subfields_clean_up_marc($field, ['a']); } 
+        my $string = $self->_clean_up_marc($field);
         $self->holdings($self->source, $string) unless aws($string);
     }
 
     return $TRUE;
 }
+
+
+sub _clean_up_marc {
+    my($self, $field) = @_;
+
+    my @string;
+
+    my $tag = $field->tag();
+
+    foreach my $subfield ($field->subfields) {
+
+        my($code, $data) = @{$subfield};
+        next if ($tag eq '950') && ($code ne 'a');
+        push @string, $data;
+    }
+
+    return trim_beg_end(join(' ', @string));
+}
+
 
 sub _url_text_subfield { return '3'; }
 
