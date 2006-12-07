@@ -4624,37 +4624,21 @@ sub form_url {
     ## (03-may-2006 kl) - added so that godot would work with apache ProxyPass and ProxyPassReverse options
     ##                  - logic below assumes that the script name is not changed by proxying
 
-    my @path = split('/', script_name());
+    ##
+    ## (06-dec-2006 kl) - bug in apache2 results in CGI.pm not returning proper value;  $ENV{'SCRIPT_NAME'} 
+    ##                    appears to work though
+    ##
+
+    my $script_name = $ENV{'SCRIPT_NAME'};
+
+    my @path = split('/', $script_name);
+
+    debug "script_name:  ", $script_name;
 
     my $script_no_path = $path[$#path];
 
     return $script_no_path;
     
-    ##----------------------- (03-may-2006 kl) no longer used -- delete in week if no problems ---------------------
-
-    my($server_port_str);
-
-    if (&server_port() eq '80') { $server_port_str = ''; }                      ## -default
-    else                        { $server_port_str = ':' . &server_port(); } 
-
-    ##
-    ## -$ENV{'HTTP_HOST'} will be the server name used in the initial URL
-    ## -we need this because sandbox cookies saved by the config tool are not getting picked up 
-    ## -this fix may not be sufficient. May need to change to cookies that are good within a domain.  
-    ##
-    my $server_name = (naws($ENV{'HTTP_HOST'})) ? $ENV{'HTTP_HOST'} : server_name();
-
-    ##
-    ## (25-jan-2006 - $ENV{'HTTP_HOST'} includes port so check if we already have the port specified before adding
-    ##
-
-    $server_name =~ s#(:\d+)+##g;
-
-    my $url = 'http://' . $server_name . $server_port_str . script_name();
-
-    debug '>>> ', location, ':  ', $url;
-
-    return $url;
 }
 
 
