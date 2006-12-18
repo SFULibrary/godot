@@ -87,6 +87,7 @@ sub send {
        
     if    ($self->transport eq 'email')  { return $self->send_by_email($reqno); }
     elsif ($self->transport eq 'http')   { return $self->send_by_http($reqno);  }    
+    elsif ($self->transport eq 'relais') { return $self->send_by_relais($reqno);   }    
     else {
         $self->error_message("invalid transport (" .  $self->transport . ")");
         return $FALSE;
@@ -206,13 +207,11 @@ sub send_by_http {
 
     $url .= (($url =~ m#\?#) ? '&' : '?') . $self->format($reqno);
 
+
     if (defined $self->error_message) { return $FALSE; }
 
     $self->_log_ill_message($self->_split_on_ampersand($url), 'input');
     
-    ## !!!!!!!!!!!!!!!!!!!!!!!!!! temporary test setup !!!!!!!!!!!!!!!!!!!!
-    #### return $TRUE;
-
     my $request = new HTTP::Request 'GET' => $url;
     my $res = $ua->request($request);
 
@@ -228,12 +227,62 @@ sub send_by_http {
         error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
 
         ##
-        ## -don't overwrite current error message
-        ##
-        if (aws($self->error_message)) {
-            $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
+	## -don't overwrite current error message
+	##
+
+	if (aws($self->error_message)) {
+	    $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
         }
 
+        return $FALSE;
+    }
+
+    return $TRUE;
+}
+
+
+sub send_by_relais {
+    my($self, $reqno) = @_;
+
+    my $url = $self->message_url;
+    if (aws($url)) { 
+        $self->error_message("unable to determine URL for message");
+        return $FALSE;
+    }
+
+    use URI::URL;
+    use LWP::UserAgent;
+
+    my $ua = new LWP::UserAgent;
+
+    my $content = $self->format($reqno);
+    print STDERR "\n\n$content\n\n";
+
+    if (defined $self->error_message) { return $FALSE; }
+
+    $self->_log_ill_message($content, 'input');
+    
+    my $request = new HTTP::Request 'POST' => $url;
+    $request->content_type('text/xml; charset=utf-8');
+    $request->header(Accept => 'application/soap+xml, application/dime, multipart/related, text/*');
+    $request->header(SOAPAction => '');
+    $request->content($content);
+
+    my $res = $ua->request($request);
+
+    unless ($res->is_success) {
+        error "Unable to run POST request for $url (" . $res->message . ").";        
+        print STDERR $res->content, "\n\n";
+        $self->error_message("Unable to run POST request for $url.");        
+        return $FALSE;
+    }
+
+
+    $self->_log_ill_message($res->content, 'output');
+
+    unless ($self->check_http_return($res->content)) {
+        error "message POST request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
+        $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
         return $FALSE;
     }
 
@@ -577,11 +626,13 @@ sub _log_ill_message {
 ##
 ## -split on ampersand and question mark
 ##
+
 sub _split_on_ampersand {
     my($self, $string) = @_;
 
     use CGI qw(:unescape);
 
+    
     $string =~ s#\?#\n?#g;
     $string =~ s#\046#\n\046#g;    ## -ampersand is '\046'
     return unescape($string);
