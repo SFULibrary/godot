@@ -70,7 +70,7 @@
 'from_email'                             => '\'From\' email address for messages sent',
 'ill_local_system'                       => 'Message format',
 'ill_local_system_email'                 => 'Email address',
-'ill_local_system_host'                  => 'Local ILL system host name',
+'ill_local_system_host'                  => 'Local ILL system host or URL',
 'ill_copy_to_local_system'               => 'Copy requests to other sites to your local system',
 'ill_id'                                 => 'ID used in some message formats',
 'ill_local_system_date_format'           => 'Date format for borrowing requests',
