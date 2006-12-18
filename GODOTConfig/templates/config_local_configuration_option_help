@@ -748,7 +748,7 @@ Query CUFTS for full text links. Make sure your CUFTS account is activated.
 
 
 [% config_local_configuration_option_help.ill_local_system_host = BLOCK %]
-RSS server host name.
+RSS server host name or RELAIS server URL.
 [% END %]
 
 
