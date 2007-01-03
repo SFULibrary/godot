@@ -291,6 +291,13 @@ sub issn_terms {
     $self->terms($hyphen_term);
 }
 
+##
+## (01-jan-2007 kl) - added logic for isbn-13                   
+##
+##
+## !!! TO DO !!! - once isbn-13 hyphenation is added to GODOT::CatalogueHoldings::Term::hyphen_ISBN will need to
+##                 include calls to it below
+##
 
 sub isbn_terms {
     my($self, $citation) = @_;
@@ -298,13 +305,53 @@ sub isbn_terms {
     my $site = $self->site;
     my $system = $self->system;
 
-    my $term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
-    $term->isbn($citation->parsed('ISBN'), $citation->is_journal);
-    $self->terms($term);
+    my $isbn = $citation->parsed('ISBN');
 
-    my $hyphen_term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
-    $hyphen_term->hyphen_isbn($citation->parsed('ISBN'), $citation->is_journal);
-    $self->terms($hyphen_term);
+    my $isbn_10;
+    my $isbn_13;
+
+    if (length($isbn) == 10) {
+
+        $isbn_10 = $isbn;
+
+        my @isbns = convert_ISBN($isbn);
+        $isbn_13 = $isbns[1] if (scalar(@isbns) == 2);
+
+    }
+    elsif (length($isbn) == 13) {
+
+        $isbn_13 = $isbn;
+
+        if ($isbn =~ m#^978#) {
+
+            my @isbns = convert_ISBN($isbn);            
+            $isbn_10 = $isbns[1] if (scalar(@isbns) == 2);
+        }
+    }
+
+    if ($isbn_10) {
+
+        my $term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
+        $term->isbn($isbn_10, $citation->is_journal);
+        $self->terms($term);
+
+        my $hyphen_term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
+        $hyphen_term->hyphen_isbn($isbn_10, $citation->is_journal);
+        $self->terms($hyphen_term);
+    }
+
+    if ($isbn_13) {
+
+        my $term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
+        $term->isbn($isbn_13, $citation->is_journal);
+        $self->terms($term);
+            
+        #### add hyphenation for isbn-13 when available -- see above
+
+        #### my $hyphen_term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
+        #### $hyphen_term->hyphen_isbn($isbn_13, $citation->is_journal);
+        #### $self->terms($hyphen_term);
+    }
 }
 
 
