@@ -20,6 +20,7 @@ $INDICATOR_INDENT = 3;
 
 my $MARC_ISBN_FIELD               = '020';
 my $MARC_ISSN_FIELD               = '022';
+my $MARC_OTHER_STANDARD_ID_FIELD  = '024';
 my $MARC_TITLE_FIELD              = '245';
 
 
@@ -329,13 +330,18 @@ sub url_link_format  {
     ## -for now just take first _good_ ISBN 
     ##
     my $isbn;
-    foreach my $field ($rec->field($MARC_ISBN_FIELD)) {
+    foreach my $field ($rec->field($MARC_ISBN_FIELD), $rec->field($MARC_OTHER_STANDARD_ID_FIELD)) {
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
+
             my($code, $data) = @{$subfield};
 
-            if (clean_ISBN($data)) {
-                $isbn = $data; 
+            ##
+            ## (07-dec-2006 kl) changed from clean_ISBN to valid_ISBN as part of ISBN-13 changes
+            ##
+
+            if (my $clean_isbn = valid_ISBN($data)) {
+                $isbn = $clean_isbn; 
                 last;
             }
         } 
@@ -431,11 +437,21 @@ sub isbn_from_cat_rec {
     my($self, $record, $marc) = @_;
 
     my @fields = $marc->field('020');
+
+    my @fields_024 = $marc->field('024');
+
+    foreach my $field (@fields_024) {
+
+        if ($field->indicator(1) eq '3')     {     ## one or more ISBN-13
+            push @fields, $field;
+        } 
+    }
+
     return $FALSE unless scalar @fields;
-   
+
     foreach my $field (@fields) {
         my $string = $self->_clean_up_marc($field);
-        $self->isbn($string) unless aws($string);;
+        $self->isbn($string) unless aws($string);
     }
 
     return $TRUE;
