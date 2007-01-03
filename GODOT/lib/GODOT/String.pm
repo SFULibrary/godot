@@ -18,6 +18,9 @@ use Exporter;
              clean_ISSN 
              clean_ISBN 
              valid_ISBN
+             valid_ISBN_10
+             valid_ISBN_13
+             convert_ISBN
              valid_ISSN_s_ok
              valid_ISSN_no_hyphen_s_ok
              normalize_marc8 
@@ -123,6 +126,9 @@ sub clean_ISSN {
 	}
 }
 
+##
+## (10-nov-2006 kl) clean up isbn-10 or isbn-13
+##
 sub clean_ISBN {
 	my ($string) = @_;
 	
@@ -130,33 +136,157 @@ sub clean_ISBN {
 	
 	$string =~ tr/0-9xX//cd;
 
-	if ($string =~ /^(\d{9}[\dxX])$/) {
-		return $1;
+	if ($string =~ /^(\d{9}|\d{12})([\dxX])$/) {
+		return $1 . $2;
 	} else {
 		return undef;
 	}
 }
 
+##
+## (08-dec-2006 kl) - see valid_ISBN_10 comments
+##
+## (10-nov-2006 kl) - validate isbn-10 or isbn-13
+##                  - added checksum logic for both isbn-10 and isbn-13
+##                  - now allows hyphens and whitespace
+##
 sub valid_ISBN {
-        my($string) = @_;
+    my($string) = @_;
 
-        if    ($string =~ m#^[0-9]{10,10}$#i) { return 1; }
-        elsif ($string =~ m#^[0-9]{9,9}x$#i)  { return 1; }
-	return 0;
+    my $valid_isbn;
+
+    my @isbns = split(/\s+/, $string);
+
+    if ($valid_isbn = valid_ISBN_10($string)) {
+        return $valid_isbn;
+    }
+    elsif ($valid_isbn = valid_ISBN_13($string)) {
+        return $valid_isbn;
+    }
+    ##
+    ## -now try splitting on whitespace to see if we can find a valid ISBN
+    ## -stop recursion with check to number of possible ISBNs 
+    ## 
+    elsif (scalar(@isbns) > 1) {
+
+	foreach my $poss_isbn (@isbns) {
+
+            if ($valid_isbn = valid_ISBN($poss_isbn)) {
+
+	        return $valid_isbn;
+            }
+        }
+    }
+
+    return undef;
 }
 
+##
+## (08-dec-2006 kl) - extracts a valid ISBN if possible and returns it, otherwise returns undef
+##                  - previously only returned 1/0 for valid/invalid
+##
+sub valid_ISBN_10 {
+    my($isbn) = @_;
+
+    $isbn = clean_ISBN($isbn);       
+
+    unless (length($isbn) == 10) { return 0; }
+
+    use Business::ISBN;
+    my $obj = Business::ISBN->new($isbn);
+    
+    ##
+    ## (30-dec-2006 kl) - include as invalid any returns for bad country and publisher codes as these depend 
+    ##                    on a valid check sum and so cannot be separated from check sum errors
+    ##                  - some online isbn checkers allow bad country and publisher codes so results of such a check
+    ##                    can be different
+    ##
+
+    return ($obj->is_valid eq Business::ISBN::GOOD_ISBN) ? $isbn : undef;
+}
+
+##
+## (08-dec-2006 kl) - see valid_ISBN_10 comments
+##
+sub valid_ISBN_13 {
+    my ($isbn) = @_;
+
+    $isbn = clean_ISBN($isbn);       
+    unless (length($isbn) == 13) { return 0; }
+
+    my $chksum = chop($isbn);
+
+    if ($chksum =~ /[xX]/){ $chksum="10";}
+
+    my $sum = &_gen_chksum_13($isbn);
+
+    return ($chksum == $sum) ? ($isbn . $chksum) : undef;
+}
+
+
+##
+## Return () if the ISBN is not valid.
+## Return (<incoming>) for an attempt to change a 979 isbn-13 to a isbn-10.
+## Return (<incoming>, <converted>) if there is a valid isbn that can be converted.
+##
+sub convert_ISBN {
+    my ($isbn) = @_;
+
+    use Business::ISBN;
+
+    $isbn =~ s#[\055\s]##g;
+    $isbn = lc($isbn);
+
+    my @isbns;
+
+    if ((length($isbn) == 10) && valid_ISBN_10($isbn)) {
+
+        my $obj = Business::ISBN->new($isbn);
+        my $isbn13 = $obj->as_ean($isbn);
+
+        push @isbns, $isbn, $isbn13;
+    }
+    elsif ((length($isbn) == 13) && valid_ISBN_13($isbn)) {
+
+        if ($isbn =~ m#^(978)(\d{9}[\dx])$#) {
+
+            my $isbn10 = $2;
+
+            my $obj = Business::ISBN->new($isbn10);            
+
+            $obj->fix_checksum; 
+
+            push @isbns, $isbn, $obj->isbn; 
+        }
+        else {
+
+            push @isbns, $isbn;
+        }        
+    }
+
+    return @isbns;
+} 
+
+
+##
+## (08-dec-2006 kl) - changed to match valid_ISBN
+##                  - now returns valid ISSN or undef instead of 1/0
+##
 sub valid_ISSN_s_ok {
         my($string) = @_;
 
-        if ($string =~ m#^[0-9]{4,4}-[0-9]{3,3}[0-9|X|S]$#i) { return 1; }
-	return 0;
+        if ($string =~ m#^[0-9]{4,4}-[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
+	return undef;
 }
 
+##
+##  (08-dec-2006 kl) - same as valid_ISSN_s_ok
+##
 sub valid_ISSN_no_hyphen_s_ok {
         my($string) = @_;
 
-        if ($string =~ m#^[0-9]{4,4}[0-9]{3,3}[0-9|X|S]$#i) { return 1; }
-        return 0;
+        if ($string =~ m#^[0-9]{4,4}[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
+        return undef;
 }
 
 sub normalize_marc8 {
@@ -581,6 +711,30 @@ sub rm_shell_char {
      $string =~ s#[\076\077\133\134\135\136\140\173\174\175\176]##g;      
 
     return $string;
+}
+
+
+
+sub _gen_chksum_13{
+    my ($isbn) = @_;
+
+    my $tb;
+
+    for (my $i; $i<=12; $i++){
+        my $tc = chop($isbn);
+        my $ta = ($tc*3);
+        my $tci = chop($isbn);
+        $tb = $tb + $ta + $tci;
+    }
+    my $tg=($tb/10);
+
+    my $tint=int($tg); 
+    if ($tint==$tg) { return 0; }
+
+    my $ts = chop($tg);
+    my $tsum = (10-$ts);
+
+    return($tsum);
 }
 
 
