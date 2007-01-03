@@ -26,10 +26,10 @@ sub parse_citation {
 	# more intelligent to do.  They are generally seperated by spaces and a vertical bar.
 	
 	if ($citation->pre('IB') =~ /^([-\dXx]+)\s*\|/) {
-		$citation->parsed('ISBN', GODOT::String::clean_ISBN($1));
+		$citation->parsed('ISBN', clean_ISBN($1));
 	}
 	if ($citation->pre('IS') =~ /^([-\dXx]+)\s*\|/) {
-		$citation->parsed('ISSN', GODOT::String::clean_ISSN($1));
+		$citation->parsed('ISSN', clean_ISSN($1));
 	}
 
 	my $source = $citation->parsed('SOURCE');
