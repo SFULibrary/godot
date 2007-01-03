@@ -6,6 +6,7 @@ package parse;
 
 use GODOT::String;
 use GODOT::Date;
+use GODOT::Debug;
 
 require hold_tab;       ## -chg circular requires....
 require openurl;
@@ -455,7 +456,6 @@ sub check_citation {
     if ($citation->get_dbase()->is_blank_dbase()) {
 
         my($year) = trim_beg_end(${$citation_ref}{$hold_tab::YEAR_FIELD});
-        my($isbn) = trim_beg_end(${$citation_ref}{$hold_tab::ISBN_FIELD});
         my($issn) = trim_beg_end(${$citation_ref}{$hold_tab::ISSN_FIELD});
 
         my($continue_msg) = p . "Please correct before continuing.";
@@ -493,15 +493,24 @@ sub check_citation {
             }
         }
 
+        ##
+        ## -new ISBN parsing logic extracts ISBN only if it is valid so to look for input errors we 
+        ##  need the ISBN before parsing
+        ##
+        my($isbn) = trim_beg_end($citation->pre('ISBN'));
 
         if (naws($isbn)) {
 
-            if (! valid_ISBN($isbn)) {
+            my $valid_isbn = valid_ISBN($isbn);
 
-                 ${$message_ref} = 
-                     "The ISBN should consist of ten characters and use the format '9999999999' or '999999999X', " . 
-                     "where '9' is a digit from '0' to '9'. Leave out dashes (-) when entering, i.e. 0234789301 or 087320019x. " . 
-                     $continue_msg;
+            unless ($valid_isbn) {
+
+                 ${$message_ref} = join(' ', '<b>You have entered an invalid ISBN.</b>  The ISBN should consist of ten or thirteen',
+                                             'digits with the exception of the last character, which may be a digit or an X.',  
+                                             'If you have entered a correct number of characters, then the problem may be',
+				             'that the final character (a check digit) is not correct.',
+                                             'Example ISBNs are 1-56619-909-3 and 979-1-56619-909-3.',
+                                             $continue_msg);
 
                  return $CITN_FAILURE; 
              }                  
