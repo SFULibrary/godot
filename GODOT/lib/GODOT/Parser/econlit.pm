@@ -72,14 +72,6 @@ sub parse_citation {
         		$citation->parsed('PGS', $1);
         	}
 
-		# Grab any ISBN if one isn't found automatically... just in case there's more than
-		# one in the default field.
-        	
-        	if (defined($citation->pre('IB')) && !defined($citation->parsed('ISBN'))) {
-        		if ($citation->pre('IB') =~ /(\d{10})/) {
-        			$citation->parsed('ISBN', $1);
-        		}
-		}	
         } elsif ($citation->is_book_article()) {
         
         	##
@@ -106,15 +98,6 @@ sub parse_citation {
 
 		$citation->parsed('TITLE', $title);
 
-		# Grab any ISBN if one isn't found automatically... just in case there's more than
-		# one in the default field.
-
-        	if (defined($citation->pre('IB')) && !defined($citation->parsed('ISBN'))) {
-        		if ($citation->pre('IB') =~ /(\d{10})/) {
-        			$citation->parsed('ISBN', $1);
-        		}
-		}
-		
 		$citation->parsed('ARTAUT', $citation->pre('AU'));
 		$citation->parsed('ARTTIT', $citation->pre('TI')); 
 
@@ -164,6 +147,23 @@ sub parse_citation {
 		$citation->parsed('ARTAUT', '');
 		
 	}
+
+	if ($citation->is_book() || ($citation->is_book_article())) {
+
+		# Grab any ISBN if one isn't found automatically... just in case there's more than
+		# one in the default field.
+
+        	if (defined($citation->pre('IB')) && !defined($citation->parsed('ISBN'))) {
+
+        	        if ($citation->pre('IB') =~ /(\d{12}[\d|x|X])|(\d{9}[\d|x|X])/) {
+                                my $isbn = $1;
+
+                                if ($isbn = valid_ISBN($isbn)) {
+                	                $citation->parsed('ISBN', $isbn);   
+                                }
+                        }
+		}	       
+        }
 
 	return $citation;
 }
