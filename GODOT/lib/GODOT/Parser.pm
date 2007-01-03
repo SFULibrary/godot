@@ -143,7 +143,6 @@ sub post_parse {
 
 	$citation->parsed('PGS', $temp);
 
-
 	# try to fill title
 	
 	if (aws($citation->parsed('TITLE'))) {
@@ -220,6 +219,26 @@ sub post_parse {
 	     $citation->parsed('ISSN', '');
 	}
 
+        ##
+        ## (08-dec-2006 kl) -- check that we have valid ISBN and if not try to extract one 
+        ##
+
+        if (my $isbn = valid_ISBN($citation->parsed('ISBN'))) {
+
+            if ($isbn ne $citation->parsed('ISBN')) {
+                ##
+                ## -tested ISBN was not valid, but we were able to extract a valid one, so save that to ISBN field
+                ##
+                $citation->parsed('ISBN', $isbn);
+            }
+        }
+        else { 
+            ##         
+            ## (01-jan-2006 kl ) tested ISBN was not valid and we were unable to extract a valid one, so initialize field
+            ## 
+            $citation->parsed('ISBN', '');
+        }
+
 	# strip leading and trailing whitespace from the citation fields
 	my $tmp_value;
 	foreach my $field (@GODOT::Citation::PARSED_FIELDS) {
@@ -244,9 +263,7 @@ sub parse_citation {
 	    $citation->parsed('SOURCE', $citation->pre('JN'));
 	}
 
-	if ( $citation->is_thesis()  ||
-	     $citation->is_book()    ||
-	     $citation->is_unknown() ) {
+	if ( $citation->is_thesis()  || $citation->is_book()    || $citation->is_unknown() ) {
 		$citation->parsed('TITLE', $citation->pre('TI'));
 		$citation->parsed('AUT', $citation->pre('AU'));
 	} else {
@@ -259,9 +276,17 @@ sub parse_citation {
 	$citation->parsed('YEAR', $citation->pre('PY'));
 	$citation->parsed('SERIES', $citation->pre('SE')); 
 
-	# Check standard ISBN fields
+        ##
+	## Check standard ISBN fields
+        ##
+        ## (13-nov-2006 kl) - Changed from 'clean_ISBN' to 'valid_ISBN' so check digit value gets checked.
+        ##
 	foreach my $field ('IB', 'ISBN', 'BN', 'SN', 'IS', 'NU') {
-		last if defined($citation->parsed('ISBN', GODOT::String::clean_ISBN($citation->pre($field))));
+
+	    if (my $isbn = valid_ISBN($citation->pre($field))) {
+             	$citation->parsed('ISBN', $isbn);   
+                last;
+            }
 	}
 
 	return $citation;
