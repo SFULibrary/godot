@@ -12,11 +12,13 @@ use GODOT::String;
 
 use strict;
 
+my $MARC_LEADER_FIELD             = '000';
 my $MARC_ISBN_FIELD               = '020';
 my $MARC_ISSN_FIELD               = '022';
+my $MARC_OTHER_STANDARD_ID_FIELD  = '024';
 my $MARC_TITLE_FIELD              = '245';
 my $MARC_VARYING_FORM_TITLE_FIELD = '246';
-my $MARC_LEADER_FIELD             = '000';
+
 
 my $FALSE = 0;
 my $TRUE  = 1;
@@ -61,6 +63,19 @@ sub good_match {
     $citation_isbn = uc($citation_isbn);
 
     ##
+    ## (01-jan-2006 kl) - can the citation isbn-13 be converted?  
+    ## 
+    my @citation_isbns = convert_ISBN($citation_isbn);
+
+    my $citation_isbn_converted;
+
+    if (scalar(@citation_isbns) == 2) {
+        $citation_isbn_converted = $citation_isbns[1];
+        $citation_isbn_converted =~ s#[\055\s]##g;                          ## remove hyphen and white space
+	$citation_isbn_converted = uc($citation_isbn_converted);
+    }
+
+    ##
     ## (03-jun-1999 kl) - need to add logic for some more marc title fields  -- to test see
     ##                    Cindy's 28-may-1999 note
     ##                    (210-a, 212-a, 214-a, 222-a, 240-a, 242-ab)                     
@@ -68,6 +83,7 @@ sub good_match {
     ##
 
     my %subroutines = ($MARC_ISBN_FIELD               => '_clean_isbn', 
+                       $MARC_OTHER_STANDARD_ID_FIELD  => '_clean_isbn',
                        $MARC_ISSN_FIELD               => '_clean_issn', 
                        $MARC_TITLE_FIELD              => '_clean_title', 
                        $MARC_VARYING_FORM_TITLE_FIELD => '_clean_varying_form_title');
@@ -76,7 +92,9 @@ sub good_match {
 
     my $leader = $rec->leader;
 
-    foreach my $marc_field ($MARC_ISBN_FIELD, $MARC_ISSN_FIELD, $MARC_TITLE_FIELD, $MARC_VARYING_FORM_TITLE_FIELD) {
+    foreach my $marc_field ($MARC_ISBN_FIELD, $MARC_OTHER_STANDARD_ID_FIELD, 
+                            $MARC_ISSN_FIELD, 
+                            $MARC_TITLE_FIELD, $MARC_VARYING_FORM_TITLE_FIELD) {
 
         unless (defined $subroutines{$marc_field}) { 
             debug location, ":  no subroutine defined for $marc_field";
@@ -93,10 +111,10 @@ sub good_match {
 
     if (1) {                         
         debug "-----------------------------------";
-        debug "from citation ... ISBN:  $citation_isbn, ISSN:  $citation_issn, TITLE:  $citation_title";
+        debug "from citation ... ISBN:  $citation_isbn, ISBN CONVERTED:  $citation_isbn_converted, ISSN:  $citation_issn, TITLE:  $citation_title";
         debug "from catalogue ..."; 
         debug "leader:  ", $leader; 
-        foreach (@{$clean{$MARC_ISBN_FIELD}})   { debug "isbn:  $_"; }
+        foreach (@{$clean{$MARC_ISBN_FIELD}}, @{$clean{$MARC_OTHER_STANDARD_ID_FIELD}})   { debug "isbn:  $_"; }
         foreach (@{$clean{$MARC_ISSN_FIELD}})   { debug "issn:  $_"; }
         foreach (@{$clean{$MARC_TITLE_FIELD}})  { debug "title 245:  $_"; }
         foreach (@{$clean{$MARC_VARYING_FORM_TITLE_FIELD}}) { debug "title 246:  $_"; }
@@ -111,12 +129,22 @@ sub good_match {
     ##                    record to be considered a good match
     ##  
 
-    my $num_record_isbn = scalar @{$clean{$MARC_ISBN_FIELD}};
+    my @isbns = (@{$clean{$MARC_ISBN_FIELD}}, @{$clean{$MARC_OTHER_STANDARD_ID_FIELD}});
+    my $num_record_isbn = scalar @isbns;
+
     my $num_record_issn = scalar @{$clean{$MARC_ISSN_FIELD}};
 
-    if ($citation_isbn && $num_record_isbn)   {
+    ##
+    ## (02-jan-2007 kl) - added logic for converted ISBN
+    ##
+
+    if (($citation_isbn || $citation_isbn_converted) && $num_record_isbn)   {
         
-        if (grep {$citation_isbn  eq $_} @{$clean{$MARC_ISBN_FIELD}}) {
+        if (grep {$citation_isbn  eq $_} (@{$clean{$MARC_ISBN_FIELD}}, @{$clean{$MARC_OTHER_STANDARD_ID_FIELD}})) {
+
+            return ($TRUE, $MARC_ISBN_FIELD);
+        }
+        elsif (grep {$citation_isbn_converted  eq $_} (@{$clean{$MARC_ISBN_FIELD}}, @{$clean{$MARC_OTHER_STANDARD_ID_FIELD}})) {
 
             return ($TRUE, $MARC_ISBN_FIELD);
         }
@@ -162,10 +190,10 @@ sub _clean_isbn {
 	my($code, $data) = @{$subfield};      
 
         if ($code eq 'a') {
-            my $clean = uc(clean_ISBN($data));
-            $clean =~ s#[\055\s]##g;                      ## remove hyphen and whitespace
 
-            push(@cleaned_up, $clean) unless ($clean eq '');
+            my $clean = clean_ISBN($data);
+
+            push(@cleaned_up, uc($clean)) if $clean;
         }
     }
     return @cleaned_up;
