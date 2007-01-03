@@ -78,7 +78,7 @@ sub location {
 
 
 sub send_admin_email {
-    my($maillist,$message) = @_; 
+    my($maillist, $message) = @_; 
     local(*SENDMAIL);
     my($subject);   
 
