@@ -62,7 +62,7 @@ sub format {
 
     my $xml;
     my $writer = new XML::Writer( OUTPUT => \$xml, UNSAFE => 1 );
-
+    
     $writer->startTag('AddRequest',
                       'version'   => '2006.0.0.0',
                       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
