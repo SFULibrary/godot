@@ -63,10 +63,10 @@ sub parse_citation {
         ##
 
         my @issn_arr = split(';', $citation->pre('ISSN'));
-        $citation->parsed('ISSN', GODOT::String::clean_ISSN($issn_arr[0]));
+        $citation->parsed('ISSN', clean_ISSN($issn_arr[0]));
 
         my @isbn_arr = split(';', $citation->pre('ISBN'));
-        $citation->parsed('ISBN', GODOT::String::clean_ISBN($isbn_arr[0]));
+        $citation->parsed('ISBN', clean_ISBN($isbn_arr[0]));
 
         ##### warn "pid:  ", $citation->pre('pid'), "\n";
 }
