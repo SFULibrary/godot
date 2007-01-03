@@ -31,9 +31,7 @@ sub parse_citation {
 
         foreach my $isbn (@isbn_arr) {            
 
-            warn "<<< isbn:  $isbn >>>";
-
-            if ($isbn = GODOT::String::clean_ISBN($isbn)) {
+            if ($isbn = clean_ISBN($isbn)) {
                 $citation->parsed('ISBN', $isbn);
                 last;
             }
