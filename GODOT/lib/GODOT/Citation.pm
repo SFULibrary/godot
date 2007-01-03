@@ -529,11 +529,14 @@ sub clean_field {
 	
 	return $string if !defined($string) || $string eq '';
 
-#	print STDERR "clean_field, string in: $string\n";
-
 	# Strip out weird escape sequences introduced by highlighting codes in webspirs
 	$string =~ s#%1bh##ig;        
 	$string =~ s#\x1bh##ig;
+
+        # (22-sep-2006 kl) - strip out NUL;  may cause problems when sending to OpenILL
+        #### $string =~ s#\000##g;
+
+	#### debug "clean_field, string in: $string\n";
 
 	# Translate %xx to their character equivalents
 	$string = uri_unescape($string);
