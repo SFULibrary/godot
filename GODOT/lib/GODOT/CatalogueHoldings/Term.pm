@@ -129,9 +129,24 @@ sub hyphen_isbn {
 
     $isbn =~ s#/##g;                                ## -get rid of forward slashes as they confuse zclient
     $isbn =~ s#\055##g;                             ## -remove hyphens
-           
-    $isbn =~ m#(\d)(\d\d\d\d)(\d\d\d\d)([\dxX])#;   ## -put hypnens back
-    $isbn = "$1-$2-$3-$4";
+
+    ## 
+    ## (01-jan-2007 kl)  !!! TO DO !!! - add logic for hyphenation of isbn-13 -- is there a new version of Business::ISBN?
+    ##
+
+    if (length($isbn) == 10)  {
+       
+        ##
+        ## (01-jan-2007 kl) - it turns out that isbn hyphenation is based on the country and publisher codes so
+        ##                    use Business::ISBN to hyphenate properly
+
+        #### $isbn =~ m#(\d)(\d\d\d\d)(\d\d\d\d)([\dxX])#;   ## -put hypnens back
+        #### $isbn = "$1-$2-$3-$4";
+
+        use Business::ISBN;
+        my $obj = Business::ISBN->new($isbn);
+        $isbn = $obj->as_string;
+    }
 
     $self->Term($isbn);
 }
