@@ -45,7 +45,7 @@ use vars qw(
 
 	'PT'   => 'hold_tab_pt',
 	'DT'   => 'hold_tab_dt',
-	'TI'   => ['hold_tab_ti', 'ti', 'title', 'rft.title', 'rft.jtitle'],
+	'TI'   => ['hold_tab_ti', 'ti', 'title', 'jtitle', 'rft.title', 'rft.jtitle'],
 	'PB'   => ['hold_tab_pb', 'p'],
 	'CT'   => 'hold_tab_ct',
 
