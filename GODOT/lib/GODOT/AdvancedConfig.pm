@@ -94,6 +94,7 @@ use vars qw (
      'ABC-CLIO'      => 'openurl',
      'AMS'           => 'openurl::mathscinet',
      'annualreviews' => 'openurl',
+     'APA'           => 'openurl',
      'arXiv'         => 'openurl',
      'blackwell'     => 'openurl',
      'BMC'           => 'openurl',
@@ -428,6 +429,7 @@ use vars qw(@NO_BACK_TO_DATABASE_DBASE_ARR @NO_BACK_TO_DATABASE_DBASE_TYPE_ARR);
                                   'unknown');
 
 @NO_BACK_TO_DATABASE_DBASE_TYPE_ARR = ('ABC-CLIO', 
+                                       'APA',
                                        'CIOS',
                                        'CSA',
                                        'ebscohost', 
