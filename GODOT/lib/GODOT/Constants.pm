@@ -99,6 +99,7 @@ use vars qw (@DBASE_TYPE_ARR);
 @DBASE_TYPE_ARR = ('ABC-CLIO',
                    'AMS',
                    'annualreviews',
+                   'APA',
                    'arXiv',
                    'blackwell',
                    'BOWKER',
