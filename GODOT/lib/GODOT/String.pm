@@ -11,6 +11,7 @@ package GODOT::String;
 use CGI qw(:escape);
 use GODOT::Debug;
 
+
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(strip_dos_extended_characters 
@@ -25,6 +26,8 @@ use Exporter;
              valid_ISSN_no_hyphen_s_ok
              normalize_marc8 
              normalize_latin1 
+             latin1_to_utf8
+             latin1_to_utf8_xml
              is_single_word 
              aws 
              naws 
@@ -322,6 +325,25 @@ sub normalize_latin1 {
 }
 
 
+sub latin1_to_utf8 {
+    my($string) = @_;
+
+    use Unicode::String qw(latin1 utf8);    
+
+    my $u = latin1($string);
+    return $u->utf8;    
+}
+
+sub latin1_to_utf8_xml {
+    my($string) = @_;
+
+    ## A valid XML document cannot contain ASCII characters below hexadecimal value 0x20 -- with 
+    ## the exception of horizontal tab (0x9), line feed (0xA), and carriage return (0xD).
+
+    $string =~ s#[\000-\010,\013,\014,\016-\037]##g; 
+
+    return (latin1_to_utf8($string));
+}
 
 sub is_single_word {
         my($string) = @_;
