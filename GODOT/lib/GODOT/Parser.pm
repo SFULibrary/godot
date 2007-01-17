@@ -253,6 +253,11 @@ sub post_parse {
             ## 
             $tmp_value =~ s#\000##g;
 
+            ##
+            ## -(17-jan-2007 kl) - what we see when an 'en-dash' is cut/paste             
+            ##
+            $tmp_value =~ s#\226#-#g;                 
+
 	    $citation->parsed($field, $tmp_value);
 	}
 }
