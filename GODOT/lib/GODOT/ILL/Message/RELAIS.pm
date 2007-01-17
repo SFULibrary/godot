@@ -123,11 +123,18 @@ sub format {
     $writer->characters( $citation->is_journal ? 'J' : 'B' );
     $writer->endTag('PublicationType');
 
-    if ( !aws( $citation->parsed('YYYYMMDD') ) ) {
+    if ( naws( $citation->parsed('YYYYMMDD') ) ) {
         $writer->startTag('PublicationDate');
         $writer->characters( $self->format_date( $citation->parsed("YYYYMMDD") ) );
         $writer->endTag('PublicationDate');
     }
+    elsif ( naws( $citation->parsed('YEAR') ) ) {
+        $writer->startTag('PublicationDate');
+        $writer->characters( $citation->parsed("YEAR") );
+        $writer->endTag('PublicationDate');
+    }
+
+
     $writer->endTag('PublisherInfo');
 
 
@@ -302,11 +309,23 @@ sub format {
 
     $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . $xml;
+
+    ##
+    ## (16-jan-2006 kl) - both XML::Beautify and Relais fail on extended ascii so we need to convert to UTF8;
+    ##                  - extended ascii was showing up in unexpected places as a result of a problem with cutting 
+    ##                    and pasting HTML containing '&#8211;' which results in '\226' in godot; also showing up
+    ##                    for accents;
+    ##                  - also strip some low-order characters as they are not valid in XML.  Relais complains 
+    ##                    as follows:  An invalid XML character (Unicode: 0x0) was found in the element content of 
+    ##                    the document.
+    ##
+   
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . latin1_to_utf8_xml($xml); 
 
     my $b = XML::Beautify->new();
     $b->indent_str(' ');
     $xml = $b->beautify(\$xml);
+
     print STDERR $xml;
 
     print STDERR "\n\n-=-=-=- RESPONSE -=-=-=-=\n\n";
