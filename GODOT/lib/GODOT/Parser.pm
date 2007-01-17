@@ -239,11 +239,20 @@ sub post_parse {
             $citation->parsed('ISBN', '');
         }
 
-	# strip leading and trailing whitespace from the citation fields
+        ##
+	## strip leading and trailing whitespace from the citation fields
+        ##
 	my $tmp_value;
 	foreach my $field (@GODOT::Citation::PARSED_FIELDS) {
 	    $tmp_value = $citation->parsed($field);
 	    $tmp_value = &GODOT::String::trim_beg_end($tmp_value);
+
+            ##
+            ## (17-jan-2007 kl) - strip out NUL characters as they may be taken as end of string when data is passed to 
+            ##                    other programs
+            ## 
+            $tmp_value =~ s#\000##g;
+
 	    $citation->parsed($field, $tmp_value);
 	}
 }
