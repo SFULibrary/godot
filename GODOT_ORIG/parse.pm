@@ -333,6 +333,12 @@ sub second_pass_field_cleanup {
 
         if (aws(${$citation_ref}{$_})) { ${$citation_ref}{$_} = ''; }
 
+        ##
+        ## -see GODOT::Parser for similar change
+        ##
+
+        ${$citation_ref}{$_} =~ s#\000##g;
+        ${$citation_ref}{$_} =~ s#\226#-#g;                 
     } 
 }
 
