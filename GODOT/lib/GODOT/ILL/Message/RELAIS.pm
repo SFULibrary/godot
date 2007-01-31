@@ -66,7 +66,7 @@ sub format {
     $writer->startTag('AddRequest',
                       'version'   => '2006.0.0.0',
                       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                      'xsi:noNamespaceSchemaLocation' => 'http://ollie.lib.sfu.ca/~tholbroo/AddRequest.xsd',
+                      'xsi:noNamespaceSchemaLocation' => 'http://lib-relais.lib.sfu.ca/XML/AddRequest.xsd',
     );
 
     $writer->startTag('Record');
