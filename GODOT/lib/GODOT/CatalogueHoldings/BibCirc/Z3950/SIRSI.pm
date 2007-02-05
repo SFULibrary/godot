@@ -92,26 +92,33 @@ sub holdings_from_cat_rec {
 
             my $tmp = (naws($label)) ? "$label: $label_value" : $label_value;            
 
-            my($value_927, $value_927_sirsi_fmt);
-
-            ($value_927_a, $value_927) = @{pop(@value_927_arr)};
-            $value_927 .= "; " unless aws($value_927);
-            $value_927 .= "$tmp";
-            push(@value_927_arr, [$value_927_a, $value_927]);
-
             $label_value = $self->_label_value_clean_up($label_value);
+
+            ##
+            ## (02-feb-2007 kl) - added logic so that a 927 field containing only a blank subfield-a will get ignored.
+            ##
+
+            unless (aws($label) && aws($label_value)) {
+
+                my($value_927, $value_927_sirsi_fmt);
+
+                ($value_927_a, $value_927) = @{pop(@value_927_arr)};
+                $value_927 .= "; " unless aws($value_927);
+                $value_927 .= "$tmp";
+                push(@value_927_arr, [$value_927_a, $value_927]);
             
-            ##
-            ## -save data for $BIB_CIRC_SIRSI_HOLDINGS
-            ##
-            $tmp = '<TR><TD></TD><TD NOWRAP VALIGN="TOP" ALIGN="right">' . escapeHTML($label) . 
-                   ((&GODOT::String::naws($label)) ? ':' : '') . 
-                   '</TD>' .
-                   '<TD VALIGN="BOTTOM"><B>' . escapeHTML($label_value) . '</B></TD></TR>'; 
+                ##
+                ## -save data for $BIB_CIRC_SIRSI_HOLDINGS
+                ##
+                $tmp = '<TR><TD></TD><TD NOWRAP VALIGN="TOP" ALIGN="right">' . escapeHTML($label) . 
+                       ((&GODOT::String::naws($label)) ? ':' : '') . 
+                       '</TD>' .
+                       '<TD VALIGN="BOTTOM"><B>' . escapeHTML($label_value) . '</B></TD></TR>'; 
                         
-            ($value_927_a, $value_927_sirsi_fmt) = @{pop(@value_927_sirsi_fmt_arr)};
-            $value_927_sirsi_fmt .= $tmp;
-            push(@value_927_sirsi_fmt_arr, [$value_927_a, $value_927_sirsi_fmt]);                     
+                ($value_927_a, $value_927_sirsi_fmt) = @{pop(@value_927_sirsi_fmt_arr)};
+                $value_927_sirsi_fmt .= $tmp;
+                push(@value_927_sirsi_fmt_arr, [$value_927_a, $value_927_sirsi_fmt]);                     
+	    }
         }
     }
 
@@ -264,6 +271,7 @@ sub divide_holdings {
             my $location = $ref->site;
             
             my $site = $self->location_to_site(uc(trim_beg_end($location)));    
+
             $ref->site($site);
      
             if ($field eq 'holdings')       { push(@{${$div}{$site}},       $ref); }  ## push on ref, not copy     
