@@ -24,6 +24,11 @@ use Exporter();
 
 use strict;
 
+
+##
+## (31-jan-2007 kl) - any additions to @REQTYPE_ARR should be added to %GODOT::Citation::REQTYPE_TO_GENRE_MAP
+##
+
 use vars qw(@REQTYPE_ARR $JOURNAL_TYPE $CONFERENCE_TYPE $TECH_TYPE $BOOK_TYPE $BOOK_ARTICLE_TYPE $THESIS_TYPE $PREPRINT_TYPE
             $UNKNOWN_TYPE);
 
