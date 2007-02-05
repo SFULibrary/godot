@@ -153,6 +153,10 @@ sub good_match {
         }
     }
 
+    #### debug "citation_issn:  $citation_issn";
+    #### debug "num_record_issn:  $num_record_issn";
+
+
     if ($citation_issn && $num_record_issn)   {
 
         if (grep {$citation_issn  eq $_} @{$clean{$MARC_ISSN_FIELD}}) {
@@ -297,6 +301,8 @@ sub leader_match {
 
     my @leader_07_for_journal = qw(s i);
     my $leader_07 = substr($leader, 7, 1);
+
+    #### debug "leader_07:  $leader_07";
 
     if (grep {$leader_07 eq $_} qw(a b c d i m s)) {
                 
