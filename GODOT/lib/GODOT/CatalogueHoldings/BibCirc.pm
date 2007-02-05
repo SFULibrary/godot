@@ -656,10 +656,6 @@ sub location_to_site {
     my %map = $self->_location_to_site_map;
 
     ##
-    ## -if map is empty
-    ##
-    #### return $location unless (scalar (keys %map));
-    ##
     ## -if map is empty then return the source of the holdings
     ##
     return $self->source unless (scalar (keys %map));
