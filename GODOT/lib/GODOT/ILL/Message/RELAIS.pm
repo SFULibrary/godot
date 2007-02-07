@@ -33,8 +33,7 @@ sub bibliographic_info_map {
             [ 'VOLISS',   50, 'VolumeIssue' ],
             [ 'PGS',      20, 'PagesRequested' ],
             [ 'ISSN',      9, 'ISSN' ],
-            [ 'ISBN',     17, 'ISBN' ],
-            [ 'CALL_NO',  50, 'CallNumber' ]];
+            [ 'ISBN',     17, 'ISBN' ]];
 }
 
 sub primary_address_map {
@@ -86,6 +85,16 @@ sub format {
         $writer->endTag( $relais_field );
     	
     }
+
+    ##
+    ## Get the ERIC document number in call number if available
+    ##
+
+    my $call_no = ($citation->parsed('ERIC_NO') =~ /ED/) ? $citation->parsed('ERIC_NO') : $citation->parsed('CALL_NO');
+
+    $writer->startTag('CallNumber');
+    $writer->characters( substr( $call_no, 0, 50) );
+    $writer->endTag('CallNumber');
 
     $writer->startTag('InformationSource');
     $writer->characters( $self->source . " ($reqno)" );
