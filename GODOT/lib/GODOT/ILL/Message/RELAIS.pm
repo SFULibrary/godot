@@ -372,6 +372,7 @@ sub valid_date {
     my($self) = @_;
 
     use Time::Local;
+    use Date::Calc qw(check_date);
     use GODOT::Date;    
 
     my($dd, $mm, $yyyy);
@@ -404,8 +405,19 @@ sub valid_date {
             return $FALSE;
         }
         
-        # Check that it's not a date previous to today's date.
-        
+        ##
+        ## Check that it is a valid date   
+        ##
+
+        unless (check_date($yyyy, $mm, $dd)) {
+            $self->error_message("Need before date must be a valid date.");
+            return $FALSE;
+        }
+
+        ##
+        ## Check that it's not a date previous to today's date.
+        ##
+
         if (Time::Local::timelocal(59,59,23,$dd,$mm-1,$yyyy) < time()) {
             $self->error_message("Need before date must be a future date.");
             return $FALSE;
