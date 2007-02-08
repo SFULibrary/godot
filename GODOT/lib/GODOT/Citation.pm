@@ -224,6 +224,19 @@ use vars qw(
 use vars qw($FULLTEXT_AVAILABLE_STRING);
 $FULLTEXT_AVAILABLE_STRING = 'fulltext_rec';
 
+
+my %REQTYPE_TO_GENRE_MAP = (
+    $GODOT::Constants::JOURNAL_TYPE      => 'article',
+    $GODOT::Constants::CONFERENCE_TYPE   => 'conference',
+    $GODOT::Constants::TECH_TYPE         => 'book',
+    $GODOT::Constants::BOOK_TYPE         => 'book',
+    $GODOT::Constants::BOOK_ARTICLE_TYPE => 'bookitem',
+    $GODOT::Constants::THESIS_TYPE       => 'book',
+    $GODOT::Constants::PREPRINT_TYPE     => 'preprint',   
+    $GODOT::Constants::UNKNOWN_TYPE      => '',
+);
+
+
 # new - Returns a bless GODOT::Citation object
 
 sub new {
@@ -555,11 +568,102 @@ sub clean_field {
 		$string =~ s#\174([a-z0-9])#\037$1#g;
 	}
 
-#	print STDERR "clean_field, string out: $string\n";
-
 	return $string;
 }	
 
+
+##
+## (26-jan-2007 kl) -- added so that Brandon could add an OpenURL link to Relais to their templates 
+## (06-feb-2007 kl) -- added $skip_list logic so can omit fields if needed.  This logic is useful when there
+##                     is a local OpenURL (eg. Relais) field that you would prefer to use (eg.  'AU' instead of 'aulast')
+##
+sub openurl {
+    my($self, $base_url, $sid, $skip) = @_;
+
+    my $genre = (defined $REQTYPE_TO_GENRE_MAP{$self->req_type}) ? $REQTYPE_TO_GENRE_MAP{$self->req_type} : '';
+    
+    debug "this is my genre:  $genre";
+
+    ##
+    ## -need date in YYYY-MM-DD, YYYY-MM or YYYY format
+    ##
+    my $date;
+
+    if ($self->parsed('YYYYMMDD') =~ m#^\d{8,8}$#) {
+
+        $date = substr($self->parsed('YYYYMMDD'), 0, 4) . '-' . 
+                substr($self->parsed('YYYYMMDD'), 4, 2) . '-' . 
+                substr($self->parsed('YYYYMMDD'), 6, 2);   
+    }
+    elsif ($self->parsed('YEAR') =~ m#^\d{4,4}$#) {
+
+        $date = $self->parsed('YEAR');
+
+	if ($self->parsed('MONTH') =~ m#^\d{1,2}$#) {
+
+            $date .= '-' . $self->parsed('MONTH');		
+            $date .= ('-' . $self->parsed('DAY')) if ($self->parsed('DAY') =~ m#^\d{1,2}$#);
+	}
+    }
+
+    ##
+    ## -for now, no attempt to parse the name
+    ## -look into using Biblio::Citation::Parser to parse into aulast and aufirst and possibly auinit, auinit1 and auinitm
+    ## -see 'http://cufts2.lib.sfu.ca/trac/godot/ticket/100' 
+    ##
+    my $aulast = (naws($self->parsed('ARTAUT'))) ? $self->parsed('ARTAUT') : $self->parsed('AUT'); 
+      
+    my($spage, $junk1) = split(/[,\055]/, $self->parsed('PGS'), 2);
+
+    my $issn = $self->parsed('ISSN');         ## (23-mar-2000 kl) - make sure ISSN is in 9999-9999 format
+    $issn =~ s#[\055\s]##g;
+    $issn = clean_ISSN($issn, $TRUE);
+
+    my $isbn = $self->parsed('ISBN');
+    $isbn =~ s#[\055\s]##g;
+
+    my @fields = (['sid',    $sid],
+                  ['genre',  $genre],
+                  ['title',  $self->parsed('TITLE')],
+                  ['atitle', $self->parsed('ARTTIT')],
+                  ['issn',   $issn],
+                  ['isbn',   $isbn],
+                  ['aulast', $aulast],                               
+                  ['volume', $self->parsed('VOL')],
+                  ['issue',  $self->parsed('ISS')],
+                  ['spage',  $spage],
+                  ['sici',   $self->parsed('SICI')],               
+                  ['date',   $date],
+                  ['id',     (naws($self->parsed('DOI')))     ? ('doi:' . $self->parsed('DOI'))     : '' ], 
+                  ['id',     (naws($self->parsed('PMID')))    ? ('pmid:' . $self->parsed('PMID'))    : '' ], 
+                  ['id',     (naws($self->parsed('BIBCODE'))) ? ('bibcode:' . $self->parsed('BIBCODE')) : '' ], 
+                  ['id',     (naws($self->parsed('OAI')))     ? ('oai:' . $self->parsed('OAI'))     : '' ]
+                 );
+
+    my $url;
+    my $count;
+
+    foreach my $ref (@fields) {
+
+        my($label, $value) = @{$ref};
+
+        next if aws($value);
+        next if grep {$label eq $_} @{$skip};
+
+        debug "$label = $value";
+
+        my $delim = ($count) ? '&' : '?';
+        $count++;
+
+        $url .= join('', $delim, $label, '=', uri_escape(trim_beg_end($value)));        
+    }
+
+    $url = $base_url . $url;
+
+    #### debug location, ":  $url";  
+
+    return $url; 
+}
 
 1;
 
