@@ -46,7 +46,7 @@ sub parse_citation {
 	       $citation->parsed('PGS', $4);
 	    }
 	    else {
-	       send_admin_email('parser', 'atla DB: source matching failed!');
+	       warning 'atla DB: source matching failed!';
 	    }
 	}
 	elsif ($citation->is_book() ) {
@@ -76,7 +76,7 @@ sub get_req_type {
 	    $reqtype = $GODOT::Constants::BOOK_ARTICLE_TYPE;
 	}
         else {
-	    send_admin_email('parser', 'atla database got new publication type!'); 
+	    warning 'atla database got new publication type!'; 
 	}
 
 	##---------------Customized code ends here-------------------##
