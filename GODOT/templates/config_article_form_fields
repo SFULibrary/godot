@@ -1,7 +1,7 @@
 
 [% SET config_article_form_fields = { 
 
-          JOURNAL    => [ 
+       'JOURNAL'     => [ 
                          { name=> 'TITLE',  label=> 'Journal'       },
                          { name=> 'ARTTIT', label=> 'Article Title' },
                          { name=> 'ARTAUT', label=> 'Author(s)'     },
@@ -12,15 +12,34 @@
                          { name=> 'YEAR',   label=> 'Year'          }
                         ],
  
-          CONFERENCE => [
+      'CONFERENCE'   => [
+                         { name=>'TITLE',   label=> 'Title'         }, 
+                         { name=>'ARTTIT',  label=> 'Paper Title'   }, 
+                         { name=>'ARTAUT',  label=> 'Author(s)'     }, 
+                         { name=>'PGS',     label=> 'Pages'         } 
+                        ],
+
+      'BOOK-ARTICLE' => [
                          { name=>'TITLE',   label=> 'Title'         }, 
                          { name=>'ARTTIT',  label=> 'Paper Title'   }, 
                          { name=>'ARTAUT',  label=> 'Author(s)'     }, 
                          { name=>'PGS',     label=> 'Pages'         } 
                         ],
  
-          OTHER      => [  
+      'BOOK'         => [  
+                         { name=>'TITLE',   label=> 'Title'         }
+                        ],
+ 
+      'TECH'         => [  
+                         { name=>'TITLE',   label=> 'Title'         }
+                        ],
+
+      'THESIS'       => [  
+                         { name=>'TITLE',   label=> 'Title'         }
+                        ],
+
+      'OTHER'        => [  
                          { name=>'TITLE',   label=> 'Title'         }
                         ]
-         }
+       }
 %]
