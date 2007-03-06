@@ -96,6 +96,8 @@ sub good_match {
                             $MARC_ISSN_FIELD, 
                             $MARC_TITLE_FIELD, $MARC_VARYING_FORM_TITLE_FIELD) {
 
+        $clean{$marc_field} = [];
+
         unless (defined $subroutines{$marc_field}) { 
             debug location, ":  no subroutine defined for $marc_field";
             return ($FALSE, '');
@@ -130,6 +132,7 @@ sub good_match {
     ##  
 
     my @isbns = (@{$clean{$MARC_ISBN_FIELD}}, @{$clean{$MARC_OTHER_STANDARD_ID_FIELD}});
+
     my $num_record_isbn = scalar @isbns;
 
     my $num_record_issn = scalar @{$clean{$MARC_ISSN_FIELD}};
