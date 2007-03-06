@@ -237,6 +237,8 @@ sub get_on_fly_holdings {
 
     @location_arr = &get_locations_for_source($db_config->name, $live_source, $citation, $sources_to_try_arr_ref);
 
+    #### debug ">>> location_arr: ", join("--", @location_arr);
+
     $start_time = time;
 
 
@@ -269,6 +271,8 @@ sub get_on_fly_holdings {
 
         foreach $nuc_branch (keys %div_hash) {
 
+            #### debug "... nuc_branch:  $nuc_branch";
+
             ##
             ## (30-apr-2000 kl) - $nuc_branch may be of the form <nuc> or <nuc>.<branch> (eg. MWU or BVAS.BENNETT LIBRARY)
             ##                  - see GODOT::CatalogueHoldings::BibCirc::union_holdings_from_cat_rec <nuc>.<branch> logic
@@ -279,8 +283,7 @@ sub get_on_fly_holdings {
             ($nuc, $branch) = split(/$catalogue::NUC_BRANCH_DELIM_PATT/, $nuc_branch);
 
             ##
-            ## -only add to @{holdings_hash_ref} if this is the source ($db_user) to be used for 
-            ##  -the current location ($nuc_branch) 
+            ## -only add to @{holdings_hash_ref} if this is the source ($db_user) to be used for the current location ($nuc_branch) 
             ##
 
             if (grep {$nuc_branch eq $_} @location_arr) { 
@@ -498,7 +501,7 @@ sub cat_search  {
                 
             if ($match_res)  {         
                             
-                #### debug "\n<...........after good match ($site)...........................>\n",
+                #### debug "\n<...........after successful good match ($site)...........................>\n",
                 ####      Dumper($record), 
 	        ####      "\n<......................................................>";
 
@@ -525,7 +528,7 @@ sub cat_search  {
     }
 
     #### debug "//////////////////////////////////////////////////////////////\n",
-    ####      Dumper($bib_circ_arr_ref),
+    ####       Dumper($bib_circ_arr_ref),
     ####      "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n";
 
     return($res, $docs, $reason);      
