@@ -109,7 +109,7 @@ sub good_match {
 	}
     }
 
-    if (1) {                         
+    if (0) {                         
         debug "-----------------------------------";
         debug "from citation ... ISBN:  $citation_isbn, ISBN CONVERTED:  $citation_isbn_converted, ISSN:  $citation_issn, TITLE:  $citation_title";
         debug "from catalogue ..."; 
