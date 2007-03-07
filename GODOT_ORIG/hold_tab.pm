@@ -458,7 +458,6 @@ sub main_holdings_screen {
     ##
 
     if ($citation->get_dbase()->is_blank_dbase() && (! $config->use_blank_citation_form)) {
-
         $message = "$PROG_NAME is not configured to allow requesting from a blank form for user ($user)."; 
         &glib::sae("$0: $message");       
         $page->messages([$message]);
@@ -689,6 +688,7 @@ sub main_holdings_screen {
             }
       
             param(-name=>$TITLE_FIELD, '-values'=>[$title_from_holdings]);            
+            $citation->parsed('TITLE', $title_from_holdings);
         }
 
         $page->search_messages($para_server_msg_string . $main_msg_string);
@@ -698,12 +698,6 @@ sub main_holdings_screen {
         $session->var($HAS_CHECK_LINK_FIELD,    $page->has_check_link);
         $session->var($HAS_AUTO_REQ_LINK_FIELD, $page->has_auto_req_link);
         $session->var($HAS_HIDDEN_RECORD_FIELD, $page->has_hidden_record);
-
-
-        #### debug ">>> has_get_link:  ", $page->has_get_link;
-        #### debug ">>>                ", $session->var($HAS_GET_LINK_FIELD);
-        #### debug Dumper($page);
-
 
         ##
         ## -no point displaying the main holdings screen if all that is on it is an [ILL] button
@@ -725,12 +719,7 @@ sub main_holdings_screen {
         my @sites_to_search;
         &get_rank_list($config, \@sites_to_search, $citation, $max_search_group) || &glib::send_admin_email("$0: Unable to get rank list ($user).");             
         my $no_more_sites_to_search = ($search_group eq $max_search_group) || 
-                                      (($search_group eq ($max_search_group-1)) && (! scalar(@sites_to_search)));
-                     
-        # debug ">>>>>>>>> $search_group $max_search_group";
-        # debug ">>>>>>>>> ", join('--', $config->skip_main_holdings_screen_if_no_holdings, 
-        #                                (defined $tab_comp_hash{$GODOT::Page::ILL_FORM_COMP}));
-        # debug ">>>>>>>>> ", join('--', $hold_found, $page->has_get_link, $num_cat_link), '--';
+                                      (($search_group eq ($max_search_group-1)) && (! scalar(@sites_to_search)));                     
         
         if (($config->skip_main_holdings_screen_if_no_holdings) && 
             (defined $tab_comp_hash{$GODOT::Page::ILL_FORM_COMP}) && 
@@ -955,6 +944,8 @@ sub catalogue_interface_screen {
             $res = $TRUE;
         }
     }
+
+    #### foreach my $u (@cat_url_arr) { debug "cat_url:  $u"; }
 
     my $cat_url =  shift @cat_url_arr; 
 
@@ -4785,7 +4776,7 @@ sub ill_get_patron_cache
 
        if (! open(PATRON_FILE, $patron_file)) 
        {  
-               &send_admin_email("$0:  failed to open $patron_file for reading"); 
+               &glib::send_admin_email("$0:  failed to open $patron_file for reading"); 
                return $FALSE;
        }
 
