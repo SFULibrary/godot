@@ -99,6 +99,7 @@ use vars qw (
      'blackwell'     => 'openurl',
      'BMC'           => 'openurl',
      'BOWKER'        => 'openurl',
+     'BBS'           => 'openurl',
      'CAS'           => 'openurl',
      'CIOS'          => 'openurl',
      'CISTI'         => 'openurl',
