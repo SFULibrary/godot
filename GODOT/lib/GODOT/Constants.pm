@@ -106,6 +106,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'annualreviews',
                    'APA',
                    'arXiv',
+                   'BBS',
                    'blackwell',
                    'BOWKER',
                    'BMC',
