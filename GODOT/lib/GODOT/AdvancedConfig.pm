@@ -100,7 +100,7 @@ use vars qw (
      'BMC'           => 'openurl',
      'BOWKER'        => 'openurl',
      'BBS'           => 'openurl',
-     'CAS'           => 'openurl',
+     'CAS'           => 'openurl::cas',             ## SciFinder Scholar
      'CIOS'          => 'openurl',
      'CISTI'         => 'openurl',
      'CSA'           => 'openurl::csa',
