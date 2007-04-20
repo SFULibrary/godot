@@ -117,7 +117,8 @@ use vars qw (
      'gale'          => 'openurl',
      'Gale'          => 'openurl',
      'GEODOK'        => 'openurl',
-     'Google'        => 'openurl',
+     'Google'        => 'openurl',                  ## is this still needed?
+     'google'        => 'openurl',
      'Harmonie'      => 'openurl',
      'ICPSR'         => 'openurl',
      'III'           => 'openurl',
@@ -439,6 +440,7 @@ use vars qw(@NO_BACK_TO_DATABASE_DBASE_ARR @NO_BACK_TO_DATABASE_DBASE_TYPE_ARR);
                                        'gale',
                                        'GEODOK', 
                                        'Google',
+                                       'google',
                                        'ISI', 
                                        'NISC', 
                                        'openly',
