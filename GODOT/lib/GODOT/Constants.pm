@@ -133,7 +133,8 @@ use vars qw (@DBASE_TYPE_ARR);
                    'gale',
                    'Gale',
                    'GEODOK',
-                   'Google',
+                   'Google',          ## -is this still needed?        
+                   'google',
                    'Harmonie',
                    'HWW',
                    'ICPSR',
@@ -202,7 +203,7 @@ use vars qw(@OPENURL_DB_ARR);
                    'matchscinet',
                    'openly',
                    'proquest',
-		   'Google',                   
+		   'Google',      
 		   'Harmonie',
                    'HWW',
                    'Wiley',
