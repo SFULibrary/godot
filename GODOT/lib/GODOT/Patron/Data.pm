@@ -16,6 +16,7 @@ my @FIELDS = qw(authorized
                 first_name
                 last_name
                 library_id
+                pin
 
                 type
                 department
@@ -45,6 +46,7 @@ my %CONV_MAPPING = ('VALID'                   => 'authorized',
                     'PATR_FIRST_NAME_FIELD'   => 'first_name',
 	            'PATR_LAST_NAME_FIELD'    => 'last_name',
 		    'PATR_LIBRARY_ID_FIELD'   => 'library_id',
+                    'PATR_PIN_FIELD'          => 'pin',
 
 		    'PATR_PATRON_TYPE_FIELD'  => 'type',
 		    'PATR_DEPARTMENT_FIELD'   => 'department',
