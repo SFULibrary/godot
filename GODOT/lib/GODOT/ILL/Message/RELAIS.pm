@@ -296,6 +296,12 @@ sub format {
     $writer->startTag('MessagingMethod');
     $writer->characters('E');
     $writer->endTag('MessagingMethod');
+
+    if ($self->_include_messaging_format) {
+        $writer->startTag('MessagingFormat');
+        $writer->characters('T');
+        $writer->endTag('MessagingFormat');
+    } 
     
     $writer->startTag('MessagingEmail');
     $writer->characters( $patron->email );
@@ -310,6 +316,20 @@ sub format {
     $writer->endTag('DeliveryService');
    
     $writer->endTag('ElectronicDelivery');
+
+    if ($self->_include_user_login) {
+        $writer->startTag('UserLogin');
+
+        $writer->startTag('LoginID');
+        $writer->characters($patron->library_id);
+        $writer->endTag('LoginID');
+
+        $writer->startTag('LoginPassword');
+        $writer->characters($patron->pin);
+        $writer->endTag('LoginPassword');
+
+        $writer->endTag('UserLogin');
+    }
 
     $writer->endTag('PatronRecord');
     
@@ -350,7 +370,6 @@ sub format {
            . $xml
            . '</param></addRequest></soapenv:Body></soapenv:Envelope>';
 
-#    return undef;
     return $xml;
 
 }
@@ -607,5 +626,14 @@ sub _include_patron_phone_work {
 sub _include_department {
     return $FALSE;
 }
+
+sub _include_user_login {
+    return $FALSE;
+}
+
+sub _include_messaging_format {
+    return $FALSE;
+}
+
 
 1;
