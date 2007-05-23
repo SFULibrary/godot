@@ -293,15 +293,15 @@ sub format {
         $writer->endTag('DeliveryEmail');
     }
 
-    $writer->startTag('MessagingMethod');
-    $writer->characters('E');
-    $writer->endTag('MessagingMethod');
-
     if ($self->_include_messaging_format) {
         $writer->startTag('MessagingFormat');
         $writer->characters('T');
         $writer->endTag('MessagingFormat');
     } 
+
+    $writer->startTag('MessagingMethod');
+    $writer->characters('E');
+    $writer->endTag('MessagingMethod');
     
     $writer->startTag('MessagingEmail');
     $writer->characters( $patron->email );
