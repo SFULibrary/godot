@@ -127,6 +127,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'FamilyScholar',
                    'EI',
                    'Elsevier',
+                   'elsevier.com',
                    'Endeavor',
                    'Entrez',
                    'FirstSearch', 
