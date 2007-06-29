@@ -109,6 +109,7 @@ use vars qw (
      'EBSCO'         => 'openurl',
      'ebscohost'     => 'ebsco',
      'Elsevier'      => 'openurl',
+     'elsevier.com'  => 'openurl',
      'EI'            => 'openurl',
      'Endeavor'      => 'openurl',
      'Entrez'        => 'openurl',
