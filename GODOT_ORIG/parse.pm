@@ -380,8 +380,11 @@ sub check_citation {
         $missing_field_text = "More citation information is required. Please fill in as much information as possible.";
     }
     else {
-        $missing_field_text = "Not enough information was extracted from citation to continue." . 
-                              "<P>Please consult your library catalogue for holdings.";
+        ##
+        ## (29-aug-2007 kl) - changed as per pg/ns request;
+        ##
+        #### $missing_field_text = "Not enough information was extracted from citation to continue." . "<P>Please consult your library catalogue for holdings.";
+        $missing_field_text =  "Sorry, we can't tell whether we have this item based on the information provided. Please look up the title in your library's catalogue."; 
     }
 
     ##
