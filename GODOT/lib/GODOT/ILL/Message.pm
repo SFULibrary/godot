@@ -141,8 +141,6 @@ End_of_Message
      
     $self->_log_ill_message($tmp, 'input');
 
-    #### debug "send_by_email email:  ", $self->email;
-
     use CGI qw(:remote_host);
 
     ##
@@ -196,28 +194,41 @@ sub send_by_http {
         return $FALSE;
     }
 
+    ##
+    ## (05-jun-2006 kl) - added logic to check for existing '?' in URL (an issue for the III URL)
+    ##
+    my $param_string = $self->format($reqno);
+    my $url_to_log = $url . (($url =~ m#\?#) ? '&' : '?') . $param_string;
+
+    if (defined $self->error_message) { return $FALSE; }
+
+    $self->_log_ill_message($self->_split_on_ampersand($url_to_log), 'input');
+    
     use URI::URL;
     use LWP::UserAgent;
 
     my $ua = new LWP::UserAgent;
+    my $request;
 
-    ##
-    ## (05-jun-2006 kl) - added logic to check for existing '?' in URL (an issue for the III URL)
-    ##
+    if ($self->use_http_post) {
+        $ua->agent("AgentName/0.1 " . $ua->agent);
+        
+        $request = new HTTP::Request POST => $url;
+        $request->content_type('application/x-www-form-urlencoded');
+        $request->content($param_string);        
+    }	      
+    else {
+        $url .= (($url =~ m#\?#) ? '&' : '?') . $param_string;
 
-    $url .= (($url =~ m#\?#) ? '&' : '?') . $self->format($reqno);
+        $request = new HTTP::Request GET => $url;
+        $request->header('Accept' => 'text/html');
+    }
 
-
-    if (defined $self->error_message) { return $FALSE; }
-
-    $self->_log_ill_message($self->_split_on_ampersand($url), 'input');
-    
-    my $request = new HTTP::Request 'GET' => $url;
     my $res = $ua->request($request);
 
     unless ($res->is_success) {
-        error "Unable to run GET request for $url (" . $res->message . ").";        
-        $self->error_message("Unable to run GET request for $url.");        
+        error "Unable to run request for $url (" . $res->message . ").";        
+        $self->error_message("Unable to run request for $url.");        
         return $FALSE;
     }
 
@@ -602,6 +613,10 @@ sub copy {
     return $self;    
 }
 
+sub use_http_post {
+    my($self) = @_;
+    return $FALSE;
+}
 
 sub _delim            { return $DELIM; }
 
