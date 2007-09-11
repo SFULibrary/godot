@@ -351,7 +351,7 @@ my @PATR_ARR = qw(PATR_LAST_NAME_FIELD
 
 my %PATR_MAPPING   = ('PATR_LAST_NAME_FIELD'     => 'patr_last_name',
 		      'PATR_FIRST_NAME_FIELD'    => 'patr_first_name',
-		      'PATR_LIBRARY_ID_FIELD'    => 'patr_library_id',
+		      'PATR_LIBRARY_ID_FIELD'    => 'patr_library_id',                      
 		      'PATR_PATRON_TYPE_FIELD'   => 'patr_patron_type', 
 		      'PATR_DEPARTMENT_FIELD'    => 'patr_department',
 	 	      'PATR_PHONE_FIELD'         => 'patr_phone',
@@ -1632,10 +1632,6 @@ sub request_form_screen {
             $page->form_input([$elem]) if ($elem->name);     
         }
     }
-
-    ##
-    ## (20-may-2004 kl) - ??? can this be replaced by standard session and hidden field logic? 
-    ##
 
     param(-name=>'hold_tab_lender', '-values'=>[$ill_fields{'hold_tab_lender'}]);
     param(-name=>$MSG_REQ_TYPE_FIELD, '-values'=>[$ill_fields{$MSG_REQ_TYPE_FIELD}]);
