@@ -24,12 +24,24 @@ sub format {
   
     my %form;
 
+    $self->fill_field('SUBMIT THIS REQUEST', 'subill', \%form);
+
     ##
     ## -patron fields
     ##
+    ## (20-aug-2007 kl) - added for ALU for their LDAP authentication which is implemented using III's 'External Patron Verification' product
+    ##
+    my $extpatid = $self->extpatid;
+    my $extpatpw = $self->extpatpw;
 
-    $self->fill_field($patron->last_name. ", " . $patron->first_name, 'name', \%form);
-    $self->fill_field($patron->library_id,                            'barcode',        \%form);
+    if ($self->external_patron_verification && naws($extpatid) && naws($extpatpw)) {
+        $self->fill_field($extpatid, 'extpatid', \%form);
+        $self->fill_field($extpatpw, 'extpatpw', \%form);    
+    }
+    else {
+        $self->fill_field($patron->last_name. ", " . $patron->first_name, 'name', \%form);
+        $self->fill_field($patron->library_id,                            'barcode',        \%form);
+    }
 
     ##
     ## Check that 'cancel if not filled by' date is valid and in format DD/MM/YY.
@@ -132,7 +144,7 @@ sub message_url   {
 
     unless ($form_type) { return ('', 'Unexpected request type.'); }
 
-    return 'http://' . $self->host . '/ill' . $form_type . '?subill=SUBMIT%20THIS%20REQUEST';
+    return 'http://' . $self->host . '/ill' . $form_type;
 }
 
 sub message_note {
@@ -219,7 +231,6 @@ sub valid_date {
     use GODOT::Date;    
 
     my($dd, $mm, $yyyy);
-
     my $string = $self->not_req_after;
 
     if ($string =~ m#^\s*(\d\d)/(\d\d)/(\d\d)\s*$#) {
@@ -228,6 +239,7 @@ sub valid_date {
         $mm   = $2;
         $yyyy = $3;        
         $yyyy = &GODOT::Date::add_cent($yyyy);
+	
 
         if (($dd < 1) || ($dd > 31)) {
             $self->error_message("Please enter a date in DD/MM/YY format.");
@@ -252,8 +264,7 @@ sub valid_date {
         if (Time::Local::timelocal(59,59,23,$dd,$mm-1,$yyyy) < time()) {
             $self->error_message("Need before date must be a future date.");
             return $FALSE;
-        }
-                
+        }               
         return $TRUE;        
     }
 
@@ -285,6 +296,21 @@ sub check_http_return {
     else {
         return ($string =~ m#your request has been sent to the library#i);
     }
+}
+
+sub external_patron_verification {
+    my($self) = @_;
+    return $FALSE;
+}
+
+sub extpatid {
+    my($self) = @_;
+    return '';
+}
+
+sub extpatpw {
+    my($self) = @_;
+    return '';
 }
 
 sub _do_not_include {
