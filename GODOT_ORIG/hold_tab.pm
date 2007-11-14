@@ -395,12 +395,16 @@ my $BLOCKING_FALSE_WARNING             = $FALSE_STR . '_WARNING';
 my $MONO_MODE    = 'mono_mode';
 my $JOURNAL_MODE = 'journal_mode';
 
-my $HOLDINGS_LIST_ALL                     = 'ALL';
-my $HOLDINGS_LIST_CAN_BORROW_ONLY         = 'CAN_BORROW_ONLY';
+##
+## (13-nov-2007 kl) - these had been set to 'ALL' and 'CAN_BORROW_ONLY' but the config field 'holdings_list' has a form field
+##                    of type 'CHECKBOX_BOOL' so the values in the database as set by the 'new' config tool are either '0' or '1'
+##
+my $HOLDINGS_LIST_ALL               = '0';
+my $HOLDINGS_LIST_CAN_BORROW_ONLY   = '1';
 
-my $SAME_NUC_ILL_LOCAL_SYSTEM    = 'L';
-my $SAME_NUC_REQUEST_MSG         = 'R';
-my $SAME_NUC_IGNORE              = 'N';
+my $SAME_NUC_ILL_LOCAL_SYSTEM       = 'L';
+my $SAME_NUC_REQUEST_MSG            = 'R';
+my $SAME_NUC_IGNORE                 = 'N';
 
 
 ##--------------------------------------------------------------------------------------------
@@ -3226,8 +3230,6 @@ sub print_result_row {
             $record->user($location);        
 
             my $row_holdings_found = $FALSE;
-
-            #### debug Dumper($table_request_hash_ref);
             
             if (${$table_request_hash_ref}{$location}) {
 
@@ -3680,6 +3682,7 @@ sub get_table_info {
     @{$ordered_branch_arr_ref} = @branch_arr; 
 
     ##--------------------------------------------------------------------------------
+
     ##
     ## -cache config info for later use in this subroutine
     ##
@@ -3727,18 +3730,23 @@ sub get_table_info {
         ## -see logic after this 'foreach' loop for these other sites
         ##
     
+        #### debug "--------------------------------------------------";
+        #### debug Dumper($table_request_hash_ref);
+        #### debug "--------------------------------------------------";
+
         use GODOT::ILL::Site;
         my $lender_site = GODOT::ILL::Site->dispatch({'site' => $lender_config->name});
         $lender_site->nuc($lender_config->ill_nuc); 
 
-        unless (($config->holdings_list eq $HOLDINGS_LIST_CAN_BORROW_ONLY) &&
-                (! ${$table_request_hash_ref}{$lend_branch})) {
+        unless (($config->holdings_list eq $HOLDINGS_LIST_CAN_BORROW_ONLY) && (! ${$table_request_hash_ref}{$lend_branch})) {
+
+            
+            debug $config->holdings_list, " -- $lend_branch -- ${$table_request_hash_ref}{$lend_branch}\n";
 
             ##
             ## (01-sep-2004 kl) - multiple iterations of main_holdings_screen (due to different scrno or due to 
             ##                    page reloading) will result in sites being added more than once, so need
             ##                    to check whether site is in list of not
-
 
 	    unless (grep {$lender_site->description eq $_} param($HOLDINGS_SITE_FIELD)) {     
                 param(-name=>$HOLDINGS_SITE_FIELD, '-values'=>[param($HOLDINGS_SITE_FIELD), $lender_site->description]);
@@ -3826,7 +3834,7 @@ sub get_table_info {
 
         foreach my $lend_branch (keys %{$holdings_hash_ref}) {     ## -sites that have holdings
 
-            if (! (grep {$lend_branch eq $_}  @branch_arr)) {   ## -if not already in @branch_arr and thus dealt with above
+            if (! (grep {$lend_branch eq $_}  @branch_arr)) {      ## -if not already in @branch_arr and thus dealt with above
                 
                 my $lender_config = GODOTConfig::Cache->configuration_from_cache($lend_branch); 
                 return $FALSE unless (defined $lender_config); 
@@ -5022,8 +5030,7 @@ sub ill_process_request  {
         $message_to_copy->sender_id($config->ill_id);             
 
         $message_to_copy->lender_email($lender_config->request_msg_email);             
-
-        $message_to_copy->holdings_site($ill_fields{$HOLDINGS_SITE_FIELD});             
+        $message_to_copy->holdings_site($ill_fields{$HOLDINGS_SITE_FIELD}); 
 
         my %hold_hash = param($HOLDINGS_FIELD);					 
         $message_to_copy->holdings($hold_hash{$ill_fields{'hold_tab_lender'}});             
