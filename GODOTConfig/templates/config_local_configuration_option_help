@@ -235,7 +235,8 @@ Configure account numbers.
 [% config_local_configuration_option_help.holdings_list = BLOCK %]
 Do you want the holdings site list included with request messages to include all sites or only those from which 
 patrons can borrow? <p>If your [% option.ill_local_system  %] is <b>RSS_FORM</b>, <b>RSS_FORM_2</b> or 
-any system that forwards automatically based on the list, then you may want to set to <b>CAN_BORROW_ONLY</b>.
+any system that forwards automatically based on the list, then you likely want to include only those from 
+which patrons can borrow.
 [% END %]
 
 
