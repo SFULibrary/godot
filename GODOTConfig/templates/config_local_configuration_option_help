@@ -68,6 +68,27 @@ This error message will appear when a database is not searchable by GODOT. You m
 [% END %]
 
 
+[%# Enhance Citation %]
+
+[% config_local_configuration_option_help.crossref_doi_query = BLOCK %]
+If the incoming citation has a DOI, then do a Crossref lookup using this DOI.  
+If a record is found, then augment the citation with the fetched data.
+[% END %]
+
+[% config_local_configuration_option_help.crossref_id = BLOCK %]
+Crossref ID.  
+[% END %]
+
+[% config_local_configuration_option_help.crossref_password = BLOCK %]
+Crossref password.
+[% END %]
+
+[% config_local_configuration_option_help.pubmed_pmid_query = BLOCK %]
+If the incoming citation has a PMID, then do a PubMed lookup using this PMID.  
+If a record is found, then augment the citation with the fetched data.
+[% END %]
+
+
 
 [%# Holdings Table %]
 
