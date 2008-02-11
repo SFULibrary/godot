@@ -34,6 +34,7 @@ use Exporter;
              trim_beg_end 
              trim_end 
              comp_ws 
+             quote
              all_digits 
              rep_char 
              strip_html
@@ -378,9 +379,9 @@ sub trim_end {
 }
 
 
-
+##
 ## -compress all strings of white space into one space
-
+##
 sub comp_ws {
     my($string) = @_;
 
@@ -388,6 +389,11 @@ sub comp_ws {
     return $string;
 }
 
+sub quote {
+    my($string) = @_;
+
+    return "'" . $string . "'";
+}
 
 sub all_digits {
     my($string) = @_;
