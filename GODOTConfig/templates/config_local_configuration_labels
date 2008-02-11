@@ -6,14 +6,14 @@
 
 [% SET config_local_configuration_labels = {
 
-'parallel_server_msg'            => 'Display parallel server error messages only',
-'display_citation_capture_links' => 'Display citation manager links',
-'display_command_links'          => 'Display Back to Database link',
-'display_related_info_links'     => 'Display Internet search engine links',
-'expand_fulltext_by_default'     => 'Expand fulltext by default',
-'expand_holdings_by_default'     => 'Expand holdings by default',
+'parallel_server_msg'                    => 'Display parallel server error messages only',
+'display_citation_capture_links'         => 'Display citation manager links',
+'display_command_links'                  => 'Display Back to Database link',
+'display_related_info_links'             => 'Display Internet search engine links',
+'expand_fulltext_by_default'             => 'Expand fulltext by default',
+'expand_holdings_by_default'             => 'Expand holdings by default',
 
-'request_msg_date_format'        => 'Date format for incoming request messages',
+'request_msg_date_format'                => 'Date format for incoming request messages',
 
 'ill_nuc'                                => 'National Union Code (eg. BVAS)',
 'group'                                  => 'Groups of which your site is a member',
@@ -24,12 +24,15 @@
 
 'error_not_parseable'                    => 'Message when no parser exists for source containing GODOT link',
 
+'crossref_doi_query'                     => 'Query Crossref using DOI?',
+'crossref_id'                            => 'Crossref ID',
+'crossref_password'                      => 'Crossref password',
+'pubmed_pmid_query'                      => 'Query PubMed using PMID?',
+
 'use_856_links'                          => 'Search for links in MARC 856 field',
 'use_fulltext_links'                     => 'Query CUFTS for full text links',  
 'link_from_cat_name'                     => 'Be this site for MARC 856 searches', 
 'link_name'                              => 'Be this site for CUFTS searches',
-
-
 
 'rank'                                   => 'Ranking for journals',
 'other_rank'                             => 'Search sites not specified in journal ranking',
@@ -55,16 +58,12 @@
 'include_fulltext_as_holdings'           => 'Fulltext are holdings for blocking',
 'blocking'                               => 'Blocking',
 
-
-
-
 'no_holdings_req'                        => 'Display link when journal not found',
 'no_holdings_req_non_journal'            => 'Display link when non-journal not found',
 'ill_req_form'                           => 'When journal found',
 'ill_req_form_non_journal'               => 'When non-journal found',
 'ill_req_form_limit_text'                => 'ILL request link text',
 'ill_req_form_limit'                     => 'Limit messages for each type of patron',
-
 
 'from_name'                              => '\'From\' name for messages sent',
 'from_email'                             => '\'From\' email address for messages sent',
@@ -76,13 +75,10 @@
 'ill_local_system_date_format'           => 'Date format for borrowing requests',
 'holdings_list'                          => 'Only \'can borrow from\' sites in holdings list',
 
-
-
 'request'                                => 'Type of journal requesting allowed',
 'other_request'                          => 'Default journal request type',
 'request_non_journal'                    => 'Type of non-journal requesting allowed',
 'other_request_non_journal'              => 'Default non-journal request type',
-
 
 'ill_max_cost'                           => 'Maximum cost to request',
 'ill_account'                            => 'Configure account numbers',
@@ -90,7 +86,6 @@
 'use_request_acknowledgment_screen'      => 'Request acknowledgment screen',
 'ill_email_ack_msg'                      => 'Send patron an acknowledgment email',
 'ill_email_ack_msg_text'                 => 'Text for acknowledgment email',
-
 
 'lend'                                   => 'Does this site lend?',
 'request_msg_fmt'                        => 'Format of request email message',
@@ -127,7 +122,6 @@
 'patr_account_no'                        => 'Account number',
 'patr_note'                              => 'Note',
 'patr_fine_limit'                        => 'Allowed fines. Use \'0.00\' format with no \'$\'',  
-
 
 'patron_email_pattern'                   => 'Perl regex for matching patron email address',
 'patron_email_no_match_text'             => 'Text when patron email address does not match',
