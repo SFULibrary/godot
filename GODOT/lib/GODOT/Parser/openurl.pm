@@ -215,6 +215,10 @@ sub get_req_type {
 }
 
 
+sub run_post_get_req_type {
+    return $TRUE;
+}
+
 1;
 
 __END__
