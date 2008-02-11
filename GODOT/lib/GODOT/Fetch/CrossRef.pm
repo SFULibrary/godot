@@ -29,10 +29,6 @@ sub add_data {
 
     debug "add_data in GODOT::Fetch::CrossRef" if $GODOT::Config::TRACE_CALLS;
 
-    ##
-    ## !!! should these be returning $FALSE or $TRUE???
-    ##
-
     if (aws($self->auth_name)) {
         $self->error_message('No auth_name for CrossRef lookups.');
         return $FALSE;
@@ -95,10 +91,6 @@ sub add_data {
 
     my($issn, $title, $aulast, $volume, $issue, $start_page, $year, $type, $key, $doi) = split /\|/, $returned_data;
     
-    debug "year:  $year";
-    debug "type:  $type";
-    debug "key:   $key";
-
     if (aws($citation->parsed('ISSN')) && naws($issn)) {
         $issn =~ /^([\dxX]{8})/ and $citation->parsed('ISSN', $1);
     }
