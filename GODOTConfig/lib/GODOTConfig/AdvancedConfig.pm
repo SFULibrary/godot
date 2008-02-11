@@ -41,7 +41,7 @@ $GODOT_DB_ATTR = { 'PrintError' => 0, 'RaiseError' => 0, 'HandleError' => Except
 @GODOT_DB_CONNECT = ($GODOT_DB_STRING, $GODOT_USER, $GODOT_PASSWORD, $GODOT_DB_ATTR);
 
 @GODOT_SITE_GROUPS = qw(COPPUL ELN COPPUL_AND_ELN OCUL NEOS NOVANET OTHER);
-@GODOT_ILL_LOCAL_SYSTEM = qw(AVISO_3 AVISO_4 CISTI GENERIC_SCRIPT III OPENILL RSS_FORM RSS_FORM_2 RELAIS);
+@GODOT_ILL_LOCAL_SYSTEM = qw(AVISO_3 AVISO_4 CISTI GENERIC_SCRIPT III OPENILL RELAIS RSS_FORM RSS_FORM_2);
 @GODOT_REQUEST_MESSAGE_FORMATS = qw(CISTI GENERIC_SCRIPT ISO_EMAIL);
 @GODOT_PATRON_API_CHOICES = qw(III_HTTP DEFAULT DEFAULT_HTTP);
 @GODOT_SYSTEM_TYPES = qw(ALEPH BRS DYNIX ENDEAVOR EPIXTECH GEAC III MULTILIS NOTIS OCLC SIRSI OTHER);
@@ -1071,6 +1071,15 @@ my @REQUEST_TYPES = qw(N M D I);
                 'verification' => 'boolean_default_false'
 	},
 	'disable_item_and_circulation_display' => {
+                'verification' => 'boolean_default_false'
+	},
+        ##
+        ## (25-jan-2008 kl)
+        ##
+        'crossref_doi_query' => {
+                'verification' => 'boolean_default_false'
+	},
+        'pubmed_pmid_query' => {
                 'verification' => 'boolean_default_false'
 	},
 );
