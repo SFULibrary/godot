@@ -12,9 +12,12 @@
 { name => 'group',                        type => 'POPUP',         choice_labels => 'SITE_GROUPS',    section => 'general', help => 'general' },
 { name => 'contact',                      type => 'TEXTAREA',      rows => '25', section => 'general', help => 'general' },
 
+{ name => 'crossref_doi_query',           type => 'CHECKBOX_BOOL',   section => 'citation_enhancement', help => 'citation_enhancement' }, 
+{ name => 'crossref_id',                  type => 'TEXTFIELD',       section => 'citation_enhancement', help => 'citation_enhancement' },
+{ name => 'crossref_password',            type => 'TEXTFIELD',       section => 'citation_enhancement', help => 'citation_enhancement' },
+{ name => 'pubmed_pmid_query',            type => 'CHECKBOX_BOOL',   section => 'citation_enhancement', help => 'citation_enhancement' }, 
 
 { name => 'error_not_parseable',          type => 'TEXTAREA',                  section => 'errors', help => 'errors' },
-
 
 { name => 'rank',                         type => 'LIST',                      section => 'holdings', help => 'holdings' },
 { name => 'other_rank',                   type => 'CHECKBOX_BOOL',             section => 'holdings', help => 'holdings' },
