@@ -23,10 +23,11 @@ use strict;
 # table or a like-named module in ./Parser
 # takes: $db - the database to parse
 #        $database - database object  (06-feb-2002) - !!!! later can probably remove $db as param !!!!!
+#        $site - site (eg. 'BVAS') 
 # returns: $parser - a parser object
 
 sub dispatch {
-	my ($class, $db, $database) = @_;
+	my ($class, $db, $database, $site) = @_;
 
 	debug("Dispatching database parser from GODOT::Parser for database '$db'") if $GODOT::Config::TRACE_CALLS;
 
@@ -72,18 +73,21 @@ sub dispatch {
 
 	eval {require($file)};
 	if ($@ eq '') {
-		return new $module;
+		return new $module $site;
 	} else {
 		warning("Could not load parser $module ($file) for database $db: $@") if $GODOT::Config::WARN_ON_DEFAULT_PARSER;
-		##return new $class;
-		return 0; ##yyua_mod
+		return 0; 
 	}
 }
 
 # new - Returns a blessed GODOT::Parser object.
 
 sub new {
-	return bless {}, shift;
+        my($class, $site) = @_;
+
+	my $object = bless {}, $class;
+        $object->{'site'} = $site;
+        return $object;
 }
 
 # preparse - Does things common to almost all parsers like setting the 
@@ -133,6 +137,19 @@ sub post_parse {
 	my ($self, $citation) = @_;
 	debug("Generic post_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
 	
+        #### use Data::Dumper;
+        #### debug ('-----------------------------------------------------------------');
+        #### debug Dumper($self);
+        #### debug ('-----------------------------------------------------------------');
+       
+        ##
+        ## -use info in citation (eg. pmid, doi) to find out more about citation;  
+        ## -add this new data to citation object;
+        ##
+        use GODOT::FetchAll;
+        my $fetch_all = GODOT::FetchAll->dispatch({'dispatch_site' => $self->{'site'}});        
+        $fetch_all->add_data($citation);     ## -add fetched data from zero or more sources to $citation object
+
 	my $temp = $citation->parsed('PGS');
 
 	# remove trailing periods so periods in 'Pages VII.15-VII.23.1976. .' (from georef) do not get stripped 
@@ -210,16 +227,6 @@ sub post_parse {
         }
 
         ##
-        ## (23-jan-2003 kl)
-        ##         
-       
-	if (($citation->req_type() eq $GODOT::Constants::THESIS_TYPE) && 
-            (&diss_abs_issn($citation->parsed('ISSN')))) {
-              
-	     $citation->parsed('ISSN', '');
-	}
-
-        ##
         ## (08-dec-2006 kl) -- check that we have valid ISBN and if not try to extract one 
         ##
 
@@ -259,6 +266,29 @@ sub post_parse {
             $tmp_value =~ s#\226#-#g;                 
 
 	    $citation->parsed($field, $tmp_value);
+	}
+
+        ##
+        ## -final try to get a request type
+        ##
+        if ($citation->is_unknown) {
+            my $reqtype = $self->post_get_req_type($citation);
+            $citation->req_type($reqtype);
+
+            ##
+            ## -if we went from 'unknown' to 'journal article' then adjust author accordingly
+            ##
+            if ($citation->is_journal && aws($citation->parsed('ARTAUT'))  && naws($citation->parsed('AUT'))) {
+                $citation->parsed('ARTAUT', $citation->parsed('AUT'));
+                $citation->parsed('AUT', '');
+            }
+        }
+
+        ##
+        ## (23-jan-2003 kl)
+        ##               
+	if (($citation->req_type() eq $GODOT::Constants::THESIS_TYPE) && (&diss_abs_issn($citation->parsed('ISSN')))) {             
+	     $citation->parsed('ISSN', '');
 	}
 }
 	
@@ -362,6 +392,34 @@ sub get_req_type {
         }
 	return $reqtype;
 }
+
+
+sub run_post_get_req_type {
+    return $FALSE;
+}
+
+sub post_get_req_type {
+	my ($self, $citation) = @_;
+	debug("Generic post_get_req_type() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    
+        my $reqtype = $citation->req_type;
+        return $reqtype unless $self->run_post_get_req_type;
+
+        if (naws($citation->parsed('ISSN'))) {
+                return $GODOT::Constants::JOURNAL_TYPE;
+        }
+        elsif (naws($citation->parsed('UMI_DISS_NO')) || naws($citation->parsed('THESIS_TYPE'))) {
+                return $GODOT::Constants::THESIS_TYPE;
+        }
+
+        if (naws($citation->parsed('ARTTIT')) || naws($citation->parsed('ARTAUT'))) {
+	    return (naws($citation->parsed('VOLISS'))) ? $GODOT::Constants::JOURNAL_TYPE : $GODOT::Constants::BOOK_ARTICLE_TYPE;
+        }
+
+        return $GODOT::Constants::BOOK_TYPE;        
+}
+
+
 
 sub diss_abs_issn {
         my($issn) = @_;
