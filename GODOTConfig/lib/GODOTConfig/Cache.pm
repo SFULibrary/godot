@@ -514,18 +514,12 @@ sub search_group_non_journal {
 sub _search_group {
     my($self, $search_site, $rank_list, $other_group_field, $max_search_group) = @_;
 
-    debug join('--', location, $rank_list, $other_group_field, $max_search_group);
-
     my $default = (naws($other_group_field)) ? $other_group_field : $max_search_group; 
     $default = '' if $default == 0;     
 
     return $default unless defined $rank_list;
 
-    debug join('--', location, $default);
-
     foreach my $obj (@{$rank_list}) {
-
-        debug Dumper($obj);
 
         if ($obj->rank_site eq $search_site) {             
             if (aws($obj->search_group) || ($obj->search_group == 0)) { return $default;           }
