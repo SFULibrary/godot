@@ -13,6 +13,7 @@
                                'AVISO_4'        => 'Aviso 4', 
                                'CISTI'          => 'Cisti', 
                                'GENERIC_SCRIPT' => 'National Library Generic Script',
+                               'III'            => 'Innovative Interfaces',
                                'OPENILL'        => 'OpenILL',
                                'RELAIS'         => 'Relais',
                                'RSS_FORM'       => 'RSS CGI Form',
