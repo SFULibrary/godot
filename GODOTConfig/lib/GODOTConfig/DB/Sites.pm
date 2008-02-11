@@ -257,6 +257,11 @@ __PACKAGE__->config_columns(qw(
         catalogue_source_non_journal
         catalogue_source_default
 
+        crossref_doi_query
+        crossref_id
+        crossref_password
+
+        pubmed_pmid_query
 ));
 
 
