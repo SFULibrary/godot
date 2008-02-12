@@ -448,7 +448,7 @@ sub main {
         ##                    later so that all that gets passed is the Database object !!!!
         ##
 
-	my $parser = GODOT::Parser->dispatch($citation->dbase(), $database);
+	my $parser = GODOT::Parser->dispatch($citation->dbase(), $database, $user);
 
         unless ($parser) { ##yyua_mod
             my $usr_msg = 'Not enough information available for searching. Administrator has been informed.';
