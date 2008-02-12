@@ -17,6 +17,18 @@ my @FIELDS = ('auth_name',
 
 use strict;
 
+
+sub new {
+    my ($self, $fields, $values) = @_;
+
+    my $class = ref($self) || $self;
+
+    if (ref($fields) eq 'HASH')  { $values = $fields; }
+    if (ref($fields) ne 'ARRAY') { $fields = [];      }
+
+    return $class->SUPER::new([@FIELDS, @{$fields}], $values);
+}
+
 sub url {
     return 'http://doi.crossref.org/servlet/query';
 }
