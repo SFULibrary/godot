@@ -49,14 +49,6 @@ sub new {
     return $class->SUPER::new([@FIELDS, @{$fields}], $values);
 }
 
-sub auth_name {
-    return '';
-}
-
-sub auth_passwd  {
-    return '';
-}
-
 1;
 
 
