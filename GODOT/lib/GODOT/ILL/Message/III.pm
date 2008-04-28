@@ -42,7 +42,6 @@ sub format {
         $self->fill_field($patron->last_name. ", " . $patron->first_name, 'name', \%form);
         $self->fill_field($patron->library_id,                            'barcode',        \%form);
     }
-
     ##
     ## Check that 'cancel if not filled by' date is valid and in format DD/MM/YY.
     ## Date string contains the error message if it failed.
@@ -50,6 +49,12 @@ sub format {
 
     unless ($self->valid_date) { return ''; }
    
+    $self->fill_field($patron->email, 'fld_other3', \%form);
+
+    ##
+    ## -added per email from Rumi Graham 04-mar-2008
+    ##
+
     my($dd, $mm, $yy) = split('/', $self->not_req_after);
    
     $self->fill_field($dd,  'needby_Day',   \%form);
@@ -120,13 +125,23 @@ sub format {
 	return ('', 'Unexpected request type (', $citation->req_type, ').');
     }
 
-    #### $self->fill_field($citation->parsed('ISBN'),             'ItemId-ISBN', \%form);
-    #### $self->fill_field($citation->parsed('ISSN'),             'ItemId-ISSN', \%form);
+    ##
+    ## -added per email from Rumi Graham 04-mar-2008
+    ##
+    $self->fill_field($citation->parsed('ISBN'),             'fld_other2', \%form);
+    $self->fill_field($citation->parsed('ISSN'),             'fld_other2', \%form);
 
     $self->fill_field($self->source . " ($reqno)", 'main3', \%form);
     $self->fill_field($self->message_note,         'info0', \%form);
 
-    return put_query_fields(\%form);    
+    
+    #### debug "----------------------------------------------";
+    #### foreach my $field (sort keys %form) {
+    ####    debug "$field = $form{$field}";
+    #### }
+    #### debug "----------------------------------------------";
+
+    return put_query_fields(\%form);
 }
 
 
@@ -178,8 +193,6 @@ sub _message_note_fields {
             ['edition',        $self->citation->parsed('EDITION'),      'EDITION'],
             ['thesis_type',    $self->citation->parsed('THESIS_TYPE'),  'THESIS TYPE'],
 
-            ['issn',           $self->citation->parsed('ISSN'),         'ISSN'],
-            ['isbn',           $self->citation->parsed('ISBN'),         'ISBN'],
             ['call_no',        $self->citation->parsed('CALL_NO'),      'CALL NO'],
 
             ['eric_no',        $self->citation->parsed('ERIC_NO'),      'ERIC DOC NO'],
@@ -210,7 +223,7 @@ sub _message_note_fields {
             ['notification',   $self->patron->notification,             'NOTIFY'],
             ['type',           $self->patron->type,                     'TYPE'],
             ['not_req_after',  $self->not_req_after,                    'NOT REQ AFTER'],
-            ['email',          $self->patron->email,                    'EMAIL'],
+
             ['department',     $self->patron->department,               'DEPARTMENT'],
             ['province',       $self->patron->province,                 'PROVINCE'],
             ['phone',          $self->patron->phone,                    'PHONE'],
