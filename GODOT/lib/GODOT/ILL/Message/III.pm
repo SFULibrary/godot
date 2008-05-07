@@ -49,7 +49,7 @@ sub format {
 
     unless ($self->valid_date) { return ''; }
    
-    $self->fill_field($patron->email, 'fld_other3', \%form);
+    $self->fill_field($patron->email, 'info2', \%form);
 
     ##
     ## -added per email from Rumi Graham 04-mar-2008
@@ -128,8 +128,8 @@ sub format {
     ##
     ## -added per email from Rumi Graham 04-mar-2008
     ##
-    $self->fill_field($citation->parsed('ISBN'),             'fld_other2', \%form);
-    $self->fill_field($citation->parsed('ISSN'),             'fld_other2', \%form);
+    $self->fill_field($citation->parsed('ISBN'),   'info1', \%form);
+    $self->fill_field($citation->parsed('ISSN'),   'info1', \%form);
 
     $self->fill_field($self->source . " ($reqno)", 'main3', \%form);
     $self->fill_field($self->message_note,         'info0', \%form);
