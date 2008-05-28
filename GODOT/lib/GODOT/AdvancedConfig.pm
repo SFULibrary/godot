@@ -131,6 +131,7 @@ use vars qw (
      'mimas'         => 'openurl',
      'NISC'          => 'openurl',
      'openly'        => 'openurl',
+     'oup'           => 'openurl',
      'OUP'	     => 'openurl',
      'OVID'          => 'openurl',
      'proquest'      => 'openurl::proquest',
