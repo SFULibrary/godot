@@ -3,7 +3,6 @@ package GODOT::CUFTS::Result;
 ## Copyright (c) 2003, Kristina Long, Simon Fraser University
 ##
 
-
 use Exporter;
 use GODOT::Debug;
 use GODOT::String;
@@ -11,17 +10,20 @@ use GODOT::CUFTS::Object;
 
 @ISA = qw(Exporter GODOT::CUFTS::Object);
 
-#### @EXPORT = qw();
-
-#### use vars qw();
-
 use strict;
 
 my $FALSE = 0;
 my $TRUE  = 1;
 
+##
+## (08-aug-2008 kl) -- added ft_start_date, ft_end_date, coverage and cjdb_note for upei
+##
 my @FIELDS = qw(url
                 title
+                ft_start_date
+                ft_end_date
+                coverage
+                cjdb_note
                 _error_message
                );
 
@@ -59,15 +61,13 @@ sub xml_input {
     if ($string =~ m#<result\s*.*?>(.+?)</result>#s) {
 
 	 my $content = $1;
-       
-         if ($content =~ m#<url\s*.*?>(.*?)</url>#s) {
-	     my $url = $1;
-             if (GODOT::String::naws($url)) { $self->{'url'} = $url; }             
-         }
+  
+         foreach my $field qw(url title ft_start_date ft_end_date coverage cjdb_note) {       
 
-         if ($content =~ m#<title\s*.*?>(.*?)</title>#s) {
-	     my $title = $1;
-             if (GODOT::String::naws($title)) { $self->{'title'} = $title; }             
+             if ($content =~ m#<$field\s*.*?>(.*?)</$field>#s) {
+                 my $value = $1;
+                 $self->{$field} = $value if naws($value);
+             }        
          }
     } 
     else {
