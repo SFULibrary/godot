@@ -115,7 +115,6 @@ use vars qw (@DBASE_TYPE_ARR);
                    'CIOS',
                    'CISTI',
                    'CitationManager', 
-                   'CitationManager',
                    'ContentScan',
                    'CSA',
                    'dbwiz',
@@ -135,7 +134,8 @@ use vars qw (@DBASE_TYPE_ARR);
                    'gale',
                    'Gale',
                    'GEODOK',
-                   'Google',          ## -is this still needed?        
+                   'GODOTCitationFinder',
+                   'Google',                 ## -is this still needed?        
                    'google',
                    'Harmonie',
                    'HWW',
