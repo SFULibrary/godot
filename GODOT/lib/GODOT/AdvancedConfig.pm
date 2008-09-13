@@ -128,6 +128,7 @@ use vars qw (
      'IOP'           => 'openurl::axiom',
      'jstor'         => 'openurl',
      'LC'            => 'openurl',
+     'libx'          => 'openurl',
      'mimas'         => 'openurl',
      'NISC'          => 'openurl',
      'openly'        => 'openurl',
@@ -151,7 +152,8 @@ use vars qw (
      'swets'         => 'openurl',
      'RefPress'      => 'openurl',
      'Elsevier'      => 'openurl',
-     'SFX'           => 'openurl'
+     'SFX'           => 'openurl',
+     'undefined'     => 'openurl'       ## -libx may send if you have set sid to blank
 );
 
 
