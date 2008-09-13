@@ -146,6 +146,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'ISI',
                    'jstor',
                    'LC',
+                   'libx',
                    'mimas',
                    'NISC',
                    'openly',
@@ -170,6 +171,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'STN',
                    'SFX',
                    'ukoln',
+                   'undefined',            ## -libx may send if sid is set to blank
                    'unknown',
                    'WilsonWeb',
                    'Wiley',
