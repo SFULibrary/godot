@@ -186,6 +186,7 @@ sub main {
         return;
     }
 
+
     ##----------------------------new session logic----------------------------------------------
 
     $prev_screen = &hold_tab::get_screen();
@@ -292,10 +293,13 @@ sub main {
     }
 
     ##
-    ## -get user info
+    ## -get user info from parameters or from path info
     ## 
-    my $site_param = (naws(param($hold_tab::BRANCH_FIELD))) ? param($hold_tab::BRANCH_FIELD) : 
- 	                                                      param($GODOT::Constants::BRANCH_ABBREV_FIELD);
+    (my $path_info = $ENV{'PATH_INFO'}) =~ s#^/##;      
+
+    my $site_param = (naws(param($hold_tab::BRANCH_FIELD))) ? param($hold_tab::BRANCH_FIELD) 
+                   : (naws(param($GODOT::Constants::BRANCH_ABBREV_FIELD))) ?  param($GODOT::Constants::BRANCH_ABBREV_FIELD)
+                   : $path_info;
 
     my $user = $authentication->get_site($site_param);
 
