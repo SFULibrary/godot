@@ -173,6 +173,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'ukoln',
                    'undefined',            ## -libx may send if sid is set to blank
                    'unknown',
+                   'UW',
                    'WilsonWeb',
                    'Wiley',
 );
