@@ -153,7 +153,8 @@ use vars qw (
      'RefPress'      => 'openurl',
      'Elsevier'      => 'openurl',
      'SFX'           => 'openurl',
-     'undefined'     => 'openurl'       ## -libx may send if you have set sid to blank
+     'undefined'     => 'openurl',       ## -libx may send if you have set sid to blank
+     'UW'            => 'openurl'
 );
 
 
