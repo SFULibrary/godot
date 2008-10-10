@@ -251,7 +251,7 @@ sub note  {
 
         my $obj = new GODOT::CatalogueHoldings::Note;
 
-        $obj->note($note);
+        $obj->text($note);
 
         push(@{$self->{'note'}}, $obj);
     }
