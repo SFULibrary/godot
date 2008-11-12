@@ -87,6 +87,9 @@ my %fields = (
     'ill_request_type'        => undef,            ## eg. 'S' (retrieval), 'D' (direct), 'N' (new), etc.
     'records'                 => undef,
     'buttons'                 => undef,    
+
+    'ill_local_system_request_number' => undef,   ## request number passed back after sending request message to local ill system
+
     'template_vars'           => undef,
 
     'local'                   => undef
