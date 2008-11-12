@@ -361,7 +361,7 @@ sub format {
 
     # Encode XML before sending through SOAP  (<>&")
 
-    my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;' );
+    my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;', '\047' => '&#39' );
     $xml =~ s/([&<>\"])/$encode_attribute{$1}/g;
 
     # Add SOAP wrapper.. Tried using SOAP::Lite, but it doesn't quite work with the Relais stuff. Probably my fault.
@@ -427,8 +427,9 @@ sub valid_date {
             return $FALSE;
         }
         
-        if ($yyyy > 2010)  {
+        my $max_year = &GODOT::Date::date_yyyy(time) + 2;
 
+        if ($yyyy > $max_year)  {
             $self->error_message("Need before date is too far in the future.  Use the format DD/MM/YY (eg: 31/12/00 NOT 31/12/2000)");
             return $FALSE;
         }
@@ -583,9 +584,9 @@ sub _message_note_fields {
             ['patron_note',    $self->patron->note,                     'PATRON NOTE'],
 
             ##
-            ## (03-oct-2006 kl) - this is included in PatronRecord.PatronType so no need (I think) to repeat here
+            ## (27-oct-2008 kl) - this is included in PatronRecord.PatronType so no need (I think) to repeat here
             ##
-            ['patron_type',    $self->patron_type,                      'PATRON TYPE'],
+            #### ['patron_type',    $self->patron_type,                      'PATRON TYPE'],
 
             ['reqno',          $reqno,                                  'REQ NO'],
             ['eric_no',        $self->citation->parsed('ERIC_NO'),      'ERIC DOC NO'],
@@ -600,6 +601,16 @@ sub _message_note_fields {
             ['patent_year',    $self->citation->parsed('PATENT_YEAR'),  'PATENT YEAR'],
 
             ['note',           $self->citation->parsed('NOTE'),         'CITATION NOTE'],
+
+            ##
+            ## (11-nov-2008 kl) - added as it was missing;
+            ##
+            ['account_number', $self->patron->account_number,           'ACCOUNT'],
+
+            ##
+            ## (27-oct-2008 kl) - added as it was not being passed in any other field; is there a better field for it??
+            ##       
+            ['notification',   $self->patron->notification,             'NOTIFY'],
 
             ['holdings_site',  $self->holdings_site,                    'SITES'],
             ['holdings',       $self->holdings,                         'HOLDINGS'],
