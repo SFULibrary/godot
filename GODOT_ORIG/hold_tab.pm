@@ -902,7 +902,6 @@ sub catalogue_interface_screen {
     my $reqtype = param($REQTYPE_FIELD);
     my $dbase   = param($gconst::DBASE_FIELD);
 
-
     my $live_source = $TRUE;
     my $res = $FALSE;
 
@@ -939,6 +938,7 @@ sub catalogue_interface_screen {
                                                                $config,
                                                                $GODOT::Config::PARA_SERVER_TIMEOUT,
                                                                $FALSE); 
+
     if ($para_server_res) {
 
         my $parallel = &para::from_queue(\%queue_hash, $query);
@@ -5051,6 +5051,7 @@ sub ill_process_request  {
         my $site = $config->name; 
 
         my $error_msg;
+	my $ill_local_system_request_number;      ## (05-nov-2008 kl) -- added for upei running relais;
 
         ##
         ## -send main request message 
@@ -5077,8 +5078,9 @@ sub ill_process_request  {
                 #### debug "result after 'main request' message send:  $result";
                 #### debug $message->dump;
                 #### debug "----------------------------------------------";
-                
+                       
                 $error_msg = $message->error_message;
+                $ill_local_system_request_number = $message->ill_local_system_request_number;
         }
 
         ##
@@ -5098,12 +5100,13 @@ sub ill_process_request  {
                          
                 $result = $message->send($ill_reqno);
                 $error_msg = $message->error_message;
+                $ill_local_system_request_number = $message->ill_local_system_request_number;
 
                 #### debug "________ result after 'copy to local ill system' message->send:  $result";
         }
 
+	#### debug "ill_local_system_request_number:  $ill_local_system_request_number";
 	#### debug join('--', "before patron ack email: ",  $result, $config->ill_email_ack_msg, $ill_fields{'PATR_PATRON_EMAIL_FIELD'});
-
 
         ##
         ## send copy to patron
@@ -5138,7 +5141,8 @@ sub ill_process_request  {
                 ##
                 $ill_fields{'hold_tab_msg_addr'} = naws($msg_host) ? $msg_host : $msg_email;     
                 &glog::ill_log($GODOT::Config::LOG_FILE, \%ill_fields);
-
+               
+                $page->ill_local_system_request_number($ill_local_system_request_number) unless aws($ill_local_system_request_number);
                
 		if ($config->use_request_acknowledgment_screen)
 		{        
