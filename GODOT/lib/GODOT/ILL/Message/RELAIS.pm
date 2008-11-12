@@ -361,7 +361,7 @@ sub format {
 
     # Encode XML before sending through SOAP  (<>&")
 
-    my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;', '\047' => '&#39' );
+    my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;');
     $xml =~ s/([&<>\"])/$encode_attribute{$1}/g;
 
     # Add SOAP wrapper.. Tried using SOAP::Lite, but it doesn't quite work with the Relais stuff. Probably my fault.
