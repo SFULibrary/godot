@@ -18,9 +18,9 @@ my @FIELDS = ('dispatch_site',
               'lender_site',
               'lender_nuc',
               'type', 
-              'request_type',             ## ie. 'D' (direct), 'M' (mediated)
-              'citation',                 ## GODOT::Citation             
-              'patron',                   ## GODOT::Patron::Data
+              'request_type',                      ## ie. 'D' (direct), 'M' (mediated)
+              'citation',                          ## GODOT::Citation             
+              'patron',                            ## GODOT::Patron::Data
               'email',            
               'lender_email',
               'host',
@@ -36,7 +36,10 @@ my @FIELDS = ('dispatch_site',
               'rush_req',
               'not_req_after',
               'additional_text',     
-              'error_message');
+              'error_message',                
+              'formatted_content',                 ## content of message from call to $self->format
+              'ill_local_system_request_number'    ## request number passed back after sending request message to local ill system 
+           );      
 
 
 my @INCLUDE_PATH = ([qw(local  type dispatch_site)],
@@ -112,6 +115,8 @@ sub send_by_email {
     my($self, $reqno) = @_;
 
     my $message = $self->format($reqno);
+
+    $self->formatted_content($message);
 
     if (defined $self->error_message) { 
         error $self->error_message;
@@ -198,6 +203,9 @@ sub send_by_http {
     ## (05-jun-2006 kl) - added logic to check for existing '?' in URL (an issue for the III URL)
     ##
     my $param_string = $self->format($reqno);
+
+    $self->formatted_content($param_string);
+
     my $url_to_log = $url . (($url =~ m#\?#) ? '&' : '?') . $param_string;
 
     if (defined $self->error_message) { return $FALSE; }
@@ -267,6 +275,9 @@ sub send_by_relais {
     my $ua = new LWP::UserAgent;
 
     my $content = $self->format($reqno);
+
+    $self->formatted_content($content);
+
     print STDERR "\n\n$content\n\n";
 
     if (defined $self->error_message) { return $FALSE; }
