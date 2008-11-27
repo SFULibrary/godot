@@ -57,7 +57,7 @@ sub format {
 
     my $godot_relais_map = $self->godot_relais_map;
 
-    if ( !$self->valid_date ) { return ''; }
+    if ( ! $self->valid_date ) { return ''; }
 
     my $xml;
     my $writer = new XML::Writer( OUTPUT => \$xml, UNSAFE => 1 );
@@ -65,7 +65,7 @@ sub format {
     $writer->startTag('AddRequest',
                       'version'   => '2006.0.0.0',
                       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                      'xsi:noNamespaceSchemaLocation' => 'http://lib-relais.lib.sfu.ca/XML/AddRequest.xsd',
+                      'xsi:noNamespaceSchemaLocation' => $self->schema_location,
     );
 
     $writer->startTag('Record');
@@ -143,9 +143,7 @@ sub format {
         $writer->endTag('PublicationDate');
     }
 
-
     $writer->endTag('PublisherInfo');
-
 
     $writer->startTag('RequestInfo');
 
@@ -180,10 +178,14 @@ sub format {
         $writer->endTag('Mailbox');
     }
 
-
-    $writer->startTag('NeedByDate');
-    $writer->characters( $self->not_req_after() );
-    $writer->endTag('NeedByDate');    
+    ##
+    ## -relais does not like a blank date
+    ##
+    if (naws($self->not_req_after())) {
+        $writer->startTag('NeedByDate');
+        $writer->characters( $self->not_req_after() );
+        $writer->endTag('NeedByDate');    
+    }
 
     $writer->endTag('RequestInfo');
 
@@ -281,41 +283,7 @@ sub format {
         $writer->endTag('PrimaryAddress');
     }
 
-    $writer->startTag('ElectronicDelivery');
-
-    $writer->startTag('DeliveryMethod');
-    $writer->characters('P');
-    $writer->endTag('DeliveryMethod');
-
-    if ($self->_include_delivery_email) {
-        $writer->startTag('DeliveryEmail');
-        $writer->characters( $patron->email );
-        $writer->endTag('DeliveryEmail');
-    }
-
-    if ($self->_include_messaging_format) {
-        $writer->startTag('MessagingFormat');
-        $writer->characters('T');
-        $writer->endTag('MessagingFormat');
-    } 
-
-    $writer->startTag('MessagingMethod');
-    $writer->characters('E');
-    $writer->endTag('MessagingMethod');
-    
-    $writer->startTag('MessagingEmail');
-    $writer->characters( $patron->email );
-    $writer->endTag('MessagingEmail');
-
-    $writer->startTag('PickupLocation');
-    $writer->characters( $patron->pickup );
-    $writer->endTag('PickupLocation');
-
-    $writer->startTag('DeliveryService');
-    $writer->characters( 'Unknown' );
-    $writer->endTag('DeliveryService');
-   
-    $writer->endTag('ElectronicDelivery');
+    $self->_format_electronic_delivery($writer, $patron);
 
     if ($self->_include_user_login) {
         $writer->startTag('UserLogin');
@@ -373,6 +341,47 @@ sub format {
     return $xml;
 
 }
+
+sub _format_electronic_delivery {
+    my($self, $writer, $patron) = @_;
+
+    $writer->startTag('ElectronicDelivery');
+
+    $writer->startTag('DeliveryMethod');
+    $writer->characters($self->_delivery_method);
+    $writer->endTag('DeliveryMethod');
+
+    if ($self->_include_delivery_email) {
+        $writer->startTag('DeliveryEmail');
+        $writer->characters( $patron->email );
+        $writer->endTag('DeliveryEmail');
+    }
+
+       if ($self->_include_messaging_format) {
+        $writer->startTag('MessagingFormat');
+        $writer->characters('T');
+        $writer->endTag('MessagingFormat');
+    } 
+
+    $writer->startTag('MessagingMethod');
+    $writer->characters($self->_messaging_method);
+    $writer->endTag('MessagingMethod');
+    
+    $writer->startTag('MessagingEmail');
+    $writer->characters( $patron->email );
+    $writer->endTag('MessagingEmail');
+
+    $writer->startTag('PickupLocation');
+    $writer->characters( $patron->pickup );
+    $writer->endTag('PickupLocation');
+
+    $writer->startTag('DeliveryService');
+    $writer->characters( 'Unknown' );
+    $writer->endTag('DeliveryService');
+
+    $writer->endTag('ElectronicDelivery');
+}
+
 
 sub message_url   {
     my($self) = @_;
@@ -576,6 +585,23 @@ sub message_note   {
 
     return $note;
 }
+
+
+
+sub schema_location {
+    my($self) = @_;
+
+    return 'http://lib-relais.lib.sfu.ca/XML/AddRequest.xsd';
+}
+
+sub _delivery_method {
+    return 'P';
+}
+
+sub _messaging_method {
+    return 'E';
+}
+
 
 sub _message_note_fields {
     my($self, $reqno) = @_;
