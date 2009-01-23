@@ -61,7 +61,6 @@ sub export_citation {
 
         $output .= 'T3  - ' . $citation->parsed('SERIES') . "\n" if defined($citation->parsed('SERIES') );
 
-
 	if (defined($citation->parsed('ARTAUT'))) {
 		$output .= 'AU  - ' . join("\nAU  - ", split(/\s*;\s*/, $citation->parsed('ARTAUT'))) . "\n";
 		$output .= 'ED  - ' . join("\nED  - ", split(/\s*;\s*/, $citation->parsed('AUT'))) . "\n" if defined($citation->parsed('AUT'));
@@ -70,6 +69,12 @@ sub export_citation {
 	}
 
 	$output .= 'PB  - ' . $citation->parsed('PUB') . "\n" if defined($citation->parsed('PUB'));
+
+        ##
+        ## (14-jan-2009 kl) -- added for upei for evergreen to refworks export
+        ##
+	$output .= 'PP  - ' . $citation->parsed('PUB_PLACE') . "\n" if defined($citation->parsed('PUB_PLACE'));
+
 	$output .= 'M1  - ' . $citation->parsed('CALL_NO') . "\n" if defined($citation->parsed('CALL_NO'));
 	$output .= 'M2  - ' . $citation->parsed('SYSID') . "\n" if defined($citation->parsed('SYSID'));
 	$output .= 'IS  - ' . $citation->parsed('ISS') . "\n" if defined($citation->parsed('ISS'));
@@ -95,6 +100,7 @@ sub export_citation {
 	
 	
 	my $date = $citation->parsed('YYYYMMDD');
+
 	if ($date =~ /(\d{4})(\d{2})(\d{2})/) {
 		$output .= "PY  - $1/$2/$3\n";
 	} else {
