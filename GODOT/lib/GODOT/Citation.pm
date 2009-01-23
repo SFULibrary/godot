@@ -180,6 +180,7 @@ use vars qw(
 	'AUT'                => '_ht_aut',
 	'ARTAUT'             => '_ht_artaut',
 	'PUB'                => '_ht_pub',
+        'PUB_PLACE'          => '_ht_pub_place',      ## (14-jan-2009 kl) -- added for upei for evergreen to refworks export
 	'ISSN'               => '_ht_issn',
 	'ISBN'               => '_ht_isbn',
 	'SICI'		     => '_ht_sici',     
