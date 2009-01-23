@@ -7,7 +7,12 @@ package GODOT::RefWorks::RIS;
 ##
 ## Formats citation in GODOT::Citation object to RIS format for RefWorks import.
 ## 
-
+## For more information on the RIS Format:
+##
+##     http://en.wikipedia.org/wiki/RIS_(file_format) 
+##     http://www.refman.com/support/risformat_intro.asp     
+##     http://www.adeptscience.co.uk/kb/article/A626
+##
 use GODOT::Object;
 use GODOT::Debug;
 
@@ -71,9 +76,9 @@ sub export_citation {
 	$output .= 'PB  - ' . $citation->parsed('PUB') . "\n" if defined($citation->parsed('PUB'));
 
         ##
-        ## (14-jan-2009 kl) -- added for upei for evergreen to refworks export
+        ## (23-jan-2009 kl) -- city of publication -- added for upei for evergreen to refworks export
         ##
-	$output .= 'PP  - ' . $citation->parsed('PUB_PLACE') . "\n" if defined($citation->parsed('PUB_PLACE'));
+	$output .= 'CY  - ' . $citation->parsed('PUB_PLACE') . "\n" if defined($citation->parsed('PUB_PLACE'));
 
 	$output .= 'M1  - ' . $citation->parsed('CALL_NO') . "\n" if defined($citation->parsed('CALL_NO'));
 	$output .= 'M2  - ' . $citation->parsed('SYSID') . "\n" if defined($citation->parsed('SYSID'));
