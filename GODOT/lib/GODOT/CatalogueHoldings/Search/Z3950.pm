@@ -101,7 +101,7 @@ sub search_no_timeout {
 
     my %rec_hash;
 
-    foreach my $term ($self->all_terms) {
+    foreach my $term ($self->all_terms_ranked) {
 
         my $cmd = $term->prefix_syntax($system);
         
@@ -113,25 +113,22 @@ sub search_no_timeout {
 
         if (! ($rs = $conn->search($cmd))) { 
 
-            #### debug location, ":  ", $conn->errmsg();
-
             $self->{'_error_message'} = "search failed:  " . $conn->errmsg();
-
-            #### debug location, ":  ", join(':', $host, $port, $database, $syntax_res), " ", $cmd, " (", $self->{'_error_message'}, ")";
 
             ## (12-mar-2005 kl) - if search fails don't return -- try other searches instead.
             #### return undef;
 
             next;
         } 
-
+        
         $rs->option(elementSetName => $self->element_set); 
 
         ##
         ## -condition logic
         ## 
    
-        my ($get_records, $done);
+        my $get_records = $FALSE; 
+        my $done = $FALSE;
 
         if ((($condition eq $EXACTLY_ONE) && ($rs->size == 1)) || 
             (($condition eq $AT_LEAST_ONE) && ($rs->size >= 1))) {
@@ -163,8 +160,6 @@ sub search_no_timeout {
         }
 
         my $n = $rs->size();
-
-        #### warn location, " >>>> $database/$host:$port found $n records <<<<:  $cmd\n";
 
         for (my $i = 0; $i < $n; $i++) {
 
