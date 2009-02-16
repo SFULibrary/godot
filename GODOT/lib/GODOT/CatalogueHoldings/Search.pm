@@ -31,7 +31,12 @@ use strict;
 my $FALSE = 0;
 my $TRUE  = 1;
 
-my @ALL_INDEX = qw(TITLE ISSN ISBN SYSID); 
+my @ALL_INDEX = qw(TITLE ISSN ISBN SYSID);
+
+##
+## (16-feb-2009 kl) -- catalogue link logic uses a condition of 'at least one' so best to have more unique terms searched first;
+##                  
+my @ALL_INDEX_RANKED = qw(SYSID ISSN ISBN TITLE); 
 
 my @FIELDS = ('_records',                    ## GODOT::CatalogueHoldings::Record
               '_TITLE',
@@ -76,6 +81,13 @@ sub all_terms {
     return $self->terms();
 }
 
+sub all_terms_ranked {
+    my($self) = @_;
+
+    return $self->terms(@ALL_INDEX_RANKED);
+}
+
+
 sub all_terms_except_title {
     my($self) = @_;
 
@@ -119,6 +131,10 @@ sub error_message {
 
 sub search {
     my($self, $system, $condition, $max_hits) = @_;
+
+    #### debug ".................................";
+    #### debug $self->dump;
+    #### debug ".................................";
 
     my $timeout = $system->Timeout;
 
