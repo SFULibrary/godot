@@ -106,7 +106,6 @@ sub cufts_server_query {
     $auth_last  = trim_beg_end($auth_last);
     $auth_first = trim_beg_end($auth_first);
 
-
     $issn = param($gconst::ISSN_FIELD);         ## (23-mar-2000 kl) - make sure ISSN is in 9999-9999 format
     $issn =~ s#[\055\s]##g;
     $issn = clean_ISSN($issn, $TRUE);
@@ -116,19 +115,13 @@ sub cufts_server_query {
 
     $exact_title = param($gconst::TITLE_FIELD);
 
-
     ##
     ## -need date in YYYY-MM-DD, YYYY-MM or YYYY format
     ##
     
     my $date;
 
-    #### open TODD, '>>/tmp/todd1';
-    #### print TODD "!!!! $exact_title YYYYMMDD_FIELD: " . param($gconst::YYYYMMDD_FIELD) . "\n";
-
     if (param($gconst::YYYYMMDD_FIELD) =~ m#^\d{8,8}$#) {
-
-	#### print TODD '!!!! Using YYYYMMDD_FIELD: ' . param($gconst::YYYYMMDD_FIELD) . "\n";
 
         $date = substr(param($gconst::YYYYMMDD_FIELD), 0, 4) . '-' . 
                 substr(param($gconst::YYYYMMDD_FIELD), 4, 2) . '-' . 
@@ -145,9 +138,6 @@ sub cufts_server_query {
 		}
 	}
     }
-
-    #### close TODD;
-
 
     ##
     ## -create url for cufts server
