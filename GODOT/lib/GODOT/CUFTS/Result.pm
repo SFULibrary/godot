@@ -16,12 +16,21 @@ my $FALSE = 0;
 my $TRUE  = 1;
 
 ##
+## (12-jan-2009 kl) -- added vol_ft_start, vol_ft_end, iss_ft_start and iss_ft_end
+## (08-jan-2009 kl) -- added source, issn and e_issn
 ## (08-aug-2008 kl) -- added ft_start_date, ft_end_date, coverage and cjdb_note for upei
 ##
 my @FIELDS = qw(url
                 title
+                source
+                issn
+                e_issn
                 ft_start_date
                 ft_end_date
+                vol_ft_start
+                vol_ft_end
+                iss_ft_start
+                iss_ft_end
                 coverage
                 cjdb_note
                 _error_message
@@ -62,7 +71,7 @@ sub xml_input {
 
 	 my $content = $1;
   
-         foreach my $field qw(url title ft_start_date ft_end_date coverage cjdb_note) {       
+         foreach my $field qw(url title source issn e_issn ft_start_date ft_end_date vol_ft_start vol_ft_end iss_ft_start iss_ft_end coverage cjdb_note) {       
 
              if ($content =~ m#<$field\s*.*?>(.*?)</$field>#s) {
                  my $value = $1;
