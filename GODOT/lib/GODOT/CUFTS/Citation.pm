@@ -20,8 +20,6 @@ my $TRUE  = 1;
 ##
 ## OpenURL (version 0.1) fields
 ##
-## (05-feb-2006 kl) - took out 'genre' for now as CUFTS2 does not like
-##
 my @FIELDS = qw(genre
                 aulast aufirst auinit auinit1 auinitm
                 issn eissn coden isbn
@@ -61,41 +59,35 @@ sub title {
 sub query_url {
     my($self, $site) = @_;
 
-    my $url;
-
     my $count;
-
+    my $url;
     foreach my $field (@FIELDS) {
+        next if aws($self->$field);
 
         my $delim = ($count) ? '&' : '?';
         $count++;
-
-        $url .= join('', $delim, $field, '=', escape($self->$field));        
+        $url .= join('', $delim, $field, '=', escape($self->$field));                
     }
     
     if ($url) {
 
         my $sites = $site->site;
-      
+
+        debug location, ":  before assoc_sites: $sites";
+         
         if (&GODOT::String::naws($site->assoc_sites)) { 
+
+            #### debug location, "assoc_sites: ", $site->assoc_sites;
             $sites  = join(',', $sites, split(/\s+/, $site->assoc_sites));
         }
 
         debug location, ":  this is the site list for CUFTS:  $sites";  
         debug location, ":  bccampus:  ", $site->is_bccampus;  
 
-        ##
-        ## !!!!!!!!!!!! debug !!!!!!!!!!!!!
-        ## 
-        #### $sites = 'RUC';
-
         $url = $GODOT::Config::CUFTS_SERVER_URL . 
                (($GODOT::Config::CUFTS_SERVER_URL =~ m#\/$#) ? '' : '/' ) . 
                $sites .  
                "/resolve/openurl/xml" . $url;
-
-
-        #### $url .= "&pid=<CUFTSsite>$sites</CUFTSsite>%26<CUFTStemplate>xml</CUFTStemplate>";
 
         ##
         ## (28-jan-2005 kl) - BC Campus logic -- need to move to 'local' class .... 
@@ -106,7 +98,6 @@ sub query_url {
 
 
     debug "CUFTS::Citation::query_url:  $url\n";
-
 
     return $url;
 }
