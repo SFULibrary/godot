@@ -79,7 +79,12 @@ sub main {
 
     debug; 
     debug sprintf("<------ $hold_tab::PROG_NAME %s %s %s %s --------------------->", &GODOT::Date::date_yymmdd(time), &GODOT::Date::date_hh_mm_ss(time), remote_host(), param($hold_tab::SYNTAX_FIELD));
-    foreach (param()) {   debug "<incoming> $_ = ", param($_);   }
+    foreach my $param_label (param()) {   
+         my @param_arr = param($param_label);                     ## OpenURL 1.0 may have multiple occurrences of the same field 
+         foreach my $value (@param_arr) {
+             debug "<incoming> $param_label = ", $value;      
+         }
+    }
     debug "<--------------------------------------------------------------------------------->";
     debug;
 
@@ -309,11 +314,13 @@ sub main {
     my $page_local  = ($authentication->valid_field('page_local')) ? $authentication->page_local : undef;
 
     ##
-    ## (25-oct-2004 kl) - save assoc_sites as scalar due to a problem with passing param values 
-    ##                    other than scalars to parallel server
+    ## (07-mar-2009 kl) - changed so that 'param(-name=>$gconst::ASSOC_SITES_FIELD)' would be set even when assoc_sites list is empty
+    ##                  - fixes problem of CUFTS url containing a site with a trailing ',0'.  ie. we want 'BVAS' not 'BVAS,0'
+    ## (25-oct-2004 kl) - save assoc_sites as scalar due to a problem with passing param values other than scalars to parallel server
     ##
 
-    if (scalar @{$assoc_sites}) { param(-name=>$gconst::ASSOC_SITES_FIELD, '-values'=>[join(' ', @{$assoc_sites})]) ; }
+    my $assoc_sites_string = (scalar @{$assoc_sites}) ? join(' ', @{$assoc_sites}) : '';
+    param(-name=>$gconst::ASSOC_SITES_FIELD, '-values'=>[ $assoc_sites_string ]) ; 
 
     if ($authentication->valid_field('trusted_host') && $authentication->trusted_host) { 
         param(-name=>$hold_tab::TRUSTED_HOST_FIELD, '-values'=>[$TRUE]); 
@@ -468,7 +475,6 @@ sub main {
     
     #### use Data::Dumper;
     #### debug "\n-- GODOT::Citation --\n", Dumper($citation), "\n--------\n\n";
-
 
     use GODOT::CGI; 
     my $cgi = new GODOT::CGI;
