@@ -32,7 +32,7 @@ export GODOT_CONFIG_URL
 GODOT_CUFTS_SERVER_URL=http://cufts2.lib.sfu.ca:8082/Resolver/site/
 export GODOT_CUFTS_SERVER_URL
 
-GODOT_CITATION_MANAGER_URL=http://stalefish.lib.sfu.ca/CitationManager/cm.cgi
+GODOT_CITATION_MANAGER_URL=http://citationmanager.lib.sfu.ca/cm.cgi
 export GODOT_CITATION_MANAGER_URL
 
 
