@@ -20,5 +20,5 @@ setenv GODOT_CONFIG_URL      http://proxy2.lib.sfu.ca:8777/GODOTConfig/config.cg
 ## You can later change them to point to your copies.
 ##
 setenv GODOT_CUFTS_SERVER_URL      http://cufts2.lib.sfu.ca:8082/Resolver/site/
-setenv GODOT_CITATION_MANAGER_URL  http://stalefish.lib.sfu.ca/CitationManager/cm.cgi
+setenv GODOT_CITATION_MANAGER_URL  http://citationmanager.lib.sfu.ca/cm.cgi
 
