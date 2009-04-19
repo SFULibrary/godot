@@ -47,6 +47,8 @@ DEPT:        $department STATUS: $type
 NEED BEFORE: $not_req_after
 
 EOM
+
+       my $publisher_statement = $self->publisher_statement;
       
        ##
        ## -bibliographic info
@@ -67,7 +69,7 @@ EOM
 
 AUTHOR:         $citn{'AUT'}
 TITLE:          $citn{'TITLE'}
-IMPRINT:        $citn{'PUB'}
+IMPRINT:        $publisher_statement
 DATE:           $citn{'YEAR'}
 PAGES:          $citn{'PGS'}
 SERIES:         $citn{'SERIES'}
@@ -83,7 +85,7 @@ AUTHOR:         $citn{'AUT'}
 TITLE:          $citn{'TITLE'}
 DATE:           $date
 SERIES:         $citn{'SERIES'}
-IMPRINT:        $citn{'PUB'}
+IMPRINT:        $publisher_statement
 
 ARTICLE AUTHOR: $citn{'ARTAUT'}
 TITLE:          $citn{'ARTTIT'}
@@ -101,7 +103,7 @@ SERIES:         $citn{'SERIES'}
 ISSUE:          $citn{'VOLISS'}
 DATE:           $date
 PAGES:          $citn{'PGS'}
-IMPRINT:        $citn{'PUB'}
+IMPRINT:        $publisher_statement
 
 ARTICLE AUTHOR: $citn{'ARTAUT'}
 TITLE:          $citn{'ARTTIT'}
@@ -117,7 +119,7 @@ AUTHOR:         $citn{'AUT'}
 TITLE:          $citn{'TITLE'}
 SERIES:         $citn{'SERIES'}
 ISSUE:          $citn{'VOLISS'}
-IMPRINT:        $citn{'PUB'}
+IMPRINT:        $publisher_statement
 
 ARTICLE AUTHOR: $citn{'ARTAUT'}
 TITLE:          $citn{'ARTTIT'}
@@ -141,7 +143,7 @@ EOM
 
 AUTHOR:         $citn{'AUT'}
 TITLE:          $thesis
-IMPRINT:        $citn{'PUB'}
+IMPRINT:        $publisher_statement
 DATE:           $date
 
 EOM
