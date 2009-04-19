@@ -170,7 +170,7 @@ use vars qw (@DBASE_TYPE_ARR);
                    'SP',
                    'STN',
                    'SFX',
-                   'ukoln',
+                   #### 'ukoln',           ## -can now handle unknown sid/rfr_id
                    'undefined',            ## -libx may send if sid is set to blank
                    'unknown',
                    'UW',
