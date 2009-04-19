@@ -62,17 +62,28 @@ sub parse_citation {
             }
             elsif  ($item =~ m#^<AU>(.+)</AU>$#) { 
                 ##
-                ## -for now leave author (<AU>...</AU>) passed in 'pid' and instead use 
-                ##  value passed in 'aufirst' and 'aulast' fields 
+                ## (19-mar-2009 kl) -- we want complete author statement for importing into citation managers such as refworks so
+                ##                     use this author statement if it is longer than the currently extracted one 
                 ##
+		my $author_stmt = $1;
+
+                if (grep {$citation->pre('genre') eq $_} @GODOT::Config::INDIVIDUAL_ITEM_GENRE_ARR)  { 
+	            $citation->parsed('ARTAUT', $author_stmt) if length($author_stmt) > length($citation->parsed('ARTAUT')); 
+	        }
+	        else { 
+	            $citation->parsed('AUT', $author_stmt) if length($author_stmt) > length($citation->parsed('AUT')); 
+	        }  
             }
         }
 
-        warn "pub:  $pub, pub_place: $pub_place\n";
+        ##
+        ## (19-mar-2009 kl) -- now that we have a GODOT::Citation object field for PUB_PLACE no need to put in PUB field
+        ##
+        #### my $pub_stmt = $pub . (($pub && $pub_place) ? ', ' : '') . $pub_place;
+        #### if ($pub_stmt) { $citation->parsed('PUB', $pub_stmt); }            
 
-        my $pub_stmt = $pub . (($pub && $pub_place) ? ', ' : '') . $pub_place;
-            
-        if ($pub_stmt) { $citation->parsed('PUB', $pub_stmt); }
+        $citation->parsed('PUB', $pub);
+        $citation->parsed('PUB_PLACE', $pub_place);
 
         if (($conf_title)  && (! $citation->parsed('TITLE'))) {   $citation->parsed('TITLE', $conf_title); }  
 }
