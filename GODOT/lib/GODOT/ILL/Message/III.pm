@@ -62,7 +62,7 @@ sub format {
     $self->fill_field($yy,  'needby_Year',  \%form);
     $self->fill_field('-1', 'main5',        \%form);
 
-    my $pub_date = join(', ', $citation->parsed('PUB'), $date);
+    my $pub_date = join(', ', $self->publisher_statement, $date);
 
     my $title = naws($citation->parsed('TITLE')) ? $citation->parsed('TITLE') : 'Title not available.';
 
@@ -71,7 +71,7 @@ sub format {
 
         $self->fill_field($title, 'main1', \%form);
 
-        $self->fill_field($citation->parsed('PUB'),   'publ1', \%form);
+        $self->fill_field($self->publisher_statement,   'publ1', \%form);
         $self->fill_field($date,                      'publ2', \%form);
     }
     elsif ($citation->is_book_article)  {
@@ -117,7 +117,7 @@ sub format {
     elsif ($citation->is_thesis)  {
         $self->fill_field($citation->parsed('AUT'),         'main0', \%form);
         $self->fill_field($title,                           'main1', \%form);
-        $self->fill_field($citation->parsed('PUB'),         'publ0', \%form);
+        $self->fill_field($self->publisher_statement,       'publ0', \%form);
         $self->fill_field($citation->parsed('THESIS_TYPE'), 'publ1', \%form);
         $self->fill_field($date,                            'publ2', \%form);
 
@@ -187,7 +187,7 @@ sub _message_note_fields {
             ['series',         $self->citation->parsed('SERIES'),       'SERIES'],
             ['aut',            $self->citation->parsed('AUT'),          'AUTHOR'],
             ['artaut',         $self->citation->parsed('ARTAUT'),       'ARTICLE AUTHOR'],
-            ['pub',            $self->citation->parsed('PUB'),          'PUBLISHER'],
+            ['pub',            $self->publisher_statement,              'PUBLISHER'],
             ['voliss',         $self->citation->parsed('VOLISS'),       'VOLUME/ISSUE'],
             ['pgs',            $self->citation->parsed('PGS'),          'PAGES'],
             ['edition',        $self->citation->parsed('EDITION'),      'EDITION'],
