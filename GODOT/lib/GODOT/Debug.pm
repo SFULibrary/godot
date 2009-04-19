@@ -105,7 +105,7 @@ sub log_message_to_file {
     my($name, $message) = @_;
 
     use CGI qw(:remote_host :server_port);
-    return unless (remote_host() eq 'hs72260.lib.sfu.ca');
+    return unless (remote_host() eq $GODOT::Config::REMOTE_HOST_FOR_TESTING);
 
     my $filename = "/tmp/$name." . server_port();
 
