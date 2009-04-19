@@ -65,7 +65,7 @@ sub format {
 	$message .= $self->wrap("bib_item", "B");
 	$message .= $self->wrap("bib_aut1", $self->citation->parsed('AUT'));
 	$message .= $self->wrap("bib_tit1", $self->citation->parsed('TITLE'));
-	$message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+	$message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $self->citation->parsed('YEAR'));
 	$message .= $self->wrap("bib_isn", $isn);
 	$message .= $self->wrap("bib_ser", $self->citation->parsed('SERIES'));
@@ -79,7 +79,7 @@ sub format {
 	$message .= $self->wrap("bib_aut2", $self->citation->parsed('ARTAUT'));
 	$message .= $self->wrap("bib_tit1", $self->citation->parsed('TITLE'));
 	$message .= $self->wrap("bib_tit2", $self->citation->parsed('ARTTIT'));
-	$message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+	$message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $self->citation->parsed('YEAR'));
 	$message .= $self->wrap("bib_isn", $isn);
 	$message .= $self->wrap("bib_ser", $self->citation->parsed('SERIES'));
@@ -91,7 +91,7 @@ sub format {
 	$message .= $self->wrap("bib_item", "C");
 	$message .= $self->wrap("bib_aut2", $self->citation->parsed('ARTAUT'));
 	$message .= $self->wrap("bib_tit2", $self->citation->parsed('ARTTIT'));
-	$message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+	$message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $date);
 	$message .= $self->wrap("bib_isn", $isn);
 	$message .= $self->wrap("bib_ser", $self->citation->parsed('SERIES'));
@@ -105,7 +105,7 @@ sub format {
 	$message .= $self->wrap("bib_item", "J");
 	$message .= $self->wrap("bib_aut2", $self->citation->parsed('ARTAUT'));
 	$message .= $self->wrap("bib_tit2", $self->citation->parsed('ARTTIT'));
-	$message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+	$message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $date);
 	$message .= $self->wrap("bib_isn", $isn);
 	$message .= $self->wrap("bib_ser", $self->citation->parsed('SERIES'));
@@ -119,7 +119,7 @@ sub format {
 	$message .= $self->wrap("bib_item", "R");
 	$message .= $self->wrap("bib_aut2", $self->citation->parsed('ARTAUT'));
 	$message .= $self->wrap("bib_tit2", $self->citation->parsed('ARTTIT'));
-        $message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+        $message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $date);
 	$message .= $self->wrap("bib_isn", $isn);
 	$message .= $self->wrap("bib_ser", $self->citation->parsed('SERIES'));
@@ -141,7 +141,7 @@ sub format {
 	$message .= $self->wrap("bib_item", "T");
 	$message .= $self->wrap("bib_aut1", $self->citation->parsed('AUT'));
 	$message .= $self->wrap("bib_tit1", $thesis);
-	$message .= $self->wrap("bib_pub", $self->citation->parsed('PUB'));
+	$message .= $self->wrap("bib_pub", $self->publisher_statement);
 	$message .= $self->wrap("bib_date", $date);
 	$message .= $self->wrap("bib_isn", $isn);
     }
