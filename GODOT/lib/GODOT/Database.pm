@@ -8,6 +8,7 @@
 
 package GODOT::Database;
 
+use Data::Dumper;
 
 use GODOT::Constants;
 use GODOT::Config;
@@ -83,6 +84,11 @@ sub dbase_syntax {
 	return $self->{'dbase_syntax'};
 }
 
+sub is_openurl_syntax {
+        my($self) = @_;
+        return $self->dbase_syntax() eq $GODOT::Constants::OPENURL_SYNTAX;
+}
+
 sub dbase_fullname {
 	my ($self, $set) = @_;
 	$self->{'dbase_fullname'} = $set if defined($set);
@@ -141,11 +147,6 @@ sub init_dbase {
 
 	if ($hold_tab_syntax) {
 	    $self->dbase_syntax($hold_tab_syntax);
-            
-            ##
-            ## (06-feb-2002 kl) 
-            ##
-
             $self->dbase_type($db_type);
             $self->dbase_local($db_local);
 	} else {
@@ -170,50 +171,64 @@ sub init_dbase {
             ##
 	    ## Check whether it's openurl syntax.
             ##
+            
+            ##
+            ## (26-mar-2009 kl) -- moved to GODOT::AdvancedConfig
+            ##
+            ####
+            ####            if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
+            ####                 $type = 'ISI';
+            ####                 my @arr = split(':', CGI::param('rfr_id'));
+            ####                 $local = $arr[2];
+            ####            }
+            ####
+
 	    if (!defined($self->dbase_syntax())) {
 		my $fuzzy_value = 0;
 
 		foreach $param_name (@$param_names_ref) {
-			$fuzzy_value += &openurl::openurl_is_field($param_name)
+		    $fuzzy_value += &openurl::openurl_is_field($param_name)
 		}                
 
 		if ($fuzzy_value > 0)  {
-			$self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
-			$self->dbase_type(&openurl::openurl_dbase_type());
-			$self->dbase_local(&openurl::openurl_dbase_local());
+		    $self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
+		    $self->dbase_type(&openurl::openurl_dbase_type());
+		    $self->dbase_local(&openurl::openurl_dbase_local());
 		} else {
-			$syntax = '';
+		    $syntax = '';
 		}
 	    }
 
-
+            ##
+            ## (15-mar-2009 kl) -- now that better support for OpenURL version 1.0 has been added elsewhere, there 
+            ##                     appears to be no reason to have separate logic for the different versions here
             ##
             ## (14-feb-2006 kl) - check whether its OpenURL version 1.0
             ##
-
-	    if (!defined($self->dbase_syntax())) {
-		foreach $param_name (@$param_names_ref) {
-		    if ($param_name eq 'url_ver') {
-			$self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
-
-                        my $type = &openurl::openurl_dbase_type();
-                        my $local = &openurl::openurl_dbase_local();
-                        
-                        #### debug "..............", CGI::param('rfr_id'), "....................";
-
-                        if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
-                            $type = 'ISI';
-                            my @arr = split(':', CGI::param('rfr_id'));
-                            $local = $arr[2];
-                        }
-                                                        
-			$self->dbase_type($type);
-			$self->dbase_local($local);
-			last;
-		    }
-		}
-	    }
-
+	    #### if (!defined($self->dbase_syntax())) {
+            ####
+            ####     foreach $param_name (@$param_names_ref) {
+	    ####	 if ($param_name eq 'url_ver') {
+            ####	     $self->dbase_syntax($GODOT::Constants::OPENURL_SYNTAX);
+            ####
+            ####             my $type = &openurl::openurl_dbase_type();
+            ####             my $local = &openurl::openurl_dbase_local();
+            ####            
+            ####             #### debug "..............", CGI::param('rfr_id'), "....................";
+            ####
+            ####             if (CGI::param('rfr_id') =~ m#www\.isinet\.com#) {
+            ####                 $type = 'ISI';
+            ####                 my @arr = split(':', CGI::param('rfr_id'));
+            ####                 $local = $arr[2];
+            ####             }
+            ####                                            
+            ####	     $self->dbase_type($type);
+	    ####	     $self->dbase_local($local);
+            ####	     last;
+            ####	}
+	    ####    }
+	    #### }
+            ####
 
             ##
 	    ## Check whether it's ebscohost syntax
@@ -228,7 +243,7 @@ sub init_dbase {
 			last;  
 		    }
 		}
-		if ($syntax)  { ## Is abbre syntax.
+		if ($syntax)  {                             ## Is abbrev syntax
 		    $self->dbase_syntax($syntax);
 		    $self->dbase_type($db_type_abbrev);
 		    $self->dbase_local($db_local_abbrev);
@@ -236,29 +251,26 @@ sub init_dbase {
 	    }
 	}
 
-	debug "---------------------------------------------";
-	debug "syntax:  ", $self->dbase_syntax;
-	debug "type:  ", $self->dbase_type;
-	debug "local:  ", $self->dbase_local;
-	debug "---------------------------------------------";
+	#### debug "---------------------------------------------";
+	#### debug "syntax:  ", $self->dbase_syntax;
+	#### debug "type:  ", $self->dbase_type;
+	#### debug "local:  ", $self->dbase_local;
+	#### debug "---------------------------------------------";
 
-	if (defined($self->dbase_syntax())) { ## Succeed
+	if (defined($self->dbase_syntax())) {  ## Succeed
 	    return $TRUE;
-	} else { ## Failed
+	} else {                               ## Failed
 	    return $FALSE;
 	}
 }
 
-#### sub check_dbase {
-####	my($self, $dbase, $message_ref, $self_ref) = @_;
-####
-####        $self->_check_dbase($dbase, $message_ref);
-####        $self->_change_class($self_ref);
-#### }
-
 sub check_dbase {
 	my($self, $dbase, $message_ref) = @_;
 	my($key, $tmpstr);
+
+        #### debug location;
+        #### debug '-- database --';
+        #### debug Dumper $self;
 
 	if (grep {$dbase eq $_} @GODOT::Config::DBASE_ARR) {
 	    $self->dbase($dbase);
@@ -267,8 +279,7 @@ sub check_dbase {
 	}
 
 	if (GODOT::String::aws($self->dbase_local()) || GODOT::String::aws($self->dbase_type())) {
-	    ${$message_ref} = "Fields $GODOT::Constants::DBASE_LOCAL_FIELD and/or " . 
-		"$GODOT::Constants::DBASE_TYPE_FIELD were empty.";
+	    ${$message_ref} = "Fields $GODOT::Constants::DBASE_LOCAL_FIELD and/or $GODOT::Constants::DBASE_TYPE_FIELD were empty.";
 	    return $FALSE;
 	}
 
@@ -276,9 +287,18 @@ sub check_dbase {
 	## Both dbase_local and dbase_type have value.
         ##
 
-	if (!(grep {$self->dbase_type() eq $_} @GODOT::Constants::DBASE_TYPE_ARR)) {
-	    ${$message_ref} = "Field $GODOT::Constants::DBASE_TYPE_FIELD (" . $self->dbase_type() . ") was invalid.";  
-	    return $FALSE;
+	if ( ! (grep {$self->dbase_type() eq $_} @GODOT::Constants::DBASE_TYPE_ARR)) {
+
+            ##
+            ## (15-mar-2009 kl) -- if this is an openurl link, then we do not care that it is an unknown database type
+            ## (15-mar-2009 kl) -- check for openurl syntax not whether it is in a known list of openurl databases
+            ##                  
+            #### unless ($self->is_openurl_dbase) {
+
+            unless ($self->is_openurl_syntax) {
+	        ${$message_ref} = "Field $GODOT::Constants::DBASE_TYPE_FIELD (" . $self->dbase_type() . ") was invalid.";  
+	        return $FALSE;
+	    }
 	}
        
 	##
@@ -287,8 +307,7 @@ sub check_dbase {
 	$tmpstr = $self->dbase_local();
 
 	if ($self->dbase_type() eq 'erl')  {
-	    if ($tmpstr =~ m#^I\((.+)\).+$#)  {    ## ex. I(CCON0005) 
-		#### $tmpstr = substr($1, 0, 2);            
+	    if ($tmpstr =~ m#^I\((.+)\).+$#)  {         ## ex. I(CCON0005) 
 		$tmpstr = $1;            
 	    }
 	    else {
@@ -306,7 +325,7 @@ sub check_dbase {
         if ($self->dbase_type() eq 'erl') {
 
             sub by_length_descending { length($b) <=> length($a); }
-    
+
             my @erl_codes = grep /^erl\./, (keys %GODOT::Config::DBASE_LOCAL_MAPPING);
 
             foreach my $erl_code (sort by_length_descending @erl_codes) {
@@ -332,15 +351,13 @@ sub check_dbase {
         ##
         ## (06-feb-2002 kl) - added so that we do not need to add a list of all databases that contain openurl links
         ##
-        elsif ($self->dbase_syntax() eq $GODOT::Constants::OPENURL_SYNTAX) {
+        elsif ($self->is_openurl_syntax()) {             
             $self->dbase($self->dbase_type() . ':' . $self->dbase_local());
         }
 	else {
 	    ${$message_ref} = "No database defined for $key.";
 	    return $FALSE;
 	}
-
-
 
 	if (grep {$self->dbase() eq $_} @GODOT::Config::DBASE_ARR) {
 	    $self->dbase_fullname($GODOT::Config::DBASE_INFO_HASH{$self->dbase()}->{'fullname'});
@@ -357,19 +374,18 @@ sub check_dbase {
         ##
         ## (06-feb-2002 kl) - just use dbase name for fullname - also see above 
         ##
-        elsif ($self->dbase_syntax() eq $GODOT::Constants::OPENURL_SYNTAX) {
+        elsif ($self->is_openurl_syntax()) {
 	    $self->dbase_fullname('OpenURL ' . $self->dbase());                          
             return $TRUE;
         }
 
 
 	##
-	## !!!!!! if you change this message make the corresponding change to hold_tab.pm  !!!!!!
-	## !!!!!! -search for 'does not currently work with database'
+	## !!! -if you change this message make the corresponding change to hold_tab.pm
+	## !!! -search for 'does not currently work with database'
 	##
 
-	${$message_ref} = "This program ($GODOT::Constants::PROG_NAME) does not currently work with database " .
-			  $self->dbase() . ".";
+	${$message_ref} = "This program ($GODOT::Constants::PROG_NAME) does not currently work with database " . $self->dbase() . ".";
 	return $FALSE;       
 }
 
