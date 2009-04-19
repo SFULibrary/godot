@@ -48,6 +48,8 @@ use Exporter;
              strip_extra_leading_subfield
              rm_arr_dup_str
              put_query_fields
+             put_query_fields_from_array
+             uri_encode_string
              valid_email);
 
 use strict;
@@ -685,28 +687,50 @@ sub rm_arr_dup_str {
 sub put_query_fields {
     my ($ref) = @_;
 
+    unless (ref($ref) eq 'HASH') {
+        debug location, ' -- ', 'expected parameter to be a reference to a hash';
+        return '';
+    }
+
     my @arr;
-
-    #### debug location, ' -- ', ref($ref);
-
     while (my($field, $value) = each %{$ref}) {
+        push(@arr, uri_encode_string($field) . '=' . uri_encode_string($value));
+    }
 
-        #### debug "$field = $value";
+    return join('&', @arr);
+}
 
-        ##
-        ## -using this method instead of calling CGI::escape so logic matches previous code and makes testing easier
-        ##
-        $field =~ s# #+#g;
-        $field =~ s#([^0-9a-zA-Z\+])#sprintf("%%%02x", ord($1))#eg;
 
-        $value =~ s# #+#g;
-        $value =~ s#([^0-9a-zA-Z\+])#sprintf("%%%02x", ord($1))#eg;
+##
+## -same as above, but $ref is for an array of field/value pairs
+## -allows there to be multiple occurrences of the same field name
+##
+sub put_query_fields_from_array {
+    my ($ref) = @_;
 
-        push(@arr, "$field=$value");
+    unless (ref($ref) eq 'ARRAY') {
+        debug location, ' -- ', 'expected parameter to be a reference to an array';
+        return '';
+    }
+
+    my @arr;
+    foreach my $pair_ref (@{$ref}) {
+        my($field, $value) = @{$pair_ref};
+        push(@arr, uri_encode_string($field) . '=' . uri_encode_string($value));
     }
     return join('&', @arr);
 }
 
+##
+## -using this method instead of calling CGI::escape so logic matches previous code and makes testing easier
+##
+sub uri_encode_string {
+    my($string) = @_;
+    
+    $string =~ s# #+#g;
+    $string =~ s#([^0-9a-zA-Z\+])#sprintf("%%%02x", ord($1))#eg;    
+    return $string;
+}
 
 
 sub valid_email {
