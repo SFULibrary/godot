@@ -143,6 +143,12 @@ sub format {
         $writer->endTag('PublicationDate');
     }
 
+    if ( !aws( $citation->parsed('PUB_PLACE') ) ) {
+        $writer->startTag('PublicationPlace');
+        $writer->characters( substr( $citation->parsed('PUB_PLACE'), 0, 40 ) );
+        $writer->endTag('PublicationPlace');
+    }
+
     $writer->endTag('PublisherInfo');
 
     $writer->startTag('RequestInfo');
