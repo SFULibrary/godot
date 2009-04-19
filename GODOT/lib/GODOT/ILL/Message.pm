@@ -50,7 +50,6 @@ my $DELIM = ':';
 my $WRAP_INDENT = 20;
 my $WRAP_LEN    = 59;
 
-
 ##
 ## -called using class not object, so appears to need to have 'dispatch' defined explicitly for the class 
 ##
@@ -162,7 +161,7 @@ End_of_Message
             my $sender_email = $self->sender_email;
 
             my $email        = $self->email;
-            if (remote_host() eq 'hs72260.lib.sfu.ca') { $email = 'klong@sfu.ca'; }          
+            if (remote_host() eq $GODOT::Config::REMOTE_HOST_FOR_TESTING) { $email = 'klong@sfu.ca'; }          
 
             my $subject      = $self->subject($reqno);
 
@@ -519,6 +518,17 @@ sub source {
     return $string;
 }
 
+##
+## (06-apr-2009 kl) -- added during OpenURL 1.0 improvements to handle PUB_PLACE for messages without a specific publisher place field 
+##
+sub publisher_statement {
+    my($self) = @_;
+
+    my $citation = $self->citation;
+    my $place = '(' . $citation->parsed('PUB_PLACE') . ')' unless aws($citation->parsed('PUB_PLACE'));
+    my $publisher_statement = trim_beg_end(join(' ', $citation->parsed('PUB'), $place));     
+    return $publisher_statement;
+}
 
 sub transport { return 'email'; }
 
