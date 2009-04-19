@@ -22,7 +22,6 @@ sub format {
     ##                                   SponsoringBody
     ##                                   SubTitle
     ##                                   NationalBibliographyNumber
-    ##                                   PlaceOfPublication
     ##                                   TagName                      (- has to do with ISO protocol - can be ignored)
     ##
     ##
@@ -141,7 +140,9 @@ sub format {
     if ($citation->is_journal) { $self->fill_field($date,  'PublicationDateOfComponent',   \%form); }
     else                       { $self->fill_field($date,  'PublicationDate',   \%form);}
 
-    $self->fill_field($citation->parsed('PUB'),              'Publisher',         \%form);
+    $self->fill_field($citation->parsed('PUB'),              'Publisher',          \%form);
+    $self->fill_field($citation->parsed('PUB_PLACE'),        'PlaceOfPublication', \%form);
+
     $self->fill_field($citation->parsed('SERIES'),           'SeriesTitleNumber', \%form);
     $self->fill_field($citation->parsed('SYSID'),            'SystemNo',          \%form);
 
