@@ -63,7 +63,7 @@ sub format {
         $message .= $self->wrap_lf("TIT",    $self->citation->parsed('TITLE'));
 
         $message .= $self->wrap_lf("AUT",    $self->citation->parsed('AUT'));
-        $message .= $self->wrap_lf("P/M",    $self->citation->parsed('PUB'));
+        $message .= $self->wrap_lf("P/M",    $self->publisher_statement);
 
         $message .= $self->wrap_lf("DAT",    $self->citation->parsed('YEAR'));
         $message .= $self->wrap_lf("PAG",    $self->citation->parsed('PGS'));
@@ -80,7 +80,7 @@ sub format {
         $message .= $self->wrap_lf("TIT",    $self->citation->parsed('TITLE'));
         $message .= $self->wrap_lf("AUT",    $self->citation->parsed('AUT'));
 
-        $message .= $self->wrap_lf("P/M",    $self->citation->parsed('PUB'));
+        $message .= $self->wrap_lf("P/M",    $self->publisher_statement);
         $message .= $self->wrap_lf("SBN",    $self->citation->parsed('ISBN'));
         $message .= $self->wrap_lf("SSN",    $self->citation->parsed('ISSN'));
 
@@ -98,7 +98,7 @@ sub format {
         $message .= $self->wrap_lf("TIT",    $self->citation->parsed('TITLE'));
 
         $message .= $self->wrap_lf("VOL",    $self->citation->parsed('VOLISS'));  
-        $message .= $self->wrap_lf("P/M",    $self->citation->parsed('PUB'));
+        $message .= $self->wrap_lf("P/M",    $self->publisher_statement);
         $message .= $self->wrap_lf("DAT",    $date);
 
         $message .= $self->wrap_lf("PAG",    $self->citation->parsed('PGS'));
@@ -116,7 +116,7 @@ sub format {
         $message .= $self->wrap_lf("AUT",    $self->citation->parsed('AUT'));
 
         $message .= $self->wrap_lf("VOL",    $self->citation->parsed('VOLISS'));  
-        $message .= $self->wrap_lf("P/M",    $self->citation->parsed('PUB'));
+        $message .= $self->wrap_lf("P/M",    $self->publisher_statement);
 
         $message .= $self->wrap_lf("SBN",    $self->citation->parsed('ISBN'));
         $message .= $self->wrap_lf("SSN",    $self->citation->parsed('ISSN'));
@@ -140,7 +140,7 @@ sub format {
 
         $message .= $self->wrap_lf("TIT",    $thesis);
         $message .= $self->wrap_lf("AUT",    $self->citation->parsed('AUT'));
-        $message .= $self->wrap_lf("P/M",    $self->citation->parsed('PUB'));
+        $message .= $self->wrap_lf("P/M",    $self->publisher_statement);
 
         $message .= $self->wrap_lf("SBN",    $self->citation->parsed('ISBN'));
         $message .= $self->wrap_lf("SSN",    $self->citation->parsed('ISSN'));
