@@ -53,7 +53,7 @@ sub format {
     if ($citation->is_book || $citation->is_book_article) {
         $message .= $self->wrap("TITLE",           $citation->parsed('TITLE'));
 	$message .= $self->wrap("AUTHOR(S)",       $citation->parsed('AUT'));
-	$message .= $self->wrap("PUBLISHER",       $citation->parsed('PUB'));
+	$message .= $self->wrap("PUBLISHER",       $self->publisher_statement);
 	$message .= $self->wrap("SERIES TITLE",    $citation->parsed('SERIES'));
 	$message .= $self->wrap("DATE",            $citation->parsed('YEAR'));
 	$message .= $self->wrap("PAGE(S)",         $citation->parsed('PGS'));
@@ -66,7 +66,7 @@ sub format {
 
 	$message .= $self->wrap("TITLE",           $citation->parsed('TITLE'));
 	$message .= $self->wrap("AUTHOR(S)",       $citation->parsed('AUT'));
-	$message .= $self->wrap("PUBLISHER",       $citation->parsed('PUB'));
+	$message .= $self->wrap("PUBLISHER",       $self->publisher_statement);
 	$message .= $self->wrap("SERIES TITLE",    $citation->parsed('SERIES'));
         $message .= $self->wrap("DATE",            $date);     
 	$message .= $self->wrap("PAGE(S)",         $citation->parsed('PGS'));
@@ -78,7 +78,7 @@ sub format {
     elsif ($citation->is_journal) {
 
 	$message .= $self->wrap("TITLE",           $citation->parsed('TITLE'));
-	$message .= $self->wrap("PUBLISHER",       $citation->parsed('PUB'));
+	$message .= $self->wrap("PUBLISHER",       $self->publisher_statement);
 	$message .= $self->wrap("SERIES TITLE",    $citation->parsed('SERIES'));
         $message .= $self->wrap("VOLUME/ISSUE",    $citation->parsed('VOLISS'));    
         $message .= $self->wrap("DATE",            $date);      
@@ -92,7 +92,7 @@ sub format {
 
 	$message .= $self->wrap("TITLE",           $citation->parsed('TITLE'));
 	$message .= $self->wrap("AUTHOR(S)",       $citation->parsed('AUT'));
-	$message .= $self->wrap("PUBLISHER",       $citation->parsed('PUB'));
+	$message .= $self->wrap("PUBLISHER",       $self->publisher_statement);
 	$message .= $self->wrap("SERIES TITLE",    $citation->parsed('SERIES'));
         $message .= $self->wrap("VOLUME/ISSUE",    $citation->parsed('VOLISS'));    
         $message .= $self->wrap("DATE",            $date);     
@@ -115,7 +115,7 @@ sub format {
 
 	$message .= $self->wrap("TITLE",           $thesis);
 	$message .= $self->wrap("AUTHOR(S)",       $citation->parsed('AUT'));
-	$message .= $self->wrap("PUBLISHER",       $citation->parsed('PUB'));
+	$message .= $self->wrap("PUBLISHER",       $self->publisher_statement);
         $message .= $self->wrap("DATE",            $date);     
 	$message .= $self->wrap("ISBN",            $citation->parsed('ISBN'));
 	$message .= $self->wrap("ISSN",            $citation->parsed('ISSN'));
