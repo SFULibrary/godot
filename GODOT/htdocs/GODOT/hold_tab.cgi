@@ -132,11 +132,15 @@ sub main {
 	    param(-name=>$name,  '-values'=>[$value]);
 	}
     }
-    elsif (param('sid') =~ m#^ukoln:#) {
-
-        param(-name=>'sid',  '-values'=>['ukoln:ukoln']);
-    }
-
+    ##
+    ## (26-mar-2009 kl) -- can now stomach sid and rfr_id that are not known so there is no reason for this case
+    ##
+    #### elsif (param('sid') =~ m#^ukoln:#) {
+    ####
+    ####    param(-name=>'sid',  '-values'=>['ukoln:ukoln']);
+    #### }
+    ####
+  
     ##--------------------------------------------------------------------------------------------------
     ##
     ## -redirect to development/test copy of godot - this means we don't, when 
@@ -146,7 +150,7 @@ sub main {
 
     use GODOT::Redirect;
     
-    debug 'redirect....  ', GODOT::Redirect::redirect_url;
+    debug 'redirect....  ', GODOT::Redirect::redirect_url if naws(GODOT::Redirect::redirect_url);
 
     if (my $redirect_url = GODOT::Redirect::redirect_url) {
         print redirect(-location=>&hold_tab::dev_copy_url($redirect_url), -nph=>0, -method=>'GET');
@@ -154,7 +158,7 @@ sub main {
     }
 
     select(STDERR); $| = 1;
-    select(STDOUT); $| = 1;                        ## ?? is this necessary ??
+    select(STDOUT); $| = 1;                        
 
     use GODOT::Authentication;
     my $authentication = GODOT::Authentication->new;
@@ -173,7 +177,6 @@ sub main {
         ##
 
         my $user = $authentication->get_site();
-
         my $config = GODOTConfig::Cache->configuration_from_cache($user);
 
 	unless (defined $config) {
@@ -197,7 +200,7 @@ sub main {
     $prev_screen = &hold_tab::get_screen();
     $action      = &hold_tab::get_action($prev_screen);
 
-    debug "prev_screen:  $prev_screen, action:  $action"; 
+    #### debug "prev_screen:  $prev_screen, action:  $action"; 
 
     use GODOT::Session;
 
@@ -229,45 +232,35 @@ sub main {
     ##
     ## (01-dec-2003 kl) - added for Ebscohost for VCC
     ##
-
     my $branch_abbrev      = param($GODOT::Constants::BRANCH_ABBREV_FIELD);  
-
-    #### debug "<dbase_type dbase_local> $dbase_type $dbase_local";
 
     use GODOT::Database;
     my($database) = new GODOT::Database;
 
-    unless ($database->init_dbase([param()], $syntax, $dbase_type, $dbase_local, $dbase_type_abbrev, $dbase_local_abbrev) > 0 ){
-
+    unless ($database->init_dbase([param()], $syntax, $dbase_type, $dbase_local, $dbase_type_abbrev, $dbase_local_abbrev) > 0 ) {
          print header, start_html(-dtd=>$gconst::DTD), "Link to script failed.", p, "Unable to initialize database information.", end_html;
          goto _end;
     }
 
     ##
-    ## !!!!!!!!!! - set this after GODOT::Database::init_dbase is run as otherwise creation of param('hold_tab_cookie')
-    ## !!!!!!!!!!   interferes with syntax determination 
-
+    ## !!! Set this after GODOT::Database::init_dbase is run as otherwise creation of param('hold_tab_cookie') interferes with syntax determination.
+    ##
     param(-name=>$hold_tab::COOKIE_FIELD,  '-values'=>[$session->session_id]);
 
-    #### debug "cookie: ", param($hold_tab::COOKIE_FIELD);
-
     ##
-    ## *kl* move this to hidden field logic later
+    ## !!! move this to hidden field logic later
     ##
-
     param(-name=>$hold_tab::SYNTAX_FIELD, '-values'=>[$database->dbase_syntax()]);     
 
     ##
     ## (06-feb-2002 kl) 
     ##
-
     param(-name=>$hold_tab::DBASE_TYPE_FIELD,  '-values'=>[$database->dbase_type()]);     
     param(-name=>$hold_tab::DBASE_LOCAL_FIELD, '-values'=>[$database->dbase_local()]);     
     
     ##-------------------------------------------------------------------------------------------------
-
-    ## -delete action from param so doesn't get saved later
-    
+    ##
+    ## -delete action from param so doesn't get saved later    
     ##
     ## -check that essential fields have been passed -- problem may be MS Internet Explorer bug 
     ##
@@ -275,22 +268,16 @@ sub main {
     if (aws(param($hold_tab::DBASE_FIELD)) && aws($database->dbase_local()) ) {
  
 	&glib::send_admin_email("$0: Both $hold_tab::DBASE_FIELD and $hold_tab::DBASE_LOCAL_FIELD were empty (". &user_agent() . ")");
- 
-        print header, 
-              start_html(-dtd=>$gconst::DTD),
-              "Link to script failed.",
-	      end_html;
-
+        print header, start_html(-dtd=>$gconst::DTD), "Link to script failed.", end_html;
         foreach (param()) { debug "<*> param($_): ", param($_); }
 	goto _end;
     }
 
     ##
-    ## -translate URL incoded citation fields if they exist  
+    ## -translate URL encoded citation fields if they exist  
     ##
     if ($action ne $hold_tab::START_ACT) {
-
-        foreach my $field (@hold_tab::CITN_ARR) { 
+        foreach my $field (@gconst::CITN_ARR) { 
             if (param($field)) {
   	        param(-name=>$field, '-values'=>[unescape(param($field))]);   
             }
@@ -308,8 +295,7 @@ sub main {
 
     my $user = $authentication->get_site($site_param);
 
-    my $assoc_sites = ($authentication->valid_field('assoc_sites') && (defined $authentication->assoc_sites)) ? 
-                      [ $authentication->assoc_sites ] : [];
+    my $assoc_sites = ($authentication->valid_field('assoc_sites') && (defined $authentication->assoc_sites)) ? [ $authentication->assoc_sites ] : [];
 
     my $page_local  = ($authentication->valid_field('page_local')) ? $authentication->page_local : undef;
 
@@ -318,7 +304,6 @@ sub main {
     ##                  - fixes problem of CUFTS url containing a site with a trailing ',0'.  ie. we want 'BVAS' not 'BVAS,0'
     ## (25-oct-2004 kl) - save assoc_sites as scalar due to a problem with passing param values other than scalars to parallel server
     ##
-
     my $assoc_sites_string = (scalar @{$assoc_sites}) ? join(' ', @{$assoc_sites}) : '';
     param(-name=>$gconst::ASSOC_SITES_FIELD, '-values'=>[ $assoc_sites_string ]) ; 
 
@@ -328,19 +313,6 @@ sub main {
 
     param(-name=>$hold_tab::BRANCH_FIELD, '-values'=>[$user]);
     debug "user >>>> $user";
-
-    ##
-    ## -don't read in if ILL module is going to be called as it has other user info logic.
-    ##
-    ## (8-mar-1998 kl) - over time more config options are being added - given this it appears 
-    ##                   not to make sense to continue to add fields to ill_def method of getting 
-    ##                   user info - thus for now we will use both methods for ILL forms processing logic 
-    ## 
-    ##                 - obviously using both methods is not ideal -- will look at fix when
-    ##                   do work on packaging up for install at other sites and dealing with user info 
-    ##                   sync issues
-    ##
-
 
     my $config = GODOTConfig::Cache->configuration_from_cache($user);
   
@@ -364,16 +336,12 @@ sub main {
     ##
     ## -will find a value for param($hold_tab::DBASE_FIELD) if it currently does not have a valid value 
     ##
-
     my $message; 
     my $dbase = param($hold_tab::DBASE_FIELD);
 
     my $res = $database->check_dbase($dbase, \$message, \$database);
 
-    #### debug "\n-- GODOT::Database after check_dbase --\n", Dumper($database), "\n--------\n\n";
-    #### debug "2 - after check_dbase in hold_tab.cgi:  ", ref($database), "\n";
-
-    unless ($res) { ## mod_yyua
+    unless ($res) {
 
 	debug "message -> $message";
 
@@ -416,31 +384,26 @@ sub main {
     ##
 
     ##
-    ## *kl* move this to citation or parser modules??????
+    ## !!! move this to citation or parser modules ??????
     ##
 
-    if (naws(param($gconst::TITLE_FIELD)) || 
-        naws(param($gconst::ISSN_FIELD))  || 
-        naws(param($gconst::ISBN_FIELD)))       {
+    if (naws(param($gconst::TITLE_FIELD)) || naws(param($gconst::ISSN_FIELD)) || naws(param($gconst::ISBN_FIELD)))       {
 
         $citation->init_from_godot_parsed_params();
-
-        use Data::Dumper;
-        #### debug "\n-- GODOT::Citation --\n", Dumper($citation), "\n--------\n\n";
     }
     else {
 	require GODOT::Parser;
 
-	# Set some information on the citation before initializing the param fields
+        ##
+	## Set some information on the citation before initializing the param fields
+        ##
 
-        #
-	# Check for BRS/III flags - taken out of parse.pm
-        # 
-
+        ##
+	## Check for BRS/III flags - taken out of parse.pm
+        ## 
 	if (defined $database->source) { 
         
             my $source = $database->source;
-
             my $tmp_config = GODOTConfig::Cache->configuration_from_cache($source); 
 
             unless (defined $tmp_config) {
@@ -455,14 +418,12 @@ sub main {
 	$citation->init_from_params();
 
         ##
-        ## (06-feb-2002 kl) - !!!!! added Database object as another parameter -- can probably be changed
-        ##                    later so that all that gets passed is the Database object !!!!
+        ## (06-feb-2002 kl) - !!!!! added Database object as another parameter -- can probably be changed later so that all that gets passed is the Database object !!!!
         ##
-
 	my $parser = GODOT::Parser->dispatch($citation->dbase(), $database, $user);
 
-        unless ($parser) { ##yyua_mod
-            my $usr_msg = 'Not enough information available for searching. Administrator has been informed.';
+        unless ($parser) {
+            my $usr_msg = 'Not enough information available for searching.  Administrator has been informed.';
             my $admin_msg = 'Dispatching parser for database '. $database->dbase() . ' failed!';
             &glib::send_admin_email("$0: $admin_msg");
 
@@ -473,8 +434,7 @@ sub main {
 	$parser->parse($citation);
     }
     
-    #### use Data::Dumper;
-    #### debug "\n-- GODOT::Citation --\n", Dumper($citation), "\n--------\n\n";
+    debug "\n-- GODOT::Citation --\n", Dumper($citation), "\n--------\n\n";
 
     use GODOT::CGI; 
     my $cgi = new GODOT::CGI;
@@ -485,7 +445,6 @@ sub main {
     $cgi->result($action);                       ## -initialize
 
     my $brake;
-
 
     my $page = new GODOT::Page;
 
@@ -516,7 +475,7 @@ sub main {
 
         $cgi->get_state($config, $citation);
 
-        debug "from state table: (", $cgi->prev_screen, " ",  $cgi->action, ") ->  ", $cgi->subroutine_name;
+        #### debug "from state table: (", $cgi->prev_screen, " ",  $cgi->action, ") ->  ", $cgi->subroutine_name;
 
         unless ($cgi->result) {
 	    &glib::send_admin_email("$0: state (" .  $cgi->prev_screen . " " .  $cgi->action . ") not in state table");
