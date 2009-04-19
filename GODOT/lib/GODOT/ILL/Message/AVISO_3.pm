@@ -67,10 +67,12 @@ EOM
                 $imprint = "ISN: $citn{'ISSN'} $citn{'ISBN'} "; 
         }
 
-        if (! aws($citn{'PUB'})) {
+        my $publisher_statement = $self->publisher_statement;
 
-                if ($imprint)  { $imprint .= " - $citn{'PUB'}"; }
-                else           { $imprint = $citn{'PUB'};       }
+        if (! aws($publisher_statement)) {
+
+                if ($imprint)  { $imprint .= " - " . $publisher_statement; }
+                else           { $imprint = $publisher_statement;          }
         }
   
        if ($citation->is_book || $citation->is_book_article)	
