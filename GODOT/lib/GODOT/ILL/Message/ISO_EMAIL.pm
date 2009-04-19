@@ -18,8 +18,7 @@ sub format {
     my($self, $reqno) = @_;
 
     ##
-    ## -currently not sending info for citation fields:   :SEND_PlaceOfPublication
-    ##                                                    :SEND_MediumCharacteristics
+    ## -currently not sending info for citation fields:   :SEND_MediumCharacteristics
     ##                                                    :SEND_NationalBibliographyNo
     ##                                                    :SEND_SubTitle
     ##
@@ -68,7 +67,7 @@ sub format {
     }
 
     $message .= $self->_format_field($citation->parsed('EDITION'),            ':SEND_Edition');
-    $message .= $self->_format_field('',                                      ':SEND_PlaceOfPublication');
+    $message .= $self->_format_field($citation->parsed('PUB_PLACE'),          ':SEND_PlaceOfPublication');
     $message .= $self->_format_field($citation->parsed('PUB'),                ':SEND_Publisher');
     $message .= $self->_format_field($citation->parsed('SERIES'),             ':SEND_SeriesTitleNumber');
     $message .= $self->_format_field($citation->parsed('CALL_NO'),            ':SEND_CallNumber');
