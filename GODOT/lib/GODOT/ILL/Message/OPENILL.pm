@@ -35,8 +35,8 @@ sub format {
     $message .= "5: " . $citation->parsed('TITLE') . "\n";	# title
     $message .= "6: \n";				        # sub-title
     $message .= "7: \n";				        # sponsoring body
-    $message .= "8: \n";				        # place of pub
-    $message .= "9: " . $citation->parsed('PUB') . "\n";	# publisher
+    $message .= "8: " .  $citation->parsed('PUB_PLACE') . "\n";	# place of pub
+    $message .= "9: " .  $citation->parsed('PUB') . "\n";	# publisher
     $message .= "10: " . $citation->parsed('SERIES') . "\n";	# series title num
     $message .= "11: " . $citation->parsed('VOLISS') . "\n";	# volume/issue
     $message .= "12: " . $citation->parsed('EDITION') . "\n";	# edition
