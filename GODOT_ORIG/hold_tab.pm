@@ -156,73 +156,78 @@ $PARAM_DELIMITER          = '.';
 $PARAM_DELIMITER_PATTERN  = '\.';      
 
 
+##
+## (10-apr-2009 kl) -- no need for a copy in both gconst.pm and here  
+##                  -- also likely no need for a copy both in gconst.pm and GODOT::Citation.pm but leave this for another time
+##
 
 ##
 ## (04-jul-2001-kl) - added $URL_MSG_FIELD to 'use vars' and '@CITN_ARR'
 ##
 
-use vars qw(@CITN_ARR
-            $REQTYPE_FIELD     $PUBTYPE_FIELD $ARTTIT_FIELD  $YEAR_FIELD      $ISSN_FIELD
-            $SERIES_FIELD      $MONTH_FIELD   $VOLISS_FIELD  $VOL_FIELD       $ISS_FIELD
-            $PGS_FIELD         $TITLE_FIELD   $PUB_FIELD     $AUT_FIELD       $ARTAUT_FIELD
-            $NOTE_FIELD        $ISBN_FIELD    $REPNO_FIELD   $SYSID_FIELD     $THESIS_TYPE_FIELD
-            $FTREC_FIELD       $URL_FIELD     $ERIC_NO_FIELD $ERIC_AV_FIELD   $MLOG_NO_FIELD
-            $UMI_DISS_NO_FIELD $EDITION_FIELD $CALL_NO_FIELD $YYYYMMDD_FIELD  $ERIC_FT_AV_FIELD
-            $DOI_FIELD         $PMID_FIELD    $BIBCODE_FIELD $OAI_FIELD       $SICI_FIELD
-            $URL_MSG_FIELD     $DAY_FIELD     $GENRE_FIELD   $PATENT_NO_FIELD $PATENTEE_FIELD
-            $PATENT_YEAR_FIELD $NO_HOLDINGS_SEARCH_FIELD);
+#
+#use vars qw(@CITN_ARR
+#            $REQTYPE_FIELD     $PUBTYPE_FIELD $ARTTIT_FIELD  $YEAR_FIELD      $ISSN_FIELD
+#            $SERIES_FIELD      $MONTH_FIELD   $VOLISS_FIELD  $VOL_FIELD       $ISS_FIELD
+#            $PGS_FIELD         $TITLE_FIELD   $PUB_FIELD     $AUT_FIELD       $ARTAUT_FIELD
+#            $NOTE_FIELD        $ISBN_FIELD    $REPNO_FIELD   $SYSID_FIELD     $THESIS_TYPE_FIELD
+#            $FTREC_FIELD       $URL_FIELD     $ERIC_NO_FIELD $ERIC_AV_FIELD   $MLOG_NO_FIELD
+#            $UMI_DISS_NO_FIELD $EDITION_FIELD $CALL_NO_FIELD $YYYYMMDD_FIELD  $ERIC_FT_AV_FIELD
+#            $DOI_FIELD         $PMID_FIELD    $BIBCODE_FIELD $OAI_FIELD       $SICI_FIELD
+#            $URL_MSG_FIELD     $DAY_FIELD     $GENRE_FIELD   $PATENT_NO_FIELD $PATENTEE_FIELD
+#            $PATENT_YEAR_FIELD $NO_HOLDINGS_SEARCH_FIELD);
+#
 
 ##
 ## (26-nov-2000) - moved to gconst.pm
 ##               - please see that file for field descriptions
 ##
-
-
-@CITN_ARR = (
-    $REQTYPE_FIELD            = $gconst::REQTYPE_FIELD, 
-    $PUBTYPE_FIELD            = $gconst::PUBTYPE_FIELD,
-    $TITLE_FIELD              = $gconst::TITLE_FIELD,
-    $ARTTIT_FIELD             = $gconst::ARTTIT_FIELD,
-    $SERIES_FIELD             = $gconst::SERIES_FIELD,
-    $AUT_FIELD                = $gconst::AUT_FIELD,
-    $ARTAUT_FIELD             = $gconst::ARTAUT_FIELD,
-    $PUB_FIELD                = $gconst::PUB_FIELD,
-    $ISSN_FIELD               = $gconst::ISSN_FIELD,
-    $ISBN_FIELD               = $gconst::ISBN_FIELD,
-    $SICI_FIELD               = $gconst::SICI_FIELD,  
-    $VOLISS_FIELD             = $gconst::VOLISS_FIELD,
-    $VOL_FIELD                = $gconst::VOL_FIELD,
-    $ISS_FIELD                = $gconst::ISS_FIELD,
-    $PGS_FIELD                = $gconst::PGS_FIELD,
-    $YEAR_FIELD               = $gconst::YEAR_FIELD,
-    $MONTH_FIELD              = $gconst::MONTH_FIELD,
-    $DAY_FIELD                = $gconst::DAY_FIELD,
-    $YYYYMMDD_FIELD           = $gconst::YYYYMMDD_FIELD,                         
-    $EDITION_FIELD            = $gconst::EDITION_FIELD,    
-    $THESIS_TYPE_FIELD        = $gconst::THESIS_TYPE_FIELD,
-    $FTREC_FIELD              = $gconst::FTREC_FIELD,
-    $URL_FIELD                = $gconst::URL_FIELD,
-    $NOTE_FIELD               = $gconst::NOTE_FIELD,
-    $REPNO_FIELD              = $gconst::REPNO_FIELD,
-    $SYSID_FIELD              = $gconst::SYSID_FIELD,                                                                              
-    $ERIC_NO_FIELD            = $gconst::ERIC_NO_FIELD,
-    $ERIC_AV_FIELD            = $gconst::ERIC_AV_FIELD,
-    $ERIC_FT_AV_FIELD         = $gconst::ERIC_FT_AV_FIELD,
-    $MLOG_NO_FIELD            = $gconst::MLOG_NO_FIELD,
-    $UMI_DISS_NO_FIELD        = $gconst::UMI_DISS_NO_FIELD,
-    $CALL_NO_FIELD            = $gconst::CALL_NO_FIELD,
-    $DOI_FIELD                = $gconst::DOI_FIELD, 
-    $PMID_FIELD               = $gconst::PMID_FIELD,
-    $BIBCODE_FIELD            = $gconst::BIBCODE_FIELD,
-    $OAI_FIELD                = $gconst::OAI_FIELD,
-    $URL_MSG_FIELD            = $gconst::URL_MSG_FIELD,
-    $GENRE_FIELD              = $gconst::GENRE_FIELD,
-    $PATENT_NO_FIELD          = $gconst::PATENT_NO_FIELD,
-    $PATENTEE_FIELD           = $gconst::PATENTEE_FIELD,
-    $PATENT_YEAR_FIELD        = $gconst::PATENT_YEAR_FIELD,
-    $NO_HOLDINGS_SEARCH_FIELD = $gconst::NO_HOLDINGS_SEARCH_FIELD
-);
-
+#
+# @CITN_ARR = (
+#    $REQTYPE_FIELD            = $gconst::REQTYPE_FIELD, 
+#    $PUBTYPE_FIELD            = $gconst::PUBTYPE_FIELD,
+#    $TITLE_FIELD              = $gconst::TITLE_FIELD,
+#    $ARTTIT_FIELD             = $gconst::ARTTIT_FIELD,
+#    $SERIES_FIELD             = $gconst::SERIES_FIELD,
+#    $AUT_FIELD                = $gconst::AUT_FIELD,
+#    $ARTAUT_FIELD             = $gconst::ARTAUT_FIELD,
+#    $PUB_FIELD                = $gconst::PUB_FIELD,
+#    $ISSN_FIELD               = $gconst::ISSN_FIELD,
+#    $ISBN_FIELD               = $gconst::ISBN_FIELD,
+#    $SICI_FIELD               = $gconst::SICI_FIELD,  
+#    $VOLISS_FIELD             = $gconst::VOLISS_FIELD,
+#    $VOL_FIELD                = $gconst::VOL_FIELD,
+#    $ISS_FIELD                = $gconst::ISS_FIELD,
+#    $PGS_FIELD                = $gconst::PGS_FIELD,
+#    $YEAR_FIELD               = $gconst::YEAR_FIELD,
+#    $MONTH_FIELD              = $gconst::MONTH_FIELD,
+#    $DAY_FIELD                = $gconst::DAY_FIELD,
+#    $YYYYMMDD_FIELD           = $gconst::YYYYMMDD_FIELD,                         
+#    $EDITION_FIELD            = $gconst::EDITION_FIELD,    
+#    $THESIS_TYPE_FIELD        = $gconst::THESIS_TYPE_FIELD,
+#    $FTREC_FIELD              = $gconst::FTREC_FIELD,
+#    $URL_FIELD                = $gconst::URL_FIELD,
+#    $NOTE_FIELD               = $gconst::NOTE_FIELD,
+#    $REPNO_FIELD              = $gconst::REPNO_FIELD,
+#    $SYSID_FIELD              = $gconst::SYSID_FIELD,                                                                              
+#    $ERIC_NO_FIELD            = $gconst::ERIC_NO_FIELD,
+#    $ERIC_AV_FIELD            = $gconst::ERIC_AV_FIELD,
+#    $ERIC_FT_AV_FIELD         = $gconst::ERIC_FT_AV_FIELD,
+#    $MLOG_NO_FIELD            = $gconst::MLOG_NO_FIELD,
+#    $UMI_DISS_NO_FIELD        = $gconst::UMI_DISS_NO_FIELD,
+#    $CALL_NO_FIELD            = $gconst::CALL_NO_FIELD,
+#    $DOI_FIELD                = $gconst::DOI_FIELD, 
+#    $PMID_FIELD               = $gconst::PMID_FIELD,
+#    $BIBCODE_FIELD            = $gconst::BIBCODE_FIELD,
+#    $OAI_FIELD                = $gconst::OAI_FIELD,
+#    $URL_MSG_FIELD            = $gconst::URL_MSG_FIELD,
+#    $GENRE_FIELD              = $gconst::GENRE_FIELD,
+#    $PATENT_NO_FIELD          = $gconst::PATENT_NO_FIELD,
+#    $PATENTEE_FIELD           = $gconst::PATENTEE_FIELD,
+#    $PATENT_YEAR_FIELD        = $gconst::PATENT_YEAR_FIELD,
+#    $NO_HOLDINGS_SEARCH_FIELD = $gconst::NO_HOLDINGS_SEARCH_FIELD
+# );
+#
 ##--------------------------------------------------------------------------
 
 use vars qw(@REQTYPE_ARR);
@@ -497,15 +502,13 @@ sub main_holdings_screen {
     ##
     ## print out citation after parsing and cleanup
     ##
-
     if (1) {
         debug "---------------------------------";
         foreach (@gconst::CITN_ARR) { debug "$_ = $citation{$_}"; }
         debug "---------------------------------";
     }
 
-    $reqtype = $citation{$REQTYPE_FIELD};
-
+    $reqtype = $citation{$gconst::REQTYPE_FIELD};
 
     report_time_location;
 
@@ -673,7 +676,7 @@ sub main_holdings_screen {
         ##                  - required when only ISSN or ISBN was passed to godot
         ##
     
-        if (! param($TITLE_FIELD)) {
+        if (! param($gconst::TITLE_FIELD)) {
 
             my @bib_circ_arr;
             my $title_from_holdings;
@@ -691,7 +694,7 @@ sub main_holdings_screen {
                 $title_from_holdings = &catalogue::get_title_from_bib_circ(\@bib_circ_arr);                    
             }
       
-            param(-name=>$TITLE_FIELD, '-values'=>[$title_from_holdings]);            
+            param(-name=>$gconst::TITLE_FIELD, '-values'=>[$title_from_holdings]);            
             $citation->parsed('TITLE', $title_from_holdings);
         }
 
@@ -825,7 +828,7 @@ sub catalogue_screen {
     ##  item databases (ex. UBC), so added &process_citation(...) logic below
     ##
 
-    foreach (@CITN_ARR) { $citation{$_} = param($_); }
+    foreach (@gconst::CITN_ARR) { $citation{$_} = param($_); }
 
     $check_citation_result = &process_citation($citation, '', \%citation, \$dummy, $parse::CITN_CHECK_FOR_REQ);  
 
@@ -899,7 +902,7 @@ sub catalogue_interface_screen {
     my(%tab_comp_hash, %queue_hash);
 
     my $lender  = param($gconst::ACTION_PARAM_FIELD);
-    my $reqtype = param($REQTYPE_FIELD);
+    my $reqtype = param($gconst::REQTYPE_FIELD);
     my $dbase   = param($gconst::DBASE_FIELD);
 
     my $live_source = $TRUE;
@@ -1268,7 +1271,7 @@ sub request_screen {
 		if ( defined param($_) && naws(param($_)) ) { $ill_fields{$_} = param($_); }
 	}
 	
-	foreach (@CITN_ARR)
+	foreach (@gconst::CITN_ARR)
 	{
 		if ( defined param($_) && naws(param($_)) ) { $ill_fields{$_} = param($_); }
 	}
@@ -1284,7 +1287,7 @@ sub request_screen {
         ##
 
         if (defined  $call_no_save_hash{$ill_fields{'hold_tab_lender'}}) {      
-            $ill_fields{$CALL_NO_FIELD} = $call_no_save_hash{$ill_fields{'hold_tab_lender'}};
+            $ill_fields{$gconst::CALL_NO_FIELD} = $call_no_save_hash{$ill_fields{'hold_tab_lender'}};
         }
 
 	#####################################################################
@@ -1640,7 +1643,7 @@ sub request_form_screen {
     param(-name=>'hold_tab_lender', '-values'=>[$ill_fields{'hold_tab_lender'}]);
     param(-name=>$MSG_REQ_TYPE_FIELD, '-values'=>[$ill_fields{$MSG_REQ_TYPE_FIELD}]);
     param(-name=>$PATR_CHECKED_OK_FIELD, '-values'=>[$ill_fields{$PATR_CHECKED_OK_FIELD}]);
-    param(-name=>$CALL_NO_FIELD, '-values'=>[$ill_fields{$CALL_NO_FIELD}]);
+    param(-name=>$gconst::CALL_NO_FIELD, '-values'=>[$ill_fields{$gconst::CALL_NO_FIELD}]);
 
     $page->instructions($instructions);
     $instructions->skipped_main_no_holdings($cgi->skipped_main_no_holdings);
@@ -1934,12 +1937,12 @@ sub print_hold_tab  {
 
     $user = $config->name;
 
-    $reqtype = param($REQTYPE_FIELD);
+    $reqtype = param($gconst::REQTYPE_FIELD);
 
-    $issn    = param($ISSN_FIELD);
-    $isbn    = param($ISBN_FIELD);  
+    $issn    = param($gconst::ISSN_FIELD);
+    $isbn    = param($gconst::ISBN_FIELD);  
 
-    $title   = param($TITLE_FIELD);
+    $title   = param($gconst::TITLE_FIELD);
 
     $live_source = ($screen eq $CAT_SCR);                 ## -set to true/false
 
@@ -2391,12 +2394,12 @@ sub print_hold_tab  {
         for (1 .. $loop_max) {
 
             if (! $para_server_res) { 
-                debug "search loop - left because of para_server_res problem"; 
+                #### debug "search loop - left because of para_server_res problem"; 
                 last; 
             }
 
             if ($done) { 
-                debug "search loop - left because 'done'";
+                #### debug "search loop - left because 'done'";
                 last; 
             }         
 
@@ -2450,7 +2453,7 @@ sub print_hold_tab  {
                      
                 if ((! $search_all_sources ) && ($num_branch_with_holdings >= $GODOT::Config::MIN_BRANCH_WITH_HOLDINGS)) { 
 
-                    debug "search loop - done 1";
+                    #### debug "search loop - done 1";
                     $done = $TRUE; 
                 }
                 else { 
@@ -2477,7 +2480,7 @@ sub print_hold_tab  {
                             $holdings_sources_tried{$parallel->source} = $TRUE;
                         }
                         else { 
-                            debug "search loop - left because no more query";
+                            #### debug "search loop - left because no more query";
                             last; 
                         }
                     }
@@ -2534,7 +2537,7 @@ sub print_hold_tab  {
 			$para_server_msg_string .= $tmp_msg;
 
                         if (! $para_server_res) {
-                            debug "search loop - done 2";
+                            #### debug "search loop - done 2";
                             $done = $TRUE;
                         }                       
  
@@ -2542,7 +2545,7 @@ sub print_hold_tab  {
                         report_time_location;
 		    }
                     else {
-                        debug "search loop - done 3";
+                        #### debug "search loop - done 3";
                         $done = $TRUE;
                     }                    
                 }
@@ -2693,7 +2696,7 @@ sub print_hold_tab  {
         defined ${$tab_comp_hash_ref}{$GODOT::Page::ERIC_COLL_COMP}       ||
         defined ${$tab_comp_hash_ref}{$GODOT::Page::MLOG_COLL_COMP})            {
 
-        debug "hold_found:  $hold_found";
+        #### debug "hold_found:  $hold_found";
 
         if ($hold_found) {
 
@@ -2888,7 +2891,6 @@ sub print_hold_tab  {
     my %site_has_holdings;
 
     foreach my $record (@{$page->holdings_records}) {
-        #### debug "[[[ has holdings:  ", $record->user;
         $site_has_holdings{$record->user} = $TRUE;
     }
 
@@ -3191,7 +3193,7 @@ sub print_result_row {
     my($next_action, $fmt);
     my($num_request_link, $has_check_link, $has_auto_req_link, $has_hidden_record); 
 
-    my $reqtype = param($REQTYPE_FIELD);
+    my $reqtype = param($gconst::REQTYPE_FIELD);
 
     my $auto_req = &auto_req($config, $citation);
 
@@ -3293,10 +3295,7 @@ sub print_result_row {
    
             $record->description(&GODOT::String::trim_beg_end($user_name_text));
 
-
             report_time_location;
-
-            debug "........................... $location";
 
             ##
             ## (05-mar-2004 kl) - determine this site's display group 
@@ -3326,14 +3325,11 @@ sub print_result_row {
 
                 foreach $bib_circ_hash_ref (@{${$holdings_hash_ref}{$location}}) {
                  
-                    #### debug Dumper($bib_circ_hash_ref);
-
                     ($html_str, $text_str, $call_no_str) = &catalogue::fmt_bib_circ($bib_circ_hash_ref, 
                                                                                     $reqtype, 
                                                                                     $fmt);                                    
                     if (($html_str eq '') && ($text_str eq '')) {
-                        $tmp_str = sprintf("%s - %s - %s - %s", $location, 
-                                           param($TITLE_FIELD), param($ISBN_FIELD), param($ISSN_FIELD));
+                        $tmp_str = sprintf("%s - %s - %s - %s", $location, param($gconst::TITLE_FIELD), param($gconst::ISBN_FIELD), param($gconst::ISSN_FIELD));
                     }
 
                     if (naws($html_str)) { $row_holdings_found = $TRUE; } 
@@ -4192,7 +4188,7 @@ sub process_citation {
     ## -get all info that has already been parsed and if available, get user entered article info
     ##
         
-    foreach (@CITN_ARR) { 
+    foreach (@gconst::CITN_ARR) { 
 
         if (defined param($_) && (! ${$citation_ref}{$_})) {          ## -get item info from param, but don't overwrite 
 
@@ -4442,7 +4438,7 @@ sub session_to_from_param  {
     ## save citation info - in url encoded fmt (??)
     ##
 
-    foreach my $field (@hold_tab::CITN_ARR) { 
+    foreach my $field (@gconst::CITN_ARR) { 
 
         if ($save) {
             if (defined(param($field)) && (param($field) ne '')) {  $session->session->{$field} = param($field); } 
@@ -4489,12 +4485,12 @@ sub fill_other_coll_comp {
     ## 3: not available from ERIC (check the AV field for alternate sources) 
     ##
 
-    if ((param($ERIC_NO_FIELD) =~ m#$ERIC_DOC_PATTERN#)  && (param($ERIC_AV_FIELD) =~ m#1|2#)) {
+    if ((param($gconst::ERIC_NO_FIELD) =~ m#$ERIC_DOC_PATTERN#)  && (param($gconst::ERIC_AV_FIELD) =~ m#1|2#)) {
 
         ${$tab_comp_hash_ref}{$GODOT::Page::ERIC_COLL_COMP}   = '';     
     }
 
-    if (param($MLOG_NO_FIELD)) { 
+    if (param($gconst::MLOG_NO_FIELD)) { 
 
         ${$tab_comp_hash_ref}{$GODOT::Page::MLOG_COLL_COMP}   = '';
     }    
@@ -4578,38 +4574,30 @@ sub cache_patron_info {
 
 sub dev_copy_url {
     my($url) = @_; 
-
-    my(%param_hash);
     
-
     if ($ENV{'PATH_INFO'} eq '/sfx.gif')  {    return $url . $ENV{'PATH_INFO'}; }
 
     ##
-    ## -using url root ($url) and the values from param, construct a URL that includes 
-    ##  all the param fields
+    ## -using url root ($url) and the values from param, construct a URL that includes all the param fields
     ##
+    ## (05-mar-2009 kl) - OpenURL 1.0 has repeating fields (eg. 'au', 'rft_id') so change logic below so these are not lost during redirection;
+    ##
+    my @url_arr;
 
-    foreach (param()) { 
-        $param_hash{$_} = param($_); 
-    
-        ##
-        ## -uncomment the following line if you want an example to add to .../holdings/misc/comp_output.pl
-        ##
+    foreach my $param_label (param()) { 
 
-        ##
-        ## -switch on/uncomment the following line if you want an example to add to .../holdings/misc/comp_output.pl
-        ##
-
-        if ($FALSE && m#^$HOLD_TAB_PREFIX#) {
-
-            my($field) = "\'$_\'";
-
-            my($value) = $param_hash{$_};
-            $value =~ s#'#\\'#g;                                     ## -escape all single quotes            
+        my @param_arr = param($param_label);        
+        foreach my $value (@param_arr) {
+            push @url_arr, [ $param_label, $value ]; 
         }
     }
 
-    return $url . '?' . put_query_fields(\%param_hash) 
+    ##
+    ## (08-feb-2009 kl) -- add any PATH_INFO we may have;
+    ##
+    debug "path_info:  $ENV{'PATH_INFO'}";
+
+    return $url . $ENV{'PATH_INFO'}  . '?' . put_query_fields_from_array(\@url_arr); 
 }
 
 sub form_url {
@@ -4628,7 +4616,7 @@ sub form_url {
 
     my @path = split('/', $script_name);
 
-    debug "script_name:  ", $script_name;
+    #### debug "script_name:  ", $script_name;
 
     my $script_no_path = $path[$#path];
 
@@ -4677,7 +4665,7 @@ sub ill_verify_input
 		        if ($field_status eq "R" && $ill_fields{$key} eq "")                            
 		        {                                                        
 			        debug "required information was not supplied:  $key\n";
-			        return "Some required information was not supplied.";   # include period
+			        return "Some required information was not supplied -- $map_field -- $key.";   # include period
                         }
 	        }
 	
