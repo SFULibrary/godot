@@ -16,17 +16,18 @@ use vars qw(@CITN_ARR $CITN_PREFIX
             $NOTE_FIELD        $ISBN_FIELD    $REPNO_FIELD   $SYSID_FIELD     $THESIS_TYPE_FIELD
             $FTREC_FIELD       $URL_FIELD     $ERIC_NO_FIELD $ERIC_AV_FIELD   $MLOG_NO_FIELD
             $UMI_DISS_NO_FIELD $EDITION_FIELD $CALL_NO_FIELD $YYYYMMDD_FIELD  $ERIC_FT_AV_FIELD
-            $DOI_FIELD         $PMID_FIELD    $BIBCODE_FIELD $OAI_FIELD       $URL_MSG_FIELD
+            $DOI_FIELD         $PMID_FIELD    $BIBCODE_FIELD $OAI_FIELD       $OCLCNUM_FIELD
+            $URL_MSG_FIELD
             $SICI_FIELD        $DAY_FIELD     $GENRE_FIELD   $PATENT_NO_FIELD $PATENTEE_FIELD
-            $PATENT_YEAR_FIELD $NO_HOLDINGS_SEARCH_FIELD);
+            $PATENT_YEAR_FIELD $NO_HOLDINGS_SEARCH_FIELD     $PUB_PLACE_FIELD $CODEN_FIELD
+            $BICI_FIELD        $WARNING_FIELD);
 
-##--------------------------------------------------------------------------
-## - fields used by hold_tab.pm, parse.pm and others  
-## - update /usr/ns-home/www/holdings/prog.htm if this list is changed 
-##--------------------------------------------------------------------------
 
 $CITN_PREFIX = '_ht_';
 
+##
+## (19-mar-2009 kl) -- fields should match those in @GODOT::Citation::CITATION_MAPPINGS
+##
 
 @CITN_ARR = (
 
@@ -41,6 +42,7 @@ $CITN_PREFIX = '_ht_';
     $ARTAUT_FIELD      = '_ht_artaut',        ## article author
 
     $PUB_FIELD         = '_ht_pub',           ## publishing info
+    $PUB_PLACE_FIELD   = '_ht_pub_place',     ## publisher place
 
     $ISSN_FIELD        = '_ht_issn',          ## ISSN
     $ISBN_FIELD        = '_ht_isbn',          ## ISBN
@@ -83,9 +85,14 @@ $CITN_PREFIX = '_ht_';
     $DOI_FIELD         = '_ht_doi',           ## digital object identifier
     $PMID_FIELD        = '_ht_pmid',          ## PubMed identifier
     $BIBCODE_FIELD     = '_ht_bibcode',       ## identifier used in Astrophysics Data System
-    $OAI_FIELD         = '_ht_oai',           ## identifier used in the Open Archives initiative    
-    $URL_MSG_FIELD     = '_ht_url_msg',       ## message indicating that there is a url given in the database record 
-                                              ## (may include link)
+    $OAI_FIELD         = '_ht_oai',           ## identifier used in the Open Archives initiative
+    $OCLCNUM_FIELD     = '_ht_oclcnum',           
+    $CODEN_FIELD       = '_ht_coden',         
+    $BICI_FIELD        = '_ht_bici',
+
+    $URL_MSG_FIELD     = '_ht_url_msg',       ## message indicating that there is a url given in the database record (may include link)
+    $WARNING_FIELD     = '_ht_warning',       
+
     $SICI_FIELD        = '_ht_sici',      
     $GENRE_FIELD       = '_ht_genre',         ## for OpenURL links
 
