@@ -4,6 +4,11 @@ package GODOT::Fetch::PubMed;
 ##
 ## Based on code from CUFTS written by Todd Holbrook.
 ##
+## Documentation (28-mar-2009 kl -- is this the right document?) on the fields used in 
+## the returned XML can be found at:
+##     
+##     http://www.nlm.nih.gov/bsd/licensee/elements_descriptions.html
+## 
 use base qw(GODOT::Fetch);
 
 use strict;
@@ -80,7 +85,7 @@ sub add_data {
     	
     my $data = parse_pubmed_data($returned_data);
     	
-    foreach my $field (qw(TITLE ARTTIT ISSN VOL ISS PGS YYYYMMDD YEAR DAY)) {
+    foreach my $field (qw(TITLE ARTTIT ARTAUT ISSN VOL ISS PGS YYYYMMDD YEAR DAY DOI)) {
 
         debug "$field:  ", $data->{$field};
 
@@ -187,6 +192,7 @@ sub parse_pubmed_data {
         foreach my $i ( 0 .. $n - 1 ) {
             my $issn = $issn_nodes->item($i);
             my $attr = $issn->getAttribute('IssnType');
+
             my $issn_string;
             eval { 
                 $issn_string = trim_beg_end(($issn->getChildNodes)[0]->getNodeValue()); 
@@ -196,8 +202,96 @@ sub parse_pubmed_data {
                 $data->{ISSN} ||= $issn_string;            
             }
         }
+
+        ##
+        ## (06-apr-2009 kl) -- extract doi from <ArticleIdList>
+        ##
+        ## <ArticleIdList>
+        ##    <ArticleId IdType="pii">PCN1792</ArticleId>
+        ##    <ArticleId IdType="doi">10.1111/j.1440-1819.2008.01792.x</ArticleId>
+        ##    <ArticleId IdType="pubmed">18588585</ArticleId>
+        ## </ArticleIdList>
+        ##
+        my $article_id_lists = $article->getElementsByTagName('ArticleIdList');
+
+        unless ( $article_id_lists->getLength == 0) {
+            if ( $article_id_lists->getLength > 1) { warn "Multiple identifier lists returned for PMID.  Processing first one only."; }
+            my $article_id_list = $article_id_lists->item(0);
+
+            my $doi;                
+            for my $article_id ($article_id_list->getElementsByTagName('ArticleId')) {
+
+                if ($article_id->getAttribute('IdType') eq 'doi') { 
+                    eval { $doi = trim_beg_end(($article_id->getChildNodes)[0]->getNodeValue); };      
+                    $data->{DOI} = $doi unless aws($doi);
+                    last;   ## -assume there will only be one doi
+	        }
+            }
+	}
+
+        ##
+        ## (28-mar-2009 kl) -- extract authors from <AuthorList>
+        ##
+        ## from http://www.nlm.nih.gov/bsd/licensee/elements_descriptions.html:
+        ##
+        ## USE OF LISTS AND ATTRIBUTE "CompleteYN"
+        ## Three of the elements (<AuthorList>, <GrantList>, and <DataBankList>) use "lists" with the 
+        ## corresponding attribute of 'CompleteYN". 'Y', meaning Yes, represents that NLM has entered 
+        ## all list items that appear in the published journal article. 'N', meaning No, represents that NLM 
+        ## has not entered all list items that appear in the published journal article. The latter case 
+        ## (incomplete list) occurs on records created during periods of time when NLM policy was to enter 
+        ## fewer than all items that qualified. NLM recommends the following when encountering 'N' for 
+        ## the element lists:
+        ## 
+        ## <AuthorList> when attribute = N, then supply the literal "et al." after last author name
+        ##               
+
+        my @statement_authors;
+        my $author_lists = $article->getElementsByTagName('AuthorList');
+
+        unless ( $author_lists->getLength == 0) {
+
+            if ( $author_lists->getLength > 1) {  warn "Multiple author lists returned for PMID.  Processing first one only."; }
+
+            my $author_list = $author_lists->item(0);
+            my $is_complete_author_list = ($author_list->getAttribute('CompleteYN') eq 'Y') ? $TRUE : $FALSE; 
+
+            for my $author ($author_list->getElementsByTagName('Author')) {
+                my ($last_name, $fore_name, $suffix, $collective_name);
+                
+                if ($author->getAttribute('ValidYN') eq 'Y') { 
+             
+                    eval { $last_name = trim_beg_end($author->getElementsByTagName('LastName')->item(0)->getFirstChild->getNodeValue); };
+                    eval { $fore_name = trim_beg_end($author->getElementsByTagName('ForeName')->item(0)->getFirstChild->getNodeValue); };
+                    eval { $suffix = trim_beg_end($author->getElementsByTagName('Suffix')->item(0)->getFirstChild->getNodeValue); };
+
+                    my $full_name = $last_name;
+                    $full_name .= ", $fore_name $suffix" unless aws($fore_name) && aws($suffix);
+                    $full_name = trim_beg_end($full_name);
+
+                    ##
+                    ## -assumes there would never be both a personal and collective name in the same <Author> element
+                    ##
+                    if (aws($full_name)) {
+                        eval { $collective_name = trim_beg_end($author->getElementsByTagName('CollectiveName')->item(0)->getFirstChild->getNodeValue); };
+                        $full_name = trim_beg_end($collective_name);
+                    }
+
+                    push @statement_authors, $full_name unless aws($full_name); 
+	        }
+            }
+
+            push @statement_authors, 'et al.' if (scalar @statement_authors) && (! $is_complete_author_list);
+
+            ##
+            ## -assume all fetch records are for a contribution not an item
+            ## 
+            $data->{ARTAUT} = join('; ', @statement_authors);              
+        }
     }
     return $data;
 }
 
 1;
+
+
