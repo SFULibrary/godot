@@ -300,36 +300,36 @@ sub second_pass_field_cleanup {
     ##
     ## -strip year out of month field
     ##
-    if (${$citation_ref}{$hold_tab::MONTH_FIELD} =~ m#(\d\d\d\d)#) {
+    if (${$citation_ref}{$gconst::MONTH_FIELD} =~ m#(\d\d\d\d)#) {
         $year = $1;
 
-        if ($year eq ${$citation_ref}{$hold_tab::YEAR_FIELD})   {    ## -if same then strip off as it is dup info
+        if ($year eq ${$citation_ref}{$gconst::YEAR_FIELD})   {    ## -if same then strip off as it is dup info
 
-            ${$citation_ref}{$hold_tab::MONTH_FIELD} =~ s#\d\d\d\d##;
+            ${$citation_ref}{$gconst::MONTH_FIELD} =~ s#\d\d\d\d##;
         }
     }
 
     ##
     ## -fill voliss, if possible, so voliss logic does not have to be repeated in different request formats (16-feb-1998 kl)
     ##
-    if (! (aws(${$citation_ref}{$hold_tab::VOL_FIELD}) || aws(${$citation_ref}{$hold_tab::ISS_FIELD}))) {
+    if (! (aws(${$citation_ref}{$gconst::VOL_FIELD}) || aws(${$citation_ref}{$gconst::ISS_FIELD}))) {
 
-        ${$citation_ref}{$hold_tab::VOLISS_FIELD} = 
-            "${$citation_ref}{$hold_tab::VOL_FIELD} \(${$citation_ref}{$hold_tab::ISS_FIELD}\)";
+        ${$citation_ref}{$gconst::VOLISS_FIELD} = 
+            "${$citation_ref}{$gconst::VOL_FIELD} \(${$citation_ref}{$gconst::ISS_FIELD}\)";
     }
-    elsif ((aws(${$citation_ref}{$hold_tab::VOLISS_FIELD})) && (! aws(${$citation_ref}{$hold_tab::VOL_FIELD}))) {
+    elsif ((aws(${$citation_ref}{$gconst::VOLISS_FIELD})) && (! aws(${$citation_ref}{$gconst::VOL_FIELD}))) {
 
-        ${$citation_ref}{$hold_tab::VOLISS_FIELD} = ${$citation_ref}{$hold_tab::VOL_FIELD}; 
+        ${$citation_ref}{$gconst::VOLISS_FIELD} = ${$citation_ref}{$gconst::VOL_FIELD}; 
     }
-    elsif ((aws(${$citation_ref}{$hold_tab::VOLISS_FIELD})) && (! aws(${$citation_ref}{$hold_tab::ISS_FIELD}))) {
+    elsif ((aws(${$citation_ref}{$gconst::VOLISS_FIELD})) && (! aws(${$citation_ref}{$gconst::ISS_FIELD}))) {
 
-        ${$citation_ref}{$hold_tab::VOLISS_FIELD} = "\(${$citation_ref}{$hold_tab::ISS_FIELD}\)";  
+        ${$citation_ref}{$gconst::VOLISS_FIELD} = "\(${$citation_ref}{$gconst::ISS_FIELD}\)";  
     }
 
     ##
     ## -clean up so don't have to do whitespace check later - can just check for NULL
     ##    
-    foreach (@hold_tab::CITN_ARR) { 
+    foreach (@gconst::CITN_ARR) { 
 
         if (aws(${$citation_ref}{$_})) { ${$citation_ref}{$_} = ''; }
 
@@ -353,7 +353,7 @@ sub check_citation {
     my(@missing_arr); 
     my($admin_msg, $missing_field_text, $reqtype);
 
-    $reqtype = ${$citation_ref}{$hold_tab::REQTYPE_FIELD};
+    $reqtype = ${$citation_ref}{$gconst::REQTYPE_FIELD};
 
     ##
     ## (27-feb-2004 kl) - added $MAIN_HOLD_SCR to list so that would work when SKIP_MAIN_HOLD_SCR_IF_NO_HOLD is true
@@ -381,6 +381,7 @@ sub check_citation {
     }
     else {
         ##
+        ## (05-mar-2009 kl) - upei has error_screen template logic that depends on wording of error message below; 
         ## (29-aug-2007 kl) - changed as per pg/ns request;
         ##
         #### $missing_field_text = "Not enough information was extracted from citation to continue." . "<P>Please consult your library catalogue for holdings.";
@@ -395,7 +396,10 @@ sub check_citation {
 
 	push(@missing_arr, $gconst::REQTYPE_FIELD);
 
-        $admin_msg .= &missing_field_msg(\@missing_arr, $citation_ref);
+        ##
+        ## (15-mar-2009 k) -- not useful in logs
+        ##         
+        #### $admin_msg .= &missing_field_msg(\@missing_arr, $citation_ref);
         $admin_msg = sprintf("%s is %s\n\n%s", $hold_tab::DBASE_FIELD, param($hold_tab::DBASE_FIELD), $admin_msg);
         &glib::send_admin_email($admin_msg);
         ${$message_ref} = $missing_field_text;
@@ -425,15 +429,15 @@ sub check_citation {
     ##
     elsif ($reqtype ne $gconst::PREPRINT_TYPE) {
 
-        if (! (${$citation_ref}{$hold_tab::TITLE_FIELD}  || 
-               ${$citation_ref}{$hold_tab::ISBN_FIELD}   || 
-               ${$citation_ref}{$hold_tab::ISSN_FIELD}))      { 
+        if (! (${$citation_ref}{$gconst::TITLE_FIELD}  || 
+               ${$citation_ref}{$gconst::ISBN_FIELD}   || 
+               ${$citation_ref}{$gconst::ISSN_FIELD}))      { 
     
             $admin_msg .= "*** do not have sufficient title/ISBN/ISSN info ***\n";
               
-            foreach my $field (${$citation_ref}{$hold_tab::TITLE_FIELD}, 
-                               ${$citation_ref}{$hold_tab::ISBN_FIELD},
-                               ${$citation_ref}{$hold_tab::ISSN_FIELD})    {          
+            foreach my $field (${$citation_ref}{$gconst::TITLE_FIELD}, 
+                               ${$citation_ref}{$gconst::ISBN_FIELD},
+                               ${$citation_ref}{$gconst::ISSN_FIELD})    {          
              
                 if (! ${$citation_ref}{$field}) { push(@missing_arr, ${$citation_ref}{$field}); }
             }            
@@ -443,7 +447,10 @@ sub check_citation {
 
     if (@missing_arr) {
 
-        $admin_msg .= &missing_field_msg(\@missing_arr, $citation_ref); 
+        ##
+        ## (15-mar-2009 k) -- not useful in logs
+        ##         
+        #### $admin_msg .= &missing_field_msg(\@missing_arr, $citation_ref); 
                 
         $admin_msg = sprintf("%s is %s\n\n%s", $hold_tab::DBASE_FIELD, param($hold_tab::DBASE_FIELD), $admin_msg);
 
@@ -464,8 +471,8 @@ sub check_citation {
 
     if ($citation->get_dbase()->is_blank_dbase()) {
 
-        my($year) = trim_beg_end(${$citation_ref}{$hold_tab::YEAR_FIELD});
-        my($issn) = trim_beg_end(${$citation_ref}{$hold_tab::ISSN_FIELD});
+        my($year) = trim_beg_end(${$citation_ref}{$gconst::YEAR_FIELD});
+        my($issn) = trim_beg_end(${$citation_ref}{$gconst::ISSN_FIELD});
 
         my($continue_msg) = p . "Please correct before continuing.";
 
@@ -543,7 +550,7 @@ sub check_citation {
     ## -check whether we have enough information to do an ILL request
     ##   
 
-    #### warn "******** <$check_type> <$reqtype> <${$citation_ref}{$hold_tab::TITLE_FIELD}>\n";
+    #### warn "******** <$check_type> <$reqtype> <${$citation_ref}{$gconst::TITLE_FIELD}>\n";
 
     ##
     ## (15-may-2002 kl) - added '$citation->need_article_info()' logic to deal with openurl genre=journal
@@ -551,7 +558,7 @@ sub check_citation {
 
     if ($check_type eq $CITN_CHECK_FOR_REQ) {
 
-        if (! ${$citation_ref}{$hold_tab::TITLE_FIELD}) {
+        if (! ${$citation_ref}{$gconst::TITLE_FIELD}) {
 
             return $CITN_NEED_ARTICLE_INFO;
         }
@@ -568,7 +575,7 @@ sub check_citation {
         }        
         elsif ($reqtype eq $hold_tab::BOOK_ARTICLE_TYPE) {    
    
-            if (! ${$citation_ref}{$hold_tab::ARTTIT_FIELD}) { push(@missing_arr, $hold_tab::ARTTIT_FIELD); }
+            if (! ${$citation_ref}{$gconst::ARTTIT_FIELD}) { push(@missing_arr, $gconst::ARTTIT_FIELD); }
         }
         elsif ($reqtype eq $hold_tab::JOURNAL_TYPE) {   
 
@@ -576,20 +583,20 @@ sub check_citation {
 
                 ## do nothing
             }
-            elsif (! ${$citation_ref}{$hold_tab::ARTTIT_FIELD}) { 
+            elsif (! ${$citation_ref}{$gconst::ARTTIT_FIELD}) { 
 
-                push(@missing_arr, $hold_tab::ARTTIT_FIELD);
+                push(@missing_arr, $gconst::ARTTIT_FIELD);
             }
 
             ##
             ## (23-jan-2003) -minimum article information
             ##
     
-            if ((${$citation_ref}{$hold_tab::YEAR_FIELD} && ${$citation_ref}{$hold_tab::PGS_FIELD}) ||
-                (${$citation_ref}{$hold_tab::VOLISS_FIELD})                                         ||
-                (${$citation_ref}{$hold_tab::VOL_FIELD} && ${$citation_ref}{$hold_tab::PGS_FIELD})  ||
-                (${$citation_ref}{$hold_tab::VOL_FIELD} && ${$citation_ref}{$hold_tab::ISS_FIELD})  ||
-                (${$citation_ref}{$hold_tab::YEAR_FIELD} && ${$citation_ref}{$hold_tab::MON_FIELD}))      {
+            if ((${$citation_ref}{$gconst::YEAR_FIELD} && ${$citation_ref}{$gconst::PGS_FIELD}) ||
+                (${$citation_ref}{$gconst::VOLISS_FIELD})                                         ||
+                (${$citation_ref}{$gconst::VOL_FIELD} && ${$citation_ref}{$gconst::PGS_FIELD})  ||
+                (${$citation_ref}{$gconst::VOL_FIELD} && ${$citation_ref}{$gconst::ISS_FIELD})  ||
+                (${$citation_ref}{$gconst::YEAR_FIELD} && ${$citation_ref}{$gconst::MON_FIELD}))      {
 
                 ##
                 ## -we have enough info  
@@ -599,11 +606,11 @@ sub check_citation {
 
                    $admin_msg .= "*** do not have sufficient year/volume/issue/month/page info ***\n";
               
-                   foreach my $field (${$citation_ref}{$hold_tab::YEAR_FIELD}, 
-                                      ${$citation_ref}{$hold_tab::VOL_FIELD},
-                                      ${$citation_ref}{$hold_tab::MONTH_FIELD}, 
-                                      ${$citation_ref}{$hold_tab::ISS_FIELD},
-                                      ${$citation_ref}{$hold_tab::VOLISS_FIELD}) {          
+                   foreach my $field (${$citation_ref}{$gconst::YEAR_FIELD}, 
+                                      ${$citation_ref}{$gconst::VOL_FIELD},
+                                      ${$citation_ref}{$gconst::MONTH_FIELD}, 
+                                      ${$citation_ref}{$gconst::ISS_FIELD},
+                                      ${$citation_ref}{$gconst::VOLISS_FIELD}) {          
 
                        if (! ${$citation_ref}{$field}) { push(@missing_arr, ${$citation_ref}{$field}); }
                    }
