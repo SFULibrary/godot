@@ -72,14 +72,14 @@ use vars qw (
 	# OpenUrl databases 
 
 	'asfa'     => 'openurl',
-        'axiom'    => 'openurl',                 ## -is this still used ?? - should have been replaced 
-                                                 ##  with %DBASE_TYPE_PARSER_MAPPING
+        'axiom'    => 'openurl',                 ## -is this still used ?? - should have been replaced with %DBASE_TYPE_PARSER_MAPPING
         'iopp'     => 'openurl',
 	'OvidWebspirs:mla' => 'openurl',
 	'unknown'  => 'openurl',       
         'ISI:endnote' => 'openurl',
 	'ISI:WoS' => 'openurl::isi::wos',
 	'ISI:WoK' => 'openurl::isi::wos',
+        'www.isinet.com:WoK:WOS' => 'openurl::isi::wos',    ## (26-mar-2009 kl) -- moved from GODOT::Database       
 	'BMC:F1000' => 'openurl::force_journal',
 	
 	#Others ---- added by yyua
@@ -140,7 +140,7 @@ use vars qw (
      'pqil'          => 'openurl',
      'RLG'           => 'openurl::rlg',
      'SFU'           => 'openurl',
-     'ukoln'         => 'openurl',
+     #### 'ukoln'    => 'openurl',                ## can now handle unknown sid/rfr_id
      'Refworks'      => 'openurl',
      'rsc'           => 'openurl',
      'Wiley'         => 'openurl',
@@ -153,7 +153,7 @@ use vars qw (
      'RefPress'      => 'openurl',
      'Elsevier'      => 'openurl',
      'SFX'           => 'openurl',
-     'undefined'     => 'openurl',       ## -libx may send if you have set sid to blank
+     'undefined'     => 'openurl',               ## libx may send if you have set sid to blank
      'UW'            => 'openurl'
 );
 
@@ -514,13 +514,14 @@ use vars qw($MAX_QUERY_IN_PARALLEL $MIN_BRANCH_WITH_HOLDINGS);
 $MAX_QUERY_IN_PARALLEL    = 5;
 $MIN_BRANCH_WITH_HOLDINGS = 4;
 
-
-
-use vars qw(@BUNDLE_GENRE_ARR $JOURNAL_GENRE $BOOK_GENRE $CONFERENCE_GENRE);
+use vars qw(@BUNDLE_GENRE_ARR $JOURNAL_GENRE $BOOK_GENRE $CONFERENCE_GENRE $REPORT_GENRE $ISSUE_GENRE $DOCUMENT_GENRE);
 @BUNDLE_GENRE_ARR = ( 
    $JOURNAL_GENRE    = 'journal', 
+   $ISSUE_GENRE      = 'issue',         ## (02-mar-2009 kl) for openurl 0.1
    $BOOK_GENRE       = 'book',
-   $CONFERENCE_GENRE = 'conference'
+   $CONFERENCE_GENRE = 'conference',
+   $REPORT_GENRE     = 'report',        ## (02-mar-2009 kl) for openurl 0.1
+   $DOCUMENT_GENRE   = 'document'       ## (02-mar-2009 kl) for openurl 0.1
 ); 
           
 use vars qw(@INDIVIDUAL_ITEM_GENRE_ARR $ARTICLE_GENRE $PREPRINT_GENRE $PROCEEDING_GENRE $BOOKITEM_GENRE);
@@ -534,19 +535,28 @@ use vars qw(@INDIVIDUAL_ITEM_GENRE_ARR $ARTICLE_GENRE $PREPRINT_GENRE $PROCEEDIN
 use vars qw(%GENRE_TO_REQTYPE_HASH);
 %GENRE_TO_REQTYPE_HASH = (
     ##
-    ## -treat this as a journal article and prompt user, if necessary, for the article information
+    ## -treat 'journal' and 'issue' genres as journal articles and prompt user, if necessary, for the article information
     ##
     $JOURNAL_GENRE    => $GODOT::Constants::JOURNAL_TYPE,
+    $ISSUE_GENRE      => $GODOT::Constants::JOURNAL_TYPE,          ## (02-mar-2009 kl) for openurl 0.1
     $BOOK_GENRE       => $GODOT::Constants::BOOK_TYPE,
     $CONFERENCE_GENRE => $GODOT::Constants::CONFERENCE_TYPE,
     $ARTICLE_GENRE    => $GODOT::Constants::JOURNAL_TYPE,
-    $PREPRINT_GENRE   => $GODOT::Constants::PREPRINT_TYPE,         ## a preprint
+    $PREPRINT_GENRE   => $GODOT::Constants::PREPRINT_TYPE,       
     $PROCEEDING_GENRE => $GODOT::Constants::CONFERENCE_TYPE,
-    $BOOKITEM_GENRE   => $GODOT::Constants::BOOK_ARTICLE_TYPE,     
+    $BOOKITEM_GENRE   => $GODOT::Constants::BOOK_ARTICLE_TYPE,   
+    $REPORT_GENRE     => $GODOT::Constants::TECH_TYPE,             ## (02-mar-2009 kl) for openurl 0.1  
+    $DOCUMENT_GENRE   => $GODOT::Constants::TECH_TYPE              ## (02-mar-2009 kl) for openurl 0.1
 );
 
 use vars qw(@DISS_ABS_ISSN_ARR);
 @DISS_ABS_ISSN_ARR = ('04194209', '04194217', '00993123', '00959154', '0420073X', '0420073x', '08989095');
+
+##
+## (19-apr-2009 kl) -- for testing from home
+##
+use vars qw($REMOTE_HOST_FOR_TESTING);
+$REMOTE_HOST_FOR_TESTING = 's0106001ee59d8cae.vf.shawcable.net';
 
 use vars qw($REDIRECTION_ALLOWED); 
 $REDIRECTION_ALLOWED = $FALSE;
