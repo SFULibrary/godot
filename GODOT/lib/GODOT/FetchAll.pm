@@ -66,8 +66,17 @@ sub add_data {
 
     if ($config->crossref_doi_query) {
         my $fetch_crossref = GODOT::Fetch->dispatch({'type' => 'CrossRef', 'dispatch_site' => $self->dispatch_site});        
+
+        #### debug '1 -- crossref_id:  ',       $config->crossref_id;
+        #### debug '1 -- crossref_password:  ', $config->crossref_password;
+
         $fetch_crossref->auth_name($config->crossref_id);
         $fetch_crossref->auth_passwd($config->crossref_password);
+
+        #### debug '2 -- auth_name:  ',       $fetch_crossref->auth_name;
+        #### debug '2 -- auth_passwd:  ',     $fetch_crossref->auth_passwd;       
+        #### debug $fetch_crossref->dump;
+     
         unless ($fetch_crossref->add_data($citation)) {
             error $fetch_crossref->error_message;
         }
