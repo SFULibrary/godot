@@ -502,7 +502,7 @@ sub main_holdings_screen {
     ##
     ## print out citation after parsing and cleanup
     ##
-    if (1) {
+    if (0) {
         debug "---------------------------------";
         foreach (@gconst::CITN_ARR) { debug "$_ = $citation{$_}"; }
         debug "---------------------------------";
