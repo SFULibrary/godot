@@ -8,8 +8,9 @@
 ## dispatcher for picking the correct specific parser to use.
 ##
 ##
-
 package GODOT::Parser;
+
+use Data::Dumper;
 
 use GODOT::Constants;
 use GODOT::Config;
@@ -30,6 +31,9 @@ sub dispatch {
 	my ($class, $db, $database, $site) = @_;
 
 	debug("Dispatching database parser from GODOT::Parser for database '$db'") if $GODOT::Config::TRACE_CALLS;
+
+        #### debug location, ":  db:\n", Dumper($db);
+        #### debug location, ":  database:\n", Dumper($database);
 
 	# Map databases to specific parsers
 	my $mapping = \%GODOT::Config::DBASE_PARSER_MAPPING;
@@ -54,7 +58,7 @@ sub dispatch {
         ##
         ## (06-feb-2002 kl)
         ##
-	} elsif ($database->dbase_syntax() eq $GODOT::Constants::OPENURL_SYNTAX) {
+	} elsif ($database->is_openurl_syntax()) {
         
             $module = "GODOT::Parser::" . 'openurl';
 
@@ -137,7 +141,6 @@ sub post_parse {
 	my ($self, $citation) = @_;
 	debug("Generic post_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
 	
-        #### use Data::Dumper;
         #### debug ('-----------------------------------------------------------------');
         #### debug Dumper($self);
         #### debug ('-----------------------------------------------------------------');
