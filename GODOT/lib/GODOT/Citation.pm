@@ -44,15 +44,17 @@ use vars qw(
 	'CY'   => 'hold_tab_cy',
 
 	'PT'   => 'hold_tab_pt',
-	'DT'   => 'hold_tab_dt',
-	'TI'   => ['hold_tab_ti', 'ti', 'title', 'jtitle', 'rft.title', 'rft.jtitle'],
+	'DT'   => 'hold_tab_dt',        
+
+        ##
+        ## (02-mar-2009 kl) -- added 'btitle' and 'rft.btitle' for openurl 1.0 support
+        ##
+	'TI'   => ['hold_tab_ti', 'ti', 'title', 'jtitle', 'rft.title', 'rft.jtitle', 'btitle', 'rft.btitle'],   
 	'PB'   => ['hold_tab_pb', 'p'],
 	'CT'   => 'hold_tab_ct',
-
         'ST'   => 'hold_tab_st',
-
 	'CA'   => ['hold_tab_ca', 'ca'],
-	'AU'   => ['hold_tab_au', 'rft.au'],
+	'AU'   => ['hold_tab_au'],
 	'PY'   => 'hold_tab_py',
 	'AD'   => 'hold_tab_ad',
 
@@ -167,10 +169,45 @@ use vars qw(
 	'artnum' => ['artnum', 'rft.artnum'],
 	'date' => ['date', 'rft.date', 'rft.year'],
 	'ssn' => ['ssn', 'rft.ssn'],
-	'quarter' => ['quarter', 'rft.quarter']
+	'quarter' => ['quarter', 'rft.quarter'],
+
+        ##
+        ## (27-feb-2009 kl) - improving openurl 1.0 support
+        ##                  - some of these fields (as marked below) may occur multiple times in an OpenURL 1.0
+        ##
+
+	'ausuffix' => ['ausuffix', 'rft.ausuffix'],       
+        'au'    => ['au', 'rft.au'],                    ## multiple 
+	'aucorp' => ['aucorp', 'rft.aucorp'],             
+	'pub' => ['pub', 'rft.pub'],                      
+	'place' => ['place', 'rft.place'],                
+	'edition' => ['edition', 'rft.edition'],          
+	'tpages' => ['tpages', 'rft.tpages'],             
+	'series' => ['series', 'rft.series'],             
+	'chron' => ['chron', 'rft.chron'],                
+
+        ##
+        ##  (02-mar-2009 kl) more openurl 1.0 fields
+        ##        
+
+	'co' => ['co', 'rft.co'],                      ## country of publication for dissertation
+	'cc' => ['cc', 'rft.cc'],                      ## country of publication code for dissertation
+	'inst' => ['inst', 'rft.inst'],                ## institution that issued dissertation
+	'advisor' => ['advisor', 'rft.advisor'],       ## dissertation advisor
+	'degree' => ['degree', 'rft.degree'],          ## degree conferred for dissertation
+        
+        'rfr_id' => 'rfr_id',                          ## multiple;  a "referrer id" to say who made the ContextObject, eg. info:sid/elsevier.com:ScienceDirect
+        'rft_id' => 'rft_id',                          ## multiple;  an identifier for the thing you are describing, eg. info:doi/10.1002/bies.20239, info:oclcnum/148887403, info:pmid/16029089, urn:ISBN:978-0-691-07788-8
+        'url_ver' => 'url_ver',                        ## OpenURL version
+        'rft_val_fmt' => 'rft_val_fmt',                ## metadata format used by ContextObject; "kev" stands for key-encoded-value;  eg. info:ofi/fmt:kev:mtx:journal, info:ofi/fmt:dev:mtx:book 
+        'url_ctx_fmt' => 'url_ctx_fmt',                ## format of ContextObject;  fixed value;  eg. info:ofi/fmt:kev:mtx:ctx 
+        'rfe_dat' => 'rfe_dat'                         ## private data (like 'pid' in version 0.1);  eg. <accessionnumber>958948</accessionnumber>
 );
 
 
+##
+## (19-mar-2009 kl) -- fields should match those in @gconst::CITN_ARR
+##
 %CITATION_MAPPINGS = (
 	'REQTYPE'            => '_ht_reqtype',
 	'PUBTYPE'            => '_ht_pubtype',
@@ -209,6 +246,9 @@ use vars qw(
 	'PMID'               => '_ht_pmid',
 	'BIBCODE'            => '_ht_bibcode',
 	'OAI'                => '_ht_oai',
+        'OCLCNUM'            => '_ht_oclcnum',         ## (25-mar-2009 kl) -- 
+	'CODEN'              => '_ht_coden',           ## (13-mar-2009 kl) -- added during review of GODOT::Parser::openurl package
+	'BICI'               => '_ht_bici',            ## (13-mar-2009 kl) -- added during review of GODOT::Parser::openurl package      
 	'URL_MSG'            => '_ht_url_msg', 
         'WARNING'            => '_ht_warning',
         'GENRE'              => '_ht_genre',           ## for OpenURL links
@@ -289,17 +329,16 @@ sub eric_fulltext_available {
 }
 
 #
-# (15-may-2002 kl) 
 #
-# -added here to deal with openurl genre=journal case, perhaps it should be moved elsewhere?
+# (02-mar-2009 kl) - added genre=issue case
+# (15-may-2002 kl) -added here to deal with openurl genre=journal case, perhaps it should be moved elsewhere?
 #
 
 sub need_article_info {
        my ($self) = @_;
 
-       return ($self->{'parsed'}->{'GENRE'} eq $GODOT::Config::JOURNAL_GENRE);
-
-
+       my $genre = $self->{'parsed'}->{'GENRE'};
+       return scalar (grep { $genre eq $_ } ($GODOT::Config::ISSUE_GENRE, $GODOT::Config::JOURNAL_GENRE));
 }
 
 # is_* - Returns true if the request is of the specified request or 
@@ -387,18 +426,73 @@ sub get_dbase() {
 
 
 # Accessor methods for pre/parse fields
+#
+# Returns undef if field is not defined.  Any defined field will return a non-whitespace value. 
+#
+# (09-mar-2009 kl) - adding a fourth parameter -- $wantlist
+# (08-mar-2009 kl) - $value arg can be either a scalar or a listref;
+#                  - all 'pre' values are now stored as lists;  if the $value arg is a scalar then it will be stored as a one item list; 
+# 
+# NB 1:  If you are calling this method with a defined $want_listref but are not passing a $value, then you must explicitly set 
+#        $value to undef, ie.  $citation->pre('rft.au',undef,$TRUE) _not_ $citation->pre('rft.au',,$TRUE). In the
+#        second (and incorrect) case, $value would be set to $TRUE and $want_listref would not be defined. 
+#
+# NB 2:  Only define keys in the 'pre' hash for which there are values and those values are not all white space.  
+#        Later logic requires this to be the case. 
+# 
 sub pre {
-	my ($self, $field, $value) = @_;
-	
-	# Check whether $field is valid
+	my ($self, $field, $value, $want_listref) = @_;
+
+	##
+	## Check whether $field is valid
+        ##
 	unless (grep {$field eq $_} @PRE_FIELDS) {
 		error("Citation::pre() - unrecognized field: $field");
 		return undef;  # die??
 	}
 
-	$self->{'pre'}->{$field} = $value if defined($value);
-	return $self->{'pre'}->{$field};
+        ##
+        ## (08-mar-2009 kl) -- change to storing values in a listref to handle fields occuring multiple times
+        ## (05-mar-2009 kl) -- added check for whitespace
+        ##
+        ## -expecting either a scalar or a reference to a list of scalars
+        ##         
+        if (defined $value) {
+                my $value_type = ref $value;
+                unless ($value_type eq '' || $value_type eq 'ARRAY') {
+                        error ("Citation::pre() - unexpected value type: ", ref($value));
+                        return undef;
+                }
+
+                my @values = (ref $value eq 'ARRAY') ? @{$value} : ($value);
+                my @values_to_save = map { trim_beg_end($_) if naws($_) } @values;   
+                                                    
+                if (scalar @values_to_save) {
+	                $self->{'pre'}->{$field} = [ @values_to_save ];
+                }
+        }
+        ## 
+        ## (13-mar-2009 kl) -- avoid problem whereby you end up changing the value to defined (eg. by "$self->{'pre'}->{$field}->[0]" statement below)
+        ##
+        return undef unless defined $self->{'pre'}->{$field};
+
+        ##
+        ## (09-mar-2009 kl) -- return only the first item in the list unless $want_listref is true
+        ##                  -- ensures that current code is not broken
+        ##                  -- send back a value NOT a reference
+        ##
+        return ($want_listref) ? [ @{$self->{'pre'}->{$field}} ] : $self->{'pre'}->{$field}->[0];       ## !!! see 13-mar-2009 note above
 }
+
+##
+## for symmetry with 'sub pre' this will return undef if the field is not currently defined
+##
+sub pre_want_listref {
+    my($self, $field, $value) = @_;
+       
+    return $self->pre($field, $value, $TRUE);
+}
+
 
 sub parsed {
 	my ($self, $field, $value) = @_;
@@ -414,7 +508,10 @@ sub parsed {
 		return undef;  # die??
 	}
 
-	$self->{'parsed'}->{$field} = $value if defined($value);
+        ##
+        ## (05-mar-2009 kl) -- added check for whitespace
+        ##
+	$self->{'parsed'}->{$field} = $value if defined($value) and naws($value);
 	return $self->{'parsed'}->{$field};
 }
 
@@ -442,28 +539,45 @@ sub godot_citation {
 
 
 # init_from_params - Initializes the Citation object from CGI param fields.
-
+#
+# (08-mar-2009 kl) -need to handle OpenURL 1.0 where there may be multiple occurrences of the same field (eg. 'rft.au', 'rft_id');
+#
 sub init_from_params {
 	my ($self) = @_;
 	
 	require CGI;
+        
+        #### use Data::Dumper;
+        #### debug "------------- before ----------------";
+        #### debug Dumper($self->{'pre'});
 
-	# Grab the citation fields (pre-parse), mostly the two digit mappings from ERL
 	foreach my $field (keys %HOLD_TAB_PARAM_MAPPINGS) {
-		my $string;
+		my @values;
 		
 		if (ref($HOLD_TAB_PARAM_MAPPINGS{$field}) eq 'ARRAY') {
 			foreach my $field2 (@{$HOLD_TAB_PARAM_MAPPINGS{$field}}) {
-				$string = CGI::param($field2);
-				last if defined($string);
+                                ##
+                                ## -need to call param in a list context as there may be multiple occurences of the same field
+                                ##
+				@values = CGI::param($field2);                      
+				last if scalar @values;
 			}
 		} else {
-			$string = CGI::param($HOLD_TAB_PARAM_MAPPINGS{$field});
+			@values = CGI::param($HOLD_TAB_PARAM_MAPPINGS{$field});
 		}
-		chomp $string;
+                               
+		chomp(@values);
 
-		$self->{'pre'}->{$field} = $self->clean_field($string);
-	}
+                ##
+                ## (09-mar-2009 kl) -- use 'pre' method instead of assigning directly to 'pre' hash;
+                ## 
+                $self->pre($field, [ map { $self->clean_field($_) } @values ]);
+        }
+        
+        #### debug "------------- end of init_from_params ----------------";
+        #### use Data::Dumper;
+        #### debug Dumper($self->{'pre'});
+        #### debug;
 
 	return $self;
 }
@@ -517,7 +631,6 @@ sub init_from_godot_parsed_params {
 		my $string = CGI::param($field) || '';
 		next if $string eq '';
 		chomp $string;
-
 		$self->parsed($old_godot_mapping{$field}, $string);
 	}
 
@@ -583,8 +696,6 @@ sub openurl {
 
     my $genre = (defined $REQTYPE_TO_GENRE_MAP{$self->req_type}) ? $REQTYPE_TO_GENRE_MAP{$self->req_type} : '';
     
-    debug "this is my genre:  $genre";
-
     ##
     ## -need date in YYYY-MM-DD, YYYY-MM or YYYY format
     ##
@@ -651,8 +762,6 @@ sub openurl {
         next if aws($value);
         next if grep {$label eq $_} @{$skip};
 
-        debug "$label = $value";
-
         my $delim = ($count) ? '&' : '?';
         $count++;
 
@@ -660,8 +769,6 @@ sub openurl {
     }
 
     $url = $base_url . $url;
-
-    #### debug location, ":  $url";  
 
     return $url; 
 }
