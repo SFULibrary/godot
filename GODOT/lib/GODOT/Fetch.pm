@@ -28,8 +28,8 @@ sub dispatch {
     
     ${$param}{'dispatch_site'} =~ s#\055#_#g if (defined ${$param}{'dispatch_site'});       ## -for ELN-AG, ELN-AG-MONO, NEOS-OTHER, BNM-COW, BNM-NAN and BNM-POW
 
-    debug 'dispatch_site:  ', $dispatch_site;
-    debug 'type:  ', ${$param}{'type'};
+    #### debug 'dispatch_site:  ', $dispatch_site;
+    #### debug 'type:  ', ${$param}{'type'};
 
     my $obj = $class->SUPER::dispatch([@INCLUDE_PATH], $param);
     $obj->{'dispatch_site'} = $dispatch_site;
