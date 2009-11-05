@@ -528,7 +528,11 @@ sub default_http_header {
             }
         }       
 
-	my $http_header .= header('-cookies'=> [ @cookies ]);
+	#### my $http_header .= header('-cookies'=> [ @cookies ]);
+        ##
+        ## Display page in utf-8. (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+        ##
+        my $http_header .= header('-cookies'=> [ @cookies ], '-CHARSET' => 'UTF-8');
 
 	my $style = {'-SRC' => [$C_CGI_CSS]};
 	$self->css and
