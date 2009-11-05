@@ -104,7 +104,7 @@ use vars qw (
      'CIOS'          => 'openurl',
      'CISTI'         => 'openurl',
      'CSA'           => 'openurl::csa',
-     'dbwiz'         => 'openurl',
+     'dbwiz'         => 'openurl::dbwiz',
      'DIALOG'        => 'openurl',
      'digitool'      => 'openurl',
      'EBSCO'         => 'openurl',
