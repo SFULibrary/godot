@@ -248,7 +248,7 @@ sub convert_ISBN {
     if ((length($isbn) == 10) && valid_ISBN_10($isbn)) {
 
         my $obj = Business::ISBN->new($isbn);
-        my $isbn13 = $obj->as_ean($isbn);
+        my $isbn13 = $obj->as_isbn13($isbn);
 
         push @isbns, $isbn, $isbn13;
     }
