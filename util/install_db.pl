@@ -61,7 +61,11 @@ exit if $db_exists;
 printw "Creating database.\n\nIf you specifed a database password when installing the GODOTConfig files, you will be asked to enter it again.\n";
 my $pw = defined($GODOTConfig::Config::GODOT_PASSWORD) && $GODOTConfig::Config::GODOT_PASSWORD ne '' ? '--password' : '';
 
-my $create_db_command = "createdb --username=$GODOTConfig::Config::GODOT_USER $pw $GODOTConfig::Config::GODOT_DB";
+#### my $create_db_command = "createdb --username=$GODOTConfig::Config::GODOT_USER $pw $GODOTConfig::Config::GODOT_DB";
+##
+## Create db with UTF-8 support (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+##
+my $create_db_command = "createdb -E UNICODE --username=$GODOTConfig::Config::GODOT_USER $pw $GODOTConfig::Config::GODOT_DB";
 
 printw "creating the database with:\n\n", "    $create_db_command\n";
 
