@@ -213,8 +213,13 @@ sub send_by_http {
     
     use URI::URL;
     use LWP::UserAgent;
-
     my $ua = new LWP::UserAgent;
+
+    ##
+    ## (20-jul-2009 kl) -- added for itt dublin for their iii ill form which is configured as two steps (ie. 'MY_WEBPAC=false|2')
+    ##
+    return $FALSE unless ($self->auth($ua));    ## -default 'auth' method is to do nothing      
+
     my $request;
 
     if ($self->use_http_post) {
@@ -531,6 +536,15 @@ sub publisher_statement {
 }
 
 sub transport { return 'email'; }
+
+##
+## -default is do nothing and return true
+##
+sub auth {
+    my($self, $ua) = @_;
+    
+    return $TRUE;
+}
 
 sub message_url {
     my($self) = @_;
