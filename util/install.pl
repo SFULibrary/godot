@@ -59,8 +59,10 @@ my @MODULES = qw(Apache::DBI
                  Class::DBI::Relationship                  
 	         Data::Dumper
 	         Data::Dump
+	         Date::Calc
                  DBI
 	         DBD::Pg
+                 Encode
                  Error
                  Exception::Class 
                  Exception::Class::DBI 
