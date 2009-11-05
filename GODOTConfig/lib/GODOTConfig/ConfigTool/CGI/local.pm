@@ -359,9 +359,15 @@ sub process_local_edit_css {
 	my $css_name = param('css') or
 		GODOTConfig::Exception::App::CGI->throw('Template name not set in local_view_css');
 
+
 	my $css;
 	if (-e "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/sandbox/$site_id/$css_name") {
 		if (open CSS, "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/sandbox/$site_id/$css_name") {
+			while (<CSS>) { $css .= $_ };
+			close CSS;
+		}
+	} elsif (-e "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/active/$site_id/$css_name") {
+		if (open CSS, "$GODOTConfig::Config::GODOT_SITE_CSS_DIR/active/$site_id/$css_name") {
 			while (<CSS>) { $css .= $_ };
 			close CSS;
 		}
@@ -372,7 +378,6 @@ sub process_local_edit_css {
 		}
 	}		
 		
-
 	$self->template->process('local_edit_css', {'css_name' => $css_name, 'css_data' => $css}, $self->get_append_content);
 
 	return 'complete';
