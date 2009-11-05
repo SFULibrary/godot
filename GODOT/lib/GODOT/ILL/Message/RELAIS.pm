@@ -363,7 +363,7 @@ sub _format_electronic_delivery {
         $writer->endTag('DeliveryEmail');
     }
 
-       if ($self->_include_messaging_format) {
+    if ($self->_include_messaging_format) {
         $writer->startTag('MessagingFormat');
         $writer->characters('T');
         $writer->endTag('MessagingFormat');
