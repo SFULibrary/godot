@@ -16,6 +16,7 @@ use strict;
 use HTTP::Request::Common;
 use XML::DOM;
 use Data::Dumper;
+use Encode;           
 
 use GODOT::Config;
 use GODOT::Debug;
@@ -90,7 +91,11 @@ sub add_data {
         debug "$field:  ", $data->{$field};
 
     	if (aws($citation->parsed($field)) && naws($data->{$field}) ) {
-    	    $citation->parsed($field, $data->{$field});
+    	    #### $citation->parsed($field, $data->{$field});
+            ##
+            ## Andrew Sokolov of Saint-Petersburg State University Scientific Library
+            ##
+   	    $citation->parsed($field, Encode::encode_utf8($data->{$field}));
     	}
     }
 	
