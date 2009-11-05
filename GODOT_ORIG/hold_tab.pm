@@ -1975,7 +1975,13 @@ sub print_hold_tab  {
     ##
 
     if ($print_waitscr) { 
-        print STDOUT header; 
+
+        #### print STDOUT header; 
+        ##
+        ## Display page in utf-8. (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+        ##
+        print STDOUT header(-type=>'text/html', -charset=>'utf-8');
+
         $cgi->header_printed($TRUE);           ## -so we don't print HTTP header twice
     }
 
@@ -3726,8 +3732,8 @@ sub get_table_info {
         ## -see logic after this 'foreach' loop for these other sites
         ##
     
-        #### debug "--------------------------------------------------";
-        #### debug Dumper($table_request_hash_ref);
+        #### debug "--- table_request_hash_ref -----------------------";
+        #### debug "$lend_branch -- ${$table_request_hash_ref}{$lend_branch}";
         #### debug "--------------------------------------------------";
 
         use GODOT::ILL::Site;
@@ -3755,6 +3761,9 @@ sub get_table_info {
 
             $request_type = &get_request_type($config, $lend_branch, $citation);
             
+            #### debug "request_type -- $lend_branch -- $request_type";
+
+
             ##
             ## -if borrower and lender is the same then this is a $REQUEST_SELF (ie. a retrival service)
             ##  
@@ -3818,6 +3827,11 @@ sub get_table_info {
         
         ##-----------------------------------------------------------------------------           
     }
+
+    #### debug "=== ill_info_hash_ref =====================\n";
+    #### debug Dumper($ill_info_hash_ref);
+    #### debug "===========================================\n";
+
 
     report_time_location;
     
