@@ -39,14 +39,14 @@ sub format {
         $self->fill_field($extpatpw, 'extpatpw', \%form);    
     }
     else {
-        $self->fill_field($patron->last_name. ", " . $patron->first_name, 'name', \%form);
-        $self->fill_field($patron->library_id,                            'barcode',        \%form);
+        $self->fill_field($patron->last_name . ", " . $patron->first_name, 'name', \%form);
+        $self->fill_field($patron->library_id, 'barcode', \%form);
     }
+
     ##
     ## Check that 'cancel if not filled by' date is valid and in format DD/MM/YY.
     ## Date string contains the error message if it failed.
     ##
-
     unless ($self->valid_date) { return ''; }
    
     $self->fill_field($patron->email, 'info2', \%form);
@@ -54,9 +54,7 @@ sub format {
     ##
     ## -added per email from Rumi Graham 04-mar-2008
     ##
-
     my($dd, $mm, $yy) = split('/', $self->not_req_after);
-   
     $self->fill_field($dd,  'needby_Day',   \%form);
     $self->fill_field($mm,  'needby_Month', \%form);
     $self->fill_field($yy,  'needby_Year',  \%form);
@@ -134,16 +132,14 @@ sub format {
     $self->fill_field($self->source . " ($reqno)", 'main3', \%form);
     $self->fill_field($self->message_note,         'info0', \%form);
 
-    
     #### debug "----------------------------------------------";
     #### foreach my $field (sort keys %form) {
-    ####    debug "$field = $form{$field}";
+    ####   debug "$field = $form{$field}";
     #### }
     #### debug "----------------------------------------------";
 
     return put_query_fields(\%form);
 }
-
 
 sub message_url   {
     my($self) = @_;
@@ -201,6 +197,7 @@ sub _message_note_fields {
             ['umi_diss_no',    $self->citation->parsed('UMI_DISS_NO'),  'UMI DISS NO'],
             ['sysid',          $self->citation->parsed('SYSID'),        'SYSTEM NO'],
             ['repno',          $self->citation->parsed('REPNO'),        'REPORT NO'],
+            ['repno',          $self->citation->parsed('OCLCNUM'),      'OCLC NO'],
 
             ['patent_no',      $self->citation->parsed('PATENT_NO'),    'PATENT NO'],
             ['patentee',       $self->citation->parsed('PATENTEE'),     'PATENTEE'],
