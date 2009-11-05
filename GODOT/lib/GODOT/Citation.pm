@@ -660,9 +660,6 @@ sub clean_field {
 	$string =~ s#%1bh##ig;        
 	$string =~ s#\x1bh##ig;
 
-        # (22-sep-2006 kl) - strip out NUL;  may cause problems when sending to OpenILL
-        #### $string =~ s#\000##g;
-
 	#### debug "clean_field, string in: $string\n";
 
 	# Translate %xx to their character equivalents
@@ -670,7 +667,6 @@ sub clean_field {
 
 	# Change high characters to their low character equivalents
 	$string = striphigh($string);
-
 
 	# If it's a BRS database, then further stuff needs doing.
 		
