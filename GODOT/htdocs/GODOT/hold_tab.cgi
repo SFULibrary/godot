@@ -538,7 +538,12 @@ sub main {
                 ##
                 ## !!!!!!!!!!!! CGI::header changes state of CGI object so don't run just for string value !!!!!!!!!
                 ##
-                print header unless ($cgi->header_printed);
+                #### print header unless ($cgi->header_printed);
+                ##
+                ## Display page in utf-8 (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+                ##
+	        print header(-type=>'text/html', -charset=>'utf-8') unless ($cgi->header_printed);
+
                 print $page->format($cgi->new_screen, $citation, $config); 
             }
         }
