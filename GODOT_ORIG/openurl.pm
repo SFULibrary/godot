@@ -25,7 +25,7 @@ $FALSE = 0;
 my $SID_OPENURL_FIELD = 'sid';              ## openurl 0.1 -- ORIGIN-DESCRIPTION
 my $REFERRER_ID_OPENURL_FIELD = 'rfr_id';   ## openurl 1.0 -- a "referrer id" to say who made the ContextObject, eg. info:sid/elsevier.com:ScienceDirect
 
-my(@CITN_PRE_OPENURL_ARR) = (
+my @CITN_PRE_OPENURL_ARR = (
 
     $SID_OPENURL_FIELD,
     $REFERRER_ID_OPENURL_FIELD,  
@@ -67,11 +67,13 @@ my(@CITN_PRE_OPENURL_ARR) = (
 
     ##
     ## (02-mar-2009 kl) fields added to improve openurl 1.0 support;
+    ## (05-nov-2009 kl) added 'jtitle';
     ##
     'ausuffix',          ## author's name suffix, eg. 'Jr' or 'III'
     'au',                ## full name of a single author;  may repeat;
     'aucorp',            ## organization or corporation that is the author or creator of the document;
     'btitle',            ## title of the book
+    'jtitle',            ## title of the journal
     'pub',               ## publisher name
     'place',             ## place of publication
     'edition',           ## statement of edition of the book;  usually a phrase with or without numbers, but may be a single number.  eg.  "first edition"
@@ -87,7 +89,7 @@ my(@CITN_PRE_OPENURL_ARR) = (
     'url_ver',           ## OpenURL version
     'rft_val_fmt',       ## metadata format used by ContextObject; "kev" stands for key-encoded-value;  eg. info:ofi/fmt:kev:mtx:journal, info:ofi/fmt:dev:mtx:book 
     'url_ctx_fmt',       ## format of ContextObject;  fixed value;  eg. info:ofi/fmt:kev:mtx:ctx 
-    'rfe_dat'            ## private data (like 'pid' in version 0.1);  eg. <accessionnumber>958948</accessionnumber>
+    'rfe_dat',           ## private data (like 'pid' in version 0.1);  eg. <accessionnumber>958948</accessionnumber>
 );
 
 
@@ -157,8 +159,12 @@ sub openurl_is_field {
 	my $value;
 	
 	$value = $OPENURL_FUZZY_VALUES{$string};
-
-	!defined($value) && grep {$string eq $_} @CITN_PRE_OPENURL_ARR and
+     
+        ##
+        ## (05-nov-2009 kl) -strip off 'rft.' prefix before do comparison so we don't have to list both openurl 0.1 and openurl 1.0 fields in @CITN_PRE_OPENURL_ARR          
+        ## 
+        (my $stripped = $string)  =~ s#^rft\.##; 
+	!defined($value) && grep {$stripped eq $_} @CITN_PRE_OPENURL_ARR and
 		$value = 2;
 	
 	defined($value) or
