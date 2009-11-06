@@ -40,6 +40,8 @@ use Exporter;
              strip_html
              strip_subfield 
              strip_white_space
+             contains_white_space
+             no_white_space             
              add_trailing_period 
              marc8_to_latin1 
              remove_leading_article
@@ -440,6 +442,19 @@ sub strip_white_space {
 
     $string =~ s#\s+##g;
     return $string;
+}
+
+
+sub contains_white_space {
+    my($string) = @_;
+
+    return $string =~ m#\s+#;
+}
+
+sub no_white_space {
+    my($string) = @_;
+
+    return $string !~ m#\s+#;
 }
 
 
