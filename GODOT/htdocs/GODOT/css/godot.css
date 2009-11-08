@@ -120,7 +120,7 @@ table.citation {
 }
 
 tr.citation-row {
-	align: left;
+	text-align: left;
 }
 
 td.citation-label {
