@@ -20,8 +20,8 @@
                         ],
 
       'BOOK-ARTICLE' => [
-                         { name=>'TITLE',   label=> 'Title'         }, 
-                         { name=>'ARTTIT',  label=> 'Paper Title'   }, 
+                         { name=>'TITLE',   label=> 'Title of Book' }, 
+                         { name=>'ARTTIT',  label=> 'Chapter Title' }, 
                          { name=>'ARTAUT',  label=> 'Author(s)'     }, 
                          { name=>'PGS',     label=> 'Pages'         } 
                         ],
