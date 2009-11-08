@@ -41,7 +41,8 @@
 
 
 [% IF citation.parsed('ARTTIT')  %]
-    <tr class="citation-row"><td class="citation-label">Article:</td><td class="citation-field">
+    [% SET article_label = (citation.is_book_article) ? 'Chapter' : 'Article' %]
+    <tr class="citation-row"><td class="citation-label">[% article_label %]:</td><td class="citation-field">
     [% citation.parsed('ARTTIT') %]
     </td></tr>
 [% END %]
