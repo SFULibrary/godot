@@ -1,3 +1,4 @@
+[%# (11-jun-2007 kl) - (sfu only note)  Reserves Database uses 'id="search-messages"' %]
 [% UNLESS page.search_messages.aws %]
 	<div id="search-messages">[% page.search_messages %]</div>
 [% END %]
