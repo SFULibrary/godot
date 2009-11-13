@@ -13,7 +13,10 @@ require openurl;
 
 use CGI qw(-no_xhtml :standard);
  
-use Text::Striphigh 'striphigh';
+##
+## (13-nov-2009 kl) -- remove as 'striphigh' is no longer used in this package
+##
+#### use Text::Striphigh 'striphigh';
 
 use strict;
 
