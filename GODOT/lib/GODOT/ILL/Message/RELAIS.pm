@@ -1,9 +1,7 @@
 package GODOT::ILL::Message::RELAIS;
-
 ##
 ## Copyright (c) 2006, Todd Holbrook, Simon Fraser University
 ##
-
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
@@ -498,10 +496,61 @@ sub next_partner {
 sub transport { return 'relais'; }
 
 
+##
+## (10-feb-2010 kl) -- added support for ill_local_system_request_number which can be used in templates
+##
 sub check_http_return {
     my($self, $string) = @_;
 
-    return ($string =~ m#PAT-\d+#);
+    return $FALSE if $self->http_return_contains_error_message($string);
+
+    if ($string =~ m#(PAT-\d+)#) {
+        my $ill_local_system_request_number = $1;
+        $self->ill_local_system_request_number($ill_local_system_request_number);
+        return $TRUE;
+    
+    }
+    return $FALSE;
+}
+
+####
+#### sub check_http_return {
+####    my($self, $string) = @_;
+####
+####    return $FALSE if $self->http_return_contains_error_message($string);
+####    return ($string =~ m#PAT-\d+#);
+#### }
+####
+
+sub http_return_contains_error_message {
+    my($self, $string) = @_;
+
+    ## 
+    ## (04-feb-2010 kl) -- error messages are being passed back by relais as follows: 
+    ##                         &lt;ErrorMessage&gt;There was an Internal Error. Please contact the service provider.                                     &lt;/ErrorMessage&gt;
+    ##                         &lt;ErrorMessage&gt;The LoginID or Password is incorrect in Request XML.  Invalid LoginID or LoginPassword in PatronRecord&lt;/ErrorMessage&gt;
+    ##
+    ## -use 's' as a modifier, as this will lets '.' match newline (normally it doesn't)
+    ## -use '?' for minimal matching, so we match on the first '&lt;/ErrorMessage&gt;', not the last; 
+    ##
+    if ($string =~ m#&lt;ErrorMessage&gt;(.+?)&lt;\/ErrorMessage&gt;#is) {    
+        my $error_message = $1;
+
+        ##
+        ## -also try to parse out error number if possible, eg.  &lt;ErrorNumber&gt;PUBAUT011&lt;/ErrorNumber&gt;
+        ## -comment out for now as may just confuse user
+        ##
+        #### my $error_number;
+        #### if ($string =~ m#&lt;ErrorNumber&gt;(.+?)&lt;\/ErrorNumber&gt;#is) {    
+        ####    $error_number = $1;
+        ####    $error_message .= " ($error_number)";
+        #### }
+        ####
+        $self->error_message($error_message);
+        return $TRUE;
+    }
+
+    return $FALSE;
 }
 
 
