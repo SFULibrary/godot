@@ -246,20 +246,17 @@ sub send_by_http {
 
     $self->_log_ill_message($res->content, 'output');
 
+
     unless ($self->check_http_return($res->content)) {
-        error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
-
+	error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
         ##
-	## -don't overwrite current error message
-	##
-
+        ## -don't overwrite current error message
+        ##
 	if (aws($self->error_message)) {
 	    $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
-        }
-
-        return $FALSE;
+	}
+	return $FALSE;
     }
-
     return $TRUE;
 }
 
@@ -303,15 +300,24 @@ sub send_by_relais {
         return $FALSE;
     }
 
-
     $self->_log_ill_message($res->content, 'output');
 
+    ##
+    ## (10-feb-2010 kl) -- added so error messages passed back from relais will be included
+    ## 
     unless ($self->check_http_return($res->content)) {
-        error "message POST request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
-        $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
+        error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
+        ##
+	## -if we already have an error message then append it to this general one
+	##
+        #### debug "------------------------- Message.pm -----------------------";
+        #### debug $self->error_message;
+        #### debug "------------------------------------------------------------";
+
+        my $prepend = (add_trailing_period($self->error_message) . '  ') unless aws($self->error_message);        
+	$self->error_message($prepend . 'Submission of ILL request failed for ' . $self->message_url . '.');
         return $FALSE;
     }
-
     return $TRUE;
 }
 
