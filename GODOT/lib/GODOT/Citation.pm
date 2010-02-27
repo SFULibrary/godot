@@ -512,6 +512,14 @@ sub parsed {
         ## (05-mar-2009 kl) -- added check for whitespace
         ##
 	$self->{'parsed'}->{$field} = $value if defined($value) and naws($value);
+
+        ##
+        ## (26-feb-2010 kl) -- added logic so an existing value can be removed (eg. ISSN of a dissertation abstracts citation)
+        ##
+        if (naws($self->{'parsed'}->{$field}) and defined($value) and aws($value)) {
+            delete $self->{'parsed'}->{$field}; 
+        }
+
 	return $self->{'parsed'}->{$field};
 }
 
