@@ -18,7 +18,6 @@ use GODOT::String;
 use GODOT::Database;
 use GODOT::Encode;
 use URI::Escape;
-
 #### use Text::Striphigh 'striphigh';      ## -removed as no longer being used
 
 use strict;
