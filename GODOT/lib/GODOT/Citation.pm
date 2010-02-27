@@ -15,11 +15,11 @@ use GODOT::Constants;
 use GODOT::Config;
 use GODOT::Debug;
 use GODOT::String;
-
 use GODOT::Database;
-
-use Text::Striphigh 'striphigh';
+use GODOT::Encode;
 use URI::Escape;
+
+#### use Text::Striphigh 'striphigh';      ## -removed as no longer being used
 
 use strict;
 
@@ -660,31 +660,42 @@ sub init_from_godot_parsed_params {
 #
 
 sub clean_field {
-	my ($self, $string) = @_;
+	my ($self, $octets) = @_;
 	
-	return $string if !defined($string) || $string eq '';
+	return $octets if !defined($octets) || $octets eq '';
 
-	# Strip out weird escape sequences introduced by highlighting codes in webspirs
-	$string =~ s#%1bh##ig;        
-	$string =~ s#\x1bh##ig;
+        debug "clean_field octets:  $octets";
 
-	#### debug "clean_field, string in: $string\n";
+	## Strip out weird escape sequences introduced by highlighting codes in webspirs
+	$octets =~ s#%1bh##ig;        
+	$octets =~ s#\x1bh##ig;
 
 	# Translate %xx to their character equivalents
-	$string = uri_unescape($string);
+	$octets = uri_unescape($octets);
 
-	# Change high characters to their low character equivalents
-	$string = striphigh($string);
+        ##
+        ## (13-nov-2009 kl) -- remove as this breaks for incoming utf8 (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+        ##
+	## Change high characters to their low character equivalents
+        ##
+	#### $octets = striphigh($octets);
+        ##
 
-	# If it's a BRS database, then further stuff needs doing.
-		
-	if ($self->is_brs_database()) {
-		
-		$string = strip_extra_leading_subfield($string);
-		
-		# Temporary fix for ECDB
+        ##
+        ## (01-jan-2010 kl) -- decode logic that can be overridden as needed 
+        ##
+	my $string = decode_from_octets($octets);
+
+        ##
+	## If it's a BRS database, then further stuff needs doing.
+        ##		
+	if ($self->is_brs_database()) {		
+		$string = strip_extra_leading_subfield($string);		
+		## Temporary fix for ECDB
 		$string =~ s#\174([a-z0-9])#\037$1#g;
 	}
+
+        debug "clean_field string:  $string\n";
 
 	return $string;
 }	
