@@ -104,6 +104,34 @@ sub isbn {
 
 
 ##
+## (27-feb-2010 kl) -- back only the first item in the list;  returns undef if list is empty;  read only;
+##    
+sub first_title {
+    my($self) = shift;
+    $self->_first('title');
+}
+
+sub first_marc_title {
+    my($self) = shift;
+    $self->_first('marc_title');
+}
+
+sub first_call_number {
+    my($self) = shift;
+    $self->_first('call_number');
+}
+
+sub first_issn {
+    my($self) = shift;
+    $self->_first('issn');
+}
+
+sub first_isbn {
+    my($self) = shift;
+    $self->_first('isbn');
+}
+
+##
 ## usage:
 ##
 ## @collections = $bibcirc->collection 
@@ -857,6 +885,17 @@ sub _multiple {
  
     if (defined $self->{$field}) {  return @{$self->{$field}}; }
     else                         {  return ();                 }
+}
+
+##
+## (27-feb-2010 kl) -- back only the first item in the list;  returns undef if list is empty;  read only;
+##
+sub _first {
+    my($self) = shift;
+    my($field) = shift;
+
+    if (defined $self->{$field} && length(@{$self->{$field}})) {  return ${$self->{$field}}[0]; }
+    else                                                       {  return undef;                 }
 }
 
 
