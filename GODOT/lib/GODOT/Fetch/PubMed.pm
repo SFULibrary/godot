@@ -23,6 +23,7 @@ use GODOT::Debug;
 use GODOT::String;
 use GODOT::Constants;
 use GODOT::Object;
+use GODOT::Encode;
 
 
 my $month_lookup = {
@@ -91,11 +92,22 @@ sub add_data {
         debug "$field:  ", $data->{$field};
 
     	if (aws($citation->parsed($field)) && naws($data->{$field}) ) {
+
+            #### debug "$field is_utf8:  ", &is_utf8_octets($data->{$field});  
+            #### debug "$field is_cp1252:  ", &is_cp1252_octets($data->{$field});  
+
     	    #### $citation->parsed($field, $data->{$field});
             ##
             ## Andrew Sokolov of Saint-Petersburg State University Scientific Library
             ##
-   	    $citation->parsed($field, Encode::encode_utf8($data->{$field}));
+   	    ####  $citation->parsed($field, Encode::encode_utf8($data->{$field}));
+
+            ##
+            ## (20-jan-2010 kl) -- data from pubmed needs to be decoded;  
+            ##                  -- not using Encode::decode_utf8 as it does not appear that all data is encoded with utf8 (as I had previously assumed);
+            ##                  -- GODOT::Encode::decode_from_octets tests for a few encodings and decodes accordingly;  
+            ##
+   	    $citation->parsed($field, decode_from_octets($data->{$field}));            
     	}
     }
 	
