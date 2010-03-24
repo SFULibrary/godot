@@ -9,8 +9,8 @@
 package GODOT::String;
 
 use CGI qw(:escape);
+use Encode;
 use GODOT::Debug;
-
 
 use Exporter;
 @ISA = qw(Exporter);
@@ -24,6 +24,10 @@ use Exporter;
              convert_ISBN
              valid_ISSN_s_ok
              valid_ISSN_no_hyphen_s_ok
+             is_ascii
+             is_latin1
+             is_cp1252
+             is_utf8
              normalize_marc8 
              normalize_latin1 
              latin1_to_utf8
@@ -296,6 +300,51 @@ sub valid_ISSN_no_hyphen_s_ok {
         if ($string =~ m#^[0-9]{4,4}[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
         return undef;
 }
+
+
+##
+## -input is a string consisting of perl characters (ie. octets have already been decoded)
+##
+sub is_ascii {
+    my($string) = @_;
+
+    foreach my $char (split('', $string)) {
+	my $ord = ord($char);
+        return $FALSE unless ($ord >= 0) && ($ord <= 127);  
+    } 
+    return $TRUE;
+}
+
+##
+## -input is a string consisting of perl characters (ie. octets have already been decoded)
+##
+sub is_latin1 {
+    my($string) = @_;  
+
+    foreach my $char (split('', $string)) {
+	my $ord = ord($char);
+        return $FALSE unless (($ord >= 32) && ($ord <= 126)) || (($ord >= 160) && ($ord <= 255));  
+    } 
+    return $TRUE;
+}
+
+sub is_cp1252_octets {
+    my($octets) = @_;
+
+    eval { my $string = decode('cp1252', $octets, Encode::FB_CROAK);  }; 
+    return ($@) ? $FALSE : $TRUE;
+}
+
+sub is_utf8_octets {
+    my($octets) = @_;
+
+    eval {  my $string = decode_utf8($octets, Encode::FB_CROAK);  };
+    return ($@) ? $FALSE : $TRUE;
+}
+
+
+
+
 
 sub normalize_marc8 {
     my($string) = @_;
