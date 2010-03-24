@@ -5,8 +5,11 @@ package GODOT::CUFTS::Citation;
 
 use CGI qw(:escape);
 
+use Encode;
+
 use GODOT::Debug;
 use GODOT::String;
+use GODOT::Encode;
 use GODOT::Config;
 use GODOT::CUFTS::Config;
 
@@ -66,7 +69,16 @@ sub query_url {
 
         my $delim = ($count) ? '&' : '?';
         $count++;
-        $url .= join('', $delim, $field, '=', escape($self->$field));                
+
+        ##
+        ## (30-jan-2010 kl) -- transliterate characters not in latin1 range 
+        ##                  -- cufts currently expects latin1 but future version will take utf8
+        ##                  -- encode as latin1 before uri escaping
+        ##  
+        my $escaped_value = escape(encode('iso-8859-1', utf8_to_latin1_transliteration($self->$field)));
+        #### my $escaped_value = escape(utf8_to_latin1_transliteration($self->$field));
+
+        $url .= join('', $delim, $field, '=', $escaped_value);                
     }
     
     if ($url) {
