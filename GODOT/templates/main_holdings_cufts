@@ -64,7 +64,7 @@
 			   	END;
 			   END;
 			   
-			   text = '<a target="_blank" href="' _ result.url _ '">' _ text _ '</a>';
+			   text = '<a target="_blank" href="' _ result.url _ '">' _ text.encode_utf8 _ '</a>';
 			   holdings_items.push(text);
 			
 			END %]
@@ -78,7 +78,7 @@
 				
 				FOREACH result = service.results;
 					text = SERVICE_TEXT_2.defined(service_name) ? SERVICE_TEXT_2.$service_name : 'unrecognized service';
-					text = '<a target="_blank" href="' _ result.url _ '">' _ text _ '</a>';
+					text = '<a target="_blank" href="' _ result.url _ '">' _ text.encode_utf8 _ '</a>';
 					holdings_items.push({'text' => text, 'hidden' => 1});
 				END;
 			-%]
