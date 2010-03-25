@@ -15,11 +15,11 @@
         [% config.abbrev_name %] appears to have 
 
         [% IF title  %]
-                '[% title %]'                 
+                '[% title.encode_utf8 %]'                 
         [% ELSIF isbn  %]
-                an item with an ISBN of '[% isbn %]'
+                an item with an ISBN of '[% isbn.encode_utf8 %]'
         [% ELSIF issn  %]
-                an item with an ISSN of '[% issn %]'
+                an item with an ISSN of '[% issn.encode_utf8 %]'
         [% END %]
         .
         <p>
