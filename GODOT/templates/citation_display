@@ -14,12 +14,12 @@
 
 <td class="citation-field">
 [% IF citation.parsed('TITLE') %]
-     [% citation.parsed('TITLE') %]        
+     [% citation.parsed('TITLE').encode_utf8 %]        
 [% ELSE %]
      <i>No Title Available</i>
 [% END %]
 
-[% author %]
+[% author.encode_utf8 %]
 
 [% IF source_details %]
      <br />
@@ -43,34 +43,34 @@
 [% IF citation.parsed('ARTTIT')  %]
     [% SET article_label = (citation.is_book_article) ? 'Chapter' : 'Article' %]
     <tr class="citation-row"><td class="citation-label">[% article_label %]:</td><td class="citation-field">
-    [% citation.parsed('ARTTIT') %]
+    [% citation.parsed('ARTTIT').encode_utf8 %]
     </td></tr>
 [% END %]
 
 [% IF  citation.parsed('ARTAUT') %]
     <tr class="citation-row"><td class="citation-label">Author(s):</td><td class="citation-field">
-    [% citation.parsed('ARTAUT') %]
+    [% citation.parsed('ARTAUT').encode_utf8 %]
     </td></tr>
 [% END  %]
 
 [% IF citation.parsed('ERIC_NO').match($ERIC_DOC_PATTERN) %]
     <tr class="citation-row"><td class="citation-label">ERIC Doc No:</td>
     <td class="citation-field">
-    [% citation.parsed('ERIC_NO') %]
+    [% citation.parsed('ERIC_NO').encode_utf8 %]
     </td></tr>
 [% END  %]
 
 [% IF citation.parsed('MLOG_NO') %]
     <tr class="citation-row"><td class="citation-label">Microlog No:</td>
     <td class="citation-field">
-    [% citation.parsed('MLOG_NO') %]
+    [% citation.parsed('MLOG_NO').encode_utf8 %]
     </td></tr>
 [% END  %]
 
 [% IF citation.parsed('UMI_DISS_NO') %]
     <tr class="citation-row"><td class="citation-label">UMI Diss No:</td>
     <td class="citation-field">
-    [% citation.parsed('UMI_DISS_NO') %]
+    [% citation.parsed('UMI_DISS_NO').encode_utf8 %]
     </td></tr>
 [% END  %]
 
@@ -78,7 +78,7 @@
 [% IF citation.parsed('OAI') %]
     <tr class="citation-row"><td class="citation-label">OAI No:</td>
     <td class="citation-field">
-    [% citation.parsed('OAI') %]
+    [% citation.parsed('OAI').encode_utf8 %]
     </td></tr>
 [% END  %]
 
@@ -88,7 +88,7 @@
     <tr><td class="citation-label"></td></tr><tr><td class="citation-field" COLSPAN=2>
 
     [% IF citation.parsed('URL_MSG') %]
-        [% citation.parsed('URL_MSG') %]
+        [% citation.parsed('URL_MSG').encode_utf8 %]
     [% ELSIF citation.parsed('URL') %]
         Please note that 
         <A HREF="[% citation.parsed('URL')  %]">a link to the fulltext or a related web page</A>
@@ -104,10 +104,6 @@
 </table>
 </div>
 
-
-
-
-
 [% BLOCK setup_data %]
 
 [% ERIC_DOC_PATTERN = '^ed|^ED' %]
@@ -118,7 +114,7 @@
         END;
     END;
 
-    IF ((! $citation.parsed('TITLE')) and (author == '') and (citation.req_type == 'PREPRINT')) ;
+    IF ((! citation.parsed('TITLE')) and (author == '') and (citation.req_type == 'PREPRINT')) ;
          author = '/Preprint';
     END;
 %]
@@ -165,7 +161,7 @@
             source_details_list.push(tmp);
         END;
 
-        source_details = source_details_list.join(', ');
+        source_details = source_details_list.join(', ').encode_utf8;
     END
 %]
 
