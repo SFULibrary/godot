@@ -55,7 +55,7 @@
                 [% SET element = {  
                            name = name
                            type = 'TEXTFIELD'
-                           value = citation.parsed(field.name)
+                           value = citation.parsed(field.name).encode_utf8
                            size = size
                            maxlength = maxlength
                    }
