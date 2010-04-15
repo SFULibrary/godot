@@ -29,7 +29,7 @@ use Exporter;
              is_cp1252
              is_utf8
              normalize_marc8 
-             normalize_latin1 
+             normalize 
              latin1_to_utf8
              latin1_to_utf8_xml
              is_single_word 
@@ -56,7 +56,8 @@ use Exporter;
              put_query_fields
              put_query_fields_from_array
              uri_encode_string
-             valid_email);
+             valid_email
+             curly_bracket_utf8_escape_format);
 
 use strict;
 
@@ -343,16 +344,17 @@ sub is_utf8_octets {
 }
 
 
-
-
-
 sub normalize_marc8 {
     my($string) = @_;
     
-    return(&normalize_latin1(&marc8_to_latin1($string)));
+    return(&normalize(&marc8_to_latin1($string)));
 }
 
-sub normalize_latin1 {
+##
+## (25-mar-2010 kl) -- changed name from normalize_latin1 to normalize as fine for utf8 characters outside 
+##                     of latin1 (Text::Normalize::NACO calls Text::Unidecode::unidecode)
+##
+sub normalize {
         my($string) = @_;
 
         my(@clean);
@@ -371,11 +373,10 @@ sub normalize_latin1 {
         foreach my $i (split(/[ \t]+/, $string)) {     ## -split on whitespace
 
 	        unless (&all_digits($i) || (grep {$i eq $_} @STOP_WORDS)) {
-	        #### unless (grep {$i eq $_} @STOP_WORDS) {
                         push(@clean, $i);
                 } 
         }       
-        return join(' ', @clean);
+        return trim_beg_end(join(' ', @clean));
 }
 
 
@@ -829,6 +830,17 @@ sub rm_shell_char {
     return $string;
 }
 
+
+##
+## -assumes incoming string has already been decoded into internal format
+##
+
+sub curly_brace_utf8_escape_format {
+    my($string) = @_;
+
+    my @string = map { ord($_) > 127 ? (sprintf "{u%04x}", ord $_) : $_ } split('', $string);
+    return join('',  @string);
+}
 
 
 sub _gen_chksum_13{
