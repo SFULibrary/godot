@@ -17,6 +17,7 @@ use GODOT::Debug;
 use GODOT::String;
 use GODOT::Database;
 use GODOT::Encode;
+use GODOT::Encode::Transliteration;
 use URI::Escape;
 #### use Text::Striphigh 'striphigh';      ## -removed as no longer being used
 
@@ -663,7 +664,7 @@ sub clean_field {
 	
 	return $octets if !defined($octets) || $octets eq '';
 
-        debug "clean_field octets:  $octets";
+        #### debug "clean_field octets:  $octets";
 
 	## Strip out weird escape sequences introduced by highlighting codes in webspirs
 	$octets =~ s#%1bh##ig;        
@@ -694,7 +695,7 @@ sub clean_field {
 		$string =~ s#\174([a-z0-9])#\037$1#g;
 	}
 
-        debug "clean_field string:  $string\n";
+        #### debug "clean_field string:  $string\n";
 
 	return $string;
 }	
