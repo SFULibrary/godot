@@ -6,6 +6,7 @@ package GODOT::Template;
 ##
 
 use CGI qw(:escapeHTML :escape :cookie);
+use Encode;
 
 use Template;
 use Template::Stash;
@@ -115,6 +116,14 @@ $Template::Stash::SCALAR_OPS->{'escape'} = sub {
     my $x = shift; 
     return escape($x);
 };
+
+$Template::Stash::SCALAR_OPS->{'encode_utf8'} = sub { 
+    my $x = shift; 
+    return encode_utf8($x);
+};
+
+
+
 
 $Template::Stash::LIST_OPS->{'sort_by_service'} =  sub { 
   
@@ -246,6 +255,7 @@ sub format {
     debug("GODOT::Template::format using template: " . $self->{'name'});
     
     my $template = new Template({'INCLUDE_PATH' => $self->include_path, 
+                                 'ENCODING'     => 'utf8',
                                  'PRE_CHOMP'    => 1,
 			         'POST_CHOMP'   => 1,
 			         'VARIABLES'    => {'config'     => $self->config},
