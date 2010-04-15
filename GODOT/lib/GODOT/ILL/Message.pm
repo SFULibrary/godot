@@ -313,7 +313,9 @@ sub send_by_relais {
         #### debug "------------------------- Message.pm -----------------------";
         #### debug $self->error_message;
         #### debug "------------------------------------------------------------";
-
+        ##
+        ## (11-mar-2010 kl) -- 'submission of ill request failed' may be check by template logic so avoid changing ...  
+        ##
         my $prepend = (add_trailing_period($self->error_message) . '  ') unless aws($self->error_message);        
 	$self->error_message($prepend . 'Submission of ILL request failed for ' . $self->message_url . '.');
         return $FALSE;
