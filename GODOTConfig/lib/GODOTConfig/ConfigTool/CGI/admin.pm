@@ -123,7 +123,7 @@ sub process_admin_submit_edit_site {
 		push @errors, 'Site name cannot be blank';
 	assert_ne(param('site_key')) or
 		push @errors, 'Site key cannot be blank';
-	assert(no_white_space(param('site_key'))) or
+	no_white_space(param('site_key')) or
 		push @errors, 'Site key cannot contain blanks including leading and trailing ones.';
 
 	if (scalar(@errors) > 0) {
