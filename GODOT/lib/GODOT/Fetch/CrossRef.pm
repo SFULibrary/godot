@@ -18,7 +18,6 @@ my @FIELDS = ('auth_name',
 
 use strict;
 
-
 sub new {
     my ($self, $fields, $values) = @_;
 
