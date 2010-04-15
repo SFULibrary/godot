@@ -4251,11 +4251,12 @@ sub back_to_database_url {
     require parse;
 
     if    ($citation->get_dbase()->no_back_to_database())   { return ''; }
-    elsif (aws($hold_tab_back_url))                { return ''; }
+    elsif (aws($hold_tab_back_url))                         { return ''; }
 
     if ($citation->get_dbase()->is_blank_dbase()) { $label = 'To New Request Form';   }
     else                                          { $label = 'Back to Database';      }
    
+
     return $hold_tab_back_url;
 }
 
