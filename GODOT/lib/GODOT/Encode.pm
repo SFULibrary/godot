@@ -2,23 +2,28 @@
 ##
 ## Copyright (c) 2010, Kristina Long, Simon Fraser University
 ##
-## Various encoding related routines for use in GODOT.  
-## Override with local copy as required.
+## This file, GODOT::Encode, is for encoding related routines that you may need to override with a local copy for non-english languages.
+## Use GODOT::String for encoding related routines that you are unlikely to need to override.
+## See GODOT::Normalize for routines that you will likely want to override for non-english languages.
 ##
-## IMPORTANT:  Do not print utf8 strings in debug statements as they may cause confusion depending on your editor.  Instead use
-##             Data::Dump::dump to print as escaped ascii.  Trust me.
+## IMPORTANT:  Do not print utf8 strings in debug statements as they may cause confusion depending on your editor.  
+##             Instead use Data::Dump::dump or Data::Dumper::Dumper to print as escaped ascii.  Trust me.
 ##
 package GODOT::Encode;
 
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(decode_from_octets 
-             utf8_to_latin1_transliteration);
-
+             encode_catalogue_search_term
+             marc_record_field_to_utf8);
 use strict;
 
 use Data::Dump qw(dump);
+use Data::Dumper;
 use Encode;
+use MARC::Record;
+use MARC::Field;
+use MARC::Charset;
 
 use GODOT::Debug;
 use GODOT::String;
@@ -26,14 +31,7 @@ use GODOT::Encode::Transliteration;
 
 my $TRUE  = 1;
 my $FALSE = 0;
-
-my $DEBUG = $FALSE;
-
-my %map;
-
-BEGIN {
-    %map = &utf8_to_latin1_transliteration_map;
-}
+my $BLANK = '';
 
 sub decode_from_octets {
     my($octets) = @_;
@@ -60,49 +58,77 @@ sub decode_from_octets {
 }
 
 ##
-## (29-jan-2010 kl) -- started with code from Search::Tools::Transliterate by Peter Korman
+## (25-mar-2010 kl) - first pass  ... system differences should likely be handled elsewhere.
 ## 
-## Input and output are strings in perl internal format.
-## Output only contains characters in latin1 range.
-## 
-sub utf8_to_latin1_transliteration {
-    my($string) = @_;
+sub encode_catalogue_search_term {
+    my($string, $system_type) = @_;
 
-    my $latin1;
-
-    #### debug "--- transliteration map ---";
-    #### debug dump (\%map);
+    debug 'before -- encode_catalogue_search_term:  ', Dumper($string), "\n";
 
     ##
-    ## -don't bother unless we have non-ascii bytes in the string
+    ## -seems that many of the coppul/eln catalogues do not return records when search terms contain utf8 characters;
+    ## -not clear whether this is because of limitations with their z39.50 servers or because they are not indexing utf8 version of titles;
+    ## -am assuming that catalogues that are mostly non-english records will handle utf8 search terms or perhaps they are using other character sets??
+    ## -adjust this routine to match they way the catalogues you want to search are configured
     ##
-    return $string if is_ascii($string);
-
-    $DEBUG && debug "converting:  ", dump($string), "\n";
-
-    ##
-    ## -loop through perl characters 
-    ## 
-    while ( $string =~ m/(.)/gox ) {           
-        my $char = $1;
-
-        if ( is_latin1($char) ) {
-            $DEBUG && debug "is_latin1:  ", dump($char);
-            $latin1 .= $char;
-        }
-        elsif (exists $map{$char}) {
-            $DEBUG && debug 'transliterate:  ', dump($char), ' => ', dump($map{$char});
-            $latin1 .= $map{$char};
-        }
-        else {
-            $DEBUG && debug "not in map:  ", dump($char);
-            $latin1 .= ' ';
-        }
+    
+    if ($system_type eq 'ENDEAVOR') {
+        $string = encode_utf8($string);
+    }
+    elsif ($system_type eq 'III') {
+        ##
+        ## -indexes utf8 characters as escaped ascii using the form {u<code point>}.  
+        ## -for instance an e-acute would be '{u00e9}' 
+        ##
+        $string = curly_brace_utf8_escape_format($string);      
+    }
+    else {
+        ##
+        ## -utf8 to ascii transliteration 
+        ##
+        $string = unicode_to_ascii_transliteration($string);
     }
 
-    return $latin1;
+    debug 'after -- encode_catalogue_search_term:  ', dump($string), "\n";  
+
+    return $string;
 }
 
+
+## 
+## (11-apr-2010 kl) -- convert MARC::Field to utf8
+## 
+## Field must not be a control field (ie. > 009).
+##
+sub marc_record_field_to_utf8 {
+    my($marc, $field) = @_;
+
+    unless (ref $marc eq 'MARC::Record') {        
+        debug '$marc is not a MARC::Record';
+        return undef;
+    }
+
+    if ($field->is_control_field) {
+        debug '$field is a control field but subroutine was expecting a non-control field';
+        return undef;
+    }
+
+    my $leader_09 = substr($marc->leader, 9, 1);
+    debug "leader-09 value is invalid ($leader_09)" unless grep { $leader_09 eq $_ } ($BLANK, 'a');
+
+    MARC::Charset->ignore_errors(1);
+
+    my %subfields_utf8;
+    foreach my $subfield ($field->subfields) {
+        my($code, $data) = @{$subfield};
+	$data = marc8_to_utf8($data) if ($leader_09 eq $BLANK);
+        $subfields_utf8{$code} = $data;
+    }
+        
+    my $field_utf8 = MARC::Field->new($field->tab, $field->indicator(1), $field->indicator(2), %subfields_utf8);
+    return $field_utf8;
+
+}
 
 
 
