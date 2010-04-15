@@ -669,7 +669,6 @@ sub get_title_from_bib_circ {
             ##
             ## $marc_title is a MARC::Field
             ##
-
             my @string;
 	    foreach my $subfield ($marc_title->subfields) {
 		my($code, $data) = @{$subfield};
@@ -680,7 +679,11 @@ sub get_title_from_bib_circ {
             
 	    my $title = join(' ', @string);
 
-            my $clean_title = &GODOT::String::normalize_marc8($title); 
+            ##
+            ## (11-apr-2010 kl) -- changed from normalize_marc8 to normalize as $marc_title (and therefore $title) is now utf8
+            ##                  -- related to similarly dated changes in GODOT::CatalogueHoldings::BibCirc  
+            ##
+            my $clean_title = &GODOT::String::normalize($title); 
 
             if (&GODOT::String::aws($clean_title)) { next; }
 
