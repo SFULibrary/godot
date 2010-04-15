@@ -8,18 +8,82 @@ package GODOT::Encode::Transliteration;
 
 use Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(utf8_to_latin1_transliteration_map);
-
+@EXPORT = qw(utf8_to_ascii_transliteration
+             utf8_to_latin1_transliteration              
+             utf8_to_latin1_transliteration_map);
 use strict;
 
 use Data::Dump qw(dump);
+use Text::Unidecode;
 use GODOT::String;
 use GODOT::Debug;
+
+my $TRUE  = 1;
+my $FALSE = 0;
+
+my $DEBUG = $FALSE;
+
+my %map;
+
+##
+## Input and output are strings in perl internal format.
+## Output only contains characters in ascii range.
+## 
+
+sub utf8_to_ascii_transliteration {
+    my($string) = @_;
+
+    return unidecode($string);
+}
+
+##
+## (29-jan-2010 kl) -- started with code from Search::Tools::Transliterate by Peter Korman
+## 
+## Input and output are strings in perl internal format.
+## Output only contains characters in latin1 range.
+## 
+sub utf8_to_latin1_transliteration {
+    my($string) = @_;
+
+    my $latin1;
+
+    #### debug "--- transliteration map ---";
+    #### debug dump (\%map);
+
+    ##
+    ## -don't bother unless we have non-ascii bytes in the string
+    ##
+    return $string if is_ascii($string);
+
+    $DEBUG && debug "converting:  ", dump($string), "\n";
+
+    ##
+    ## -loop through perl characters 
+    ## 
+    while ( $string =~ m/(.)/gox ) {           
+        my $char = $1;
+
+        if ( is_latin1($char) ) {
+            $DEBUG && debug "is_latin1:  ", dump($char);
+            $latin1 .= $char;
+        }
+        elsif (exists $map{$char}) {
+            $DEBUG && debug 'transliterate:  ', dump($char), ' => ', dump($map{$char});
+            $latin1 .= $map{$char};
+        }
+        else {
+            $DEBUG && debug "not in map:  ", dump($char);
+            $latin1 .= ' ';
+        }
+    }
+
+    return $latin1;
+}
+
 
 ##
 ## (29-jan-2010 kl) -- based on code from Search::Tools::Transliterate by Peter Korman
 ##
-
 sub utf8_to_latin1_transliteration_map {
  
     my $string = &utf8_transliteration_map_data;
@@ -913,3 +977,9 @@ End_of_String
 
     return $string;
 }
+
+BEGIN {
+    %map = &utf8_to_latin1_transliteration_map;
+}
+
+
