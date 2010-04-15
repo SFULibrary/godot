@@ -9,6 +9,7 @@ use GODOT::Debug;
 use GODOT::String;
 use GODOT::Constants;
 use GODOT::Object;
+use GODOT::Encode;
 
 use base qw(GODOT::Fetch);
 
@@ -97,7 +98,11 @@ sub add_data {
          return $TRUE;
     }
 
-    my $returned_data = trim_beg_end( $response->content );
+    ##
+    ## (30-jan-2010 kl) -- decode data -- allow for different encodings although one would hope it is all the same ...
+    ##                  -- sample of one suggests it is utf8
+    ##    
+    my $returned_data = trim_beg_end(decode_from_octets($response->content));
 
     debug "CrossRef returned (" . ( time - $start_time ) . " s): $returned_data\n";
 
