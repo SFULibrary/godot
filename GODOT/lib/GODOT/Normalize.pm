@@ -12,7 +12,8 @@ package GODOT::Normalize;
 
 use Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw();
+@EXPORT = qw(normalize_for_catalogue_match
+             normalize_for_catalogue_match_leader);
 use strict;
 
 use Data::Dumper;
