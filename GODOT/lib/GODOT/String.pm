@@ -57,7 +57,7 @@ use Exporter;
              put_query_fields_from_array
              uri_encode_string
              valid_email
-             curly_bracket_utf8_escape_format);
+             curly_brace_utf8_escape_format);
 
 use strict;
 
