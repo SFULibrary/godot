@@ -63,7 +63,7 @@ sub decode_from_octets {
 sub encode_catalogue_search_term {
     my($string, $system_type) = @_;
 
-    debug 'before -- encode_catalogue_search_term:  ', Dumper($string), "\n";
+    debug 'before -- encode_catalogue_search_term:  ', dump($string), "\n";
 
     ##
     ## -seems that many of the coppul/eln catalogues do not return records when search terms contain utf8 characters;
