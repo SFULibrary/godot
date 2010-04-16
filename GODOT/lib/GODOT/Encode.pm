@@ -86,7 +86,7 @@ sub encode_catalogue_search_term {
         ##
         ## -utf8 to ascii transliteration 
         ##
-        $string = unicode_to_ascii_transliteration($string);
+        $string = utf8_to_ascii_transliteration($string);
     }
 
     debug 'after -- encode_catalogue_search_term:  ', dump($string), "\n";  
