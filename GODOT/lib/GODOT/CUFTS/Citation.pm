@@ -10,6 +10,7 @@ use Encode;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Encode;
+use GODOT::Encode::Transliteration;
 use GODOT::Config;
 use GODOT::CUFTS::Config;
 
