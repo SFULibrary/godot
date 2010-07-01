@@ -49,7 +49,12 @@ sub good_match {
     ## -remove all leading and trailing white space so can later test for null string instead of all-white-space
     ##
     
-    my $citation_title =  trim_beg_end(&GODOT::String::normalize_latin1($citation->parsed('TITLE')));
+    ##
+    ## (01-jul-2020 kl) -- GODOT::String in repository has new 'normalize' name instead of old 'normalize_latin1';
+    ##
+    #### my $citation_title =  trim_beg_end(&GODOT::String::normalize_latin1($citation->parsed('TITLE')));
+    my $citation_title =  trim_beg_end(&GODOT::String::normalize($citation->parsed('TITLE')));
+
 
     ##
     ## (14-feb-2003 kl) - added logic to make ISSN and ISBN uppercase
