@@ -287,6 +287,22 @@ sub format {
         $writer->endTag('PrimaryAddress');
     }
 
+    ##
+    ## (22-aug-2010 kl) -- added '<BillingInformation><BillingContact><ContactPhone>' so could send patron home phone number to U of Winnipeg;
+    ##                  -- they are using schema 'http://www.relais-intl.com/schema/2009.0/AddRequest.xsd' which does not allow '<PatronRecord><ContactPhone>';
+    ##                  -- multiple '<BillingInformation><BillingContact><ContactPhone>' does not work so put work phone number in '<ElectronicDelivery><PhoneNumber>';
+    ## 
+    if (naws($patron->phone)  && $self->_include_phone_as_billing_contact_phone) {
+            $writer->startTag('BillingInformation');
+            $writer->startTag('BillingContact');
+            $writer->startTag('ContactPhone');
+            $writer->characters( $patron->phone );
+            $writer->endTag('ContactPhone');
+            $writer->endTag('BillingContact');
+            $writer->endTag('BillingInformation');
+    }
+
+
     $self->_format_electronic_delivery($writer, $patron);
 
     if ($self->_include_user_login) {
@@ -302,6 +318,7 @@ sub format {
 
         $writer->endTag('UserLogin');
     }
+
 
     $writer->endTag('PatronRecord');
     
@@ -374,6 +391,17 @@ sub _format_electronic_delivery {
     $writer->startTag('MessagingEmail');
     $writer->characters( $patron->email );
     $writer->endTag('MessagingEmail');
+
+    ##
+    ## (22-aug-2010 kl) -- added '<ElectronicDelivery><PhoneNumber>' so could send patron work phone number to U of Winnipeg;
+    ##                  -- they are using schema 'http://www.relais-intl.com/schema/2009.0/AddRequest.xsd' which does not allow '<PatronRecord><ContactPhone>';
+    ##                  -- multiple '<BillingInformation><BillingContact><ContactPhone>' does not work so put work phone number in '<ElectronicDelivery><PhoneNumber>';
+    ##
+    if (naws($patron->phone_work)  && $self->_include_phone_as_billing_contact_phone_work) {
+            $writer->startTag('PhoneNumber');
+            $writer->characters( $patron->phone_work );
+            $writer->endTag('PhoneNumber');
+    }
 
     $writer->startTag('PickupLocation');
     $writer->characters( $patron->pickup );
@@ -524,6 +552,8 @@ sub check_http_return {
 
 sub http_return_contains_error_message {
     my($self, $string) = @_;
+
+    debug 'httpd_return_contains_error_message:  ', $string;
 
     ## 
     ## (04-feb-2010 kl) -- error messages are being passed back by relais as follows: 
@@ -724,6 +754,14 @@ sub _include_user_login {
 }
 
 sub _include_messaging_format {
+    return $FALSE;
+}
+
+sub _include_phone_as_billing_contact_phone {
+    return $FALSE;
+}
+
+sub _include_phone_as_billing_contact_phone_work {
     return $FALSE;
 }
 
