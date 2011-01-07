@@ -7,29 +7,30 @@
 
 
 
-GODOT_ROOT_DIR=/home/kristina/godot
+GODOT_ROOT_DIR=/usr/local/godot
 export GODOT_ROOT_DIR
 
 GODOT_ADMIN_EMAIL=klong@sfu.ca
 export GODOT_ADMIN_EMAIL
 
-GODOT_CGI_DIR=/home/kristina/httpd/htdocs/GODOT
+GODOT_CGI_DIR=/usr/local/apache2/htdocs/GODOT
 export GODOT_CGI_DIR
 
-GODOT_CONFIG_CGI_DIR=/home/kristina/httpd/htdocs/GODOTConfig
+GODOT_CONFIG_CGI_DIR=/usr/local/apache2/htdocs/GODOTConfig
 export GODOT_CONFIG_CGI_DIR
 
-GODOT_URL=http://proxy2.lib.sfu.ca:8777/GODOT/hold_tab.cgi
+GODOT_URL=http://lib-godot.lib.sfu.ca/GODOT/hold_tab.cgi
 export GODOT_URL
 
-GODOT_CONFIG_URL=http://proxy2.lib.sfu.ca:8777/GODOTConfig/config.cgi
+GODOT_CONFIG_URL=http://lib-godot.lib.sfu.ca/GODOTConfig/config.cgi
 export GODOT_CONFIG_URL
 
 ##
 ## If you want to install the demo, then keep these values.  
 ## You can later change them to point to your copies.
 ##
-GODOT_CUFTS_SERVER_URL=http://cufts2.lib.sfu.ca:8082/Resolver/site/
+
+GODOT_CUFTS_SERVER_URL=http://cufts2.lib.sfu.ca:8082/Resolver/site
 export GODOT_CUFTS_SERVER_URL
 
 GODOT_CITATION_MANAGER_URL=http://citationmanager.lib.sfu.ca/cm.cgi
