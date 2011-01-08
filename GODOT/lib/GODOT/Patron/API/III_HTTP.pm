@@ -178,9 +178,6 @@ sub get_patron {
         }
     }
 
-    #### debug $self->patron->dump;
-
-
     ##
     ## !!!!!!!!!!!!!!!!!!!! testing only !!!!!!!!!!!!!!!!!!!!!!
     ##
