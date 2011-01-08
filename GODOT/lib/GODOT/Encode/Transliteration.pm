@@ -8,7 +8,9 @@ package GODOT::Encode::Transliteration;
 
 use Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(utf8_to_ascii_transliteration
+@EXPORT = qw(transliterate_string
+             transliterate_string_preserve_linefeed
+             utf8_to_ascii_transliteration
              utf8_to_latin1_transliteration              
              utf8_to_latin1_transliteration_map);
 use strict;
@@ -24,6 +26,51 @@ my $FALSE = 0;
 my $DEBUG = $FALSE;
 
 my %map;
+
+
+
+##
+## (28-oct-2010)
+## -accepts one of 'ascii', 'latin1' or 'utf8'
+## -transliteration type 'utf8' results in no change;
+## -incoming string is assumed to be decoded and in perl internal format; 
+## -returns a string in perl internal format;
+## 
+sub transliterate_string {
+    my($charset, $string) = @_;
+
+    unless (grep { $charset eq $_ } qw(ascii latin1 utf8)) {
+        error location_plus, 'charset to transliterate to is invalid ($charset)';
+        return '';
+    }
+    
+    my $transliterated_string = $string;
+
+    if ($charset eq 'ascii') {
+        $transliterated_string = utf8_to_ascii_transliteration($string);
+    }
+    elsif ($charset eq 'latin1') {
+        $transliterated_string = utf8_to_latin1_transliteration($string);
+    }
+
+    return $transliterated_string;
+}
+
+sub transliterate_string_preserve_linefeed {
+    my($charset, $string) = @_;
+
+    unless (grep { $charset eq $_ } qw(ascii latin1 utf8)) {
+        error location_plus, 'charset to transliterate to is invalid ($charset)';
+        return '';
+    }
+    
+    my @transliterated;
+    foreach my $line (split(/\n/, $string)) {
+        push @transliterated, transliterate_string($charset, $line);
+    }
+
+    return join("\n", @transliterated);
+}
 
 ##
 ## Input and output are strings in perl internal format.
