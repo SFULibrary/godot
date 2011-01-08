@@ -168,6 +168,9 @@ sub subject {
     return "Document Delivery Request for " . $self->patron->last_name;
 }
 
+sub transliteration  { return 'utf8'; }
+
+sub encoding         { return 'utf8'; }
 
 1;
 
