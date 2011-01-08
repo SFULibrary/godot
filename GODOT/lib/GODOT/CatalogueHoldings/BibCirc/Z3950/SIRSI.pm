@@ -292,20 +292,11 @@ sub converted {
     my($self, $system_type) = @_;
 
 
-    #### debug "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n",
-    ####      $self->dump,
-    ####      "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
-
     my %bib_circ_hash = $self->SUPER::converted($system_type);     
 
     foreach my $holdings ($self->sirsi_holdings) {
         push(@{$bib_circ_hash{'bib_circ_sirsi_holdings'}}, [ $holdings->site, $holdings->holdings ]); 
     }
-
-    #### use Data::Dumper;
-    #### debug "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n",
-    ####      Dumper(\%bib_circ_hash),
-    ####      "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"; 
 
     return %bib_circ_hash;
 }
