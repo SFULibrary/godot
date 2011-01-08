@@ -45,26 +45,23 @@ sub report_location {
 }
 
 
-sub send_admin_email {
-    my($to, $message) = @_; 
-    local(*SENDMAIL);
-    my($subject);   
 
-    $subject = "Message from GODOT (debug)"; 
-    my($sendmail) = '/usr/lib/sendmail -t -n';
-    $message = "\n\nremote_host: " . &CGI::remote_host  . "\n\nreferer: " . &CGI::referer . "\n\n" . $message;
-    open (SENDMAIL, "| $sendmail") || return;
-    print SENDMAIL <<End_of_Message;
-From: 
-To: $to
-Reply-To:
-Subject: $subject
 
-$message
-End_of_Message
-
-    close(SENDMAIL);
-}
+##
+## (01-jul-2010 kl) comment out instead as no longer being used; 
+## (01-jul-2010 kl) switched to using GODOT::Email;
+##
+#### sub send_admin_email {
+####    my($to, $message) = @_; 
+####
+####    use GODOT::Email;
+####
+####    $subject = "Message from GODOT (debug)"; 
+####    $message = "\n\nremote_host: " . &CGI::remote_host  . "\n\nreferer: " . &CGI::referer . "\n\n" . $message;
+####
+####    send_email('', '', $to, $subject, $message);
+#### }
+####
 
 1;
 
