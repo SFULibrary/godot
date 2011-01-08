@@ -18,6 +18,8 @@ use Data::Dumper;
 use Storable qw(retrieve store retrieve_fd store_fd);
 use Time::HiRes qw(gettimeofday);
 
+use Data::Dump qw(dump);
+
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Config;
@@ -193,9 +195,6 @@ sub query {
 
     my $start = gettimeofday;
 
-    #### debug '6a ___ ', gettimeofday - $start, "\n";
-    $start = gettimeofday;
-
     my $site = $parallel->site;
 
     my $config = GODOTConfig::Cache->configuration_from_cache($site);
@@ -316,8 +315,12 @@ sub query {
     return; 
 }
 
+##
+## (27-nov-2010 kl) in the end used 'Apache2::RequestRec->rflush' so did  not need to pass $cgi;  leave for now as may be useful for something else;
+## (26-nov-2010 kl) $cgi added for '$cgi->httpd_request->rflush' so that status messages during searching will be displayed before whole page loads.  
+##
 sub run {
-   my ($queue_hash_ref, $query_to_run_arr_ref, $config, $timeout, $print_waitscr) = @_;
+   my ($queue_hash_ref, $query_to_run_arr_ref, $config, $cgi, $timeout, $print_waitscr) = @_;
 
    my (@from_server, $timed_out, $failed_to_connect, $before_time, $waitscr_msg, $main_msg, $main_msg_string);
 
@@ -410,7 +413,7 @@ sub run {
              next if aws($line);
              last if ($line eq $BYE_OUTPUT_TYPE);         
 
-             debug location, ':  ', $line;
+             #### debug location, ':  ', $line;
 
              my $filename = $line;           
 
@@ -424,7 +427,7 @@ sub run {
                                                                     $config, 
                                                                     $parallel->message_args);
 
-                 if ($print_waitscr) { print $waitscr_msg; }
+                 if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }
 
                  $main_msg_string .= "$main_msg "; 
              }
@@ -437,7 +440,8 @@ sub run {
       else {
 
           my($waitscr_msg, $main_msg) = &glib::searching_msg('', $gconst::SEARCH_MSG_PARA_SERVER_NO_CONNECT_TYPE, $config); 
-          if ($print_waitscr) { print $waitscr_msg; }
+
+          if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }
 
           $main_msg_string .= "$main_msg ";
 
@@ -457,10 +461,7 @@ sub run {
          alarm(0);         
                   
          ($waitscr_msg, $main_msg) = &glib::searching_msg('', $gconst::SEARCH_MSG_PARA_SERVER_TIMEOUT_TYPE, $config);
-
-         if ($print_waitscr) { 
-             print "<FONT COLOR=RED>$waitscr_msg</FONT>";
-         }
+         if ($print_waitscr) { $cgi->flush_to_stdout("<FONT COLOR=RED>$waitscr_msg</FONT>"); }
 
          $main_msg_string .= "<FONT COLOR=RED>$main_msg</FONT>";
 
@@ -472,12 +473,9 @@ sub run {
       {        
          alarm(0);
 
-         ($waitscr_msg, $main_msg) = &glib::searching_msg('', $gconst::SEARCH_MSG_PARA_SERVER_PROBLEM_TYPE, $config);
+         ($waitscr_msg, $main_msg) = &glib::searching_msg('', $gconst::SEARCH_MSG_PARA_SERVER_PROBLEM_TYPE, $config);          
+         if ($print_waitscr) { $cgi->flush_to_stdout("<FONT COLOR=RED>$waitscr_msg</FONT>"); }
 
-         if ($print_waitscr) {
-             print "<FONT COLOR=RED>$waitscr_msg</FONT>";
-         }
-          
          $main_msg_string .= "<FONT COLOR=RED>$main_msg</FONT>";
 
          &glib::send_admin_email("$0: (para::run) $gconst::SEARCH_MSG_PARA_SERVER_PROBLEM_TYPE ($eval_res).");
@@ -493,8 +491,7 @@ sub run {
    foreach my $parallel (@from_server) {
        ${$queue_hash_ref}{$parallel->query_name} = $parallel; 
 
-       debug "* parallel search time for ", $parallel->source, " (", $parallel->command, ") ", 
-             $parallel->end_time - $parallel->start_time; 
+       #### debug "* parallel search time for ", $parallel->source, " (", $parallel->command, ") ", $parallel->end_time - $parallel->start_time; 
 
    }
 
@@ -512,8 +509,7 @@ sub run {
                                                         $gconst::SEARCH_MSG_ELAPSED_TIME_TYPE, 
                                                         $config, 
                                                         [$elapsed_time]);
-
-       if ($print_waitscr) { print $waitscr_msg; }
+       if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }
 
        $main_msg_string .= $main_msg;
    
