@@ -20,27 +20,27 @@ my %INCOMING_TO_OBJ_MAPPING = ('VALID'                   => 'authorized',
                                'VALID_REASON'            => 'authorized_reason',
  
                                'PATR_FIRST_NAME_FIELD'   => 'first_name',
-	                       'PATR_LAST_NAME_FIELD'    => 'last_name',
-		               'PATR_LIBRARY_ID_FIELD'   => 'library_id',
+	                           'PATR_LAST_NAME_FIELD'    => 'last_name',
+		                       'PATR_LIBRARY_ID_FIELD'   => 'library_id',
 
-		               'PATR_PATRON_TYPE_FIELD'  => 'type',
-		               'PATR_DEPARTMENT_FIELD'   => 'department',
-		               'PATR_PATRON_EMAIL_FIELD' => 'email',
+		                       'PATR_PATRON_TYPE_FIELD'  => 'type',
+		                       'PATR_DEPARTMENT_FIELD'   => 'department',
+		                       'PATR_PATRON_EMAIL_FIELD' => 'email',
 
-		               'PATR_PICKUP_FIELD'       => 'pickup',
-		               'PATR_PHONE_FIELD'        => 'phone',
-		               'PATR_PHONE_WORK_FIELD'   => 'pnone_work',
+		                       'PATR_PICKUP_FIELD'       => 'pickup',
+		                       'PATR_PHONE_FIELD'        => 'phone',
+		                       'PATR_PHONE_WORK_FIELD'   => 'pnone_work',
 
-		               'PATR_BUILDING_FIELD'     => 'building',
-		               'PATR_PATRON_NOTI_FIELD'  => 'notification',
-		               'PATR_STREET_FIELD'       => 'street',
+		                       'PATR_BUILDING_FIELD'     => 'building',
+		                       'PATR_PATRON_NOTI_FIELD'  => 'notification',
+		                       'PATR_STREET_FIELD'       => 'street',
 
-		               'PATR_CITY_FIELD'         => 'city',
-		               'PATR_PROV_FIELD'         => 'province',
-		               'PATR_POSTAL_CODE_FIELD'  => 'postal_code',
+		                       'PATR_CITY_FIELD'         => 'city',
+		                       'PATR_PROV_FIELD'         => 'province',
+		                       'PATR_POSTAL_CODE_FIELD'  => 'postal_code',
 
-		               'PATR_PAID_FIELD'         => 'payment_method',
-		               'PATR_ACCOUNT_NO_FIELD'   => 'account_number',
+		                       'PATR_PAID_FIELD'         => 'payment_method',
+		                       'PATR_ACCOUNT_NO_FIELD'   => 'account_number',
                                'PATR_NOTE_FIELD'         => 'note');
 
 sub get_patron {
@@ -55,7 +55,9 @@ sub get_patron {
 
     my $reply = $self->ask_server_until_match($PATRON_API_TIMEOUT, "AUTH $patron_lib_no $patron_pin_no\n", '^>\r\n$');
 
-    debug "<<------------------------------------->>", $reply, "<<------------------------------------->>";
+    debug "<<------------------------------------->>";
+    debug $reply; 
+    debug "<<------------------------------------->>";
 
     if ($reply eq '') {
         $self->error_message("Unable to check patron record.  Please try again later.");
@@ -86,14 +88,11 @@ sub get_patron {
     $self->patron($patron);
 
     if ($rec_hash{'VALID'} eq 'Y') {                  ## -patron is authorized 
-
         $self->_process_patron_data({%rec_hash});
-
-        debug "--------------------------------------\n", $patron->dump, "--------------------------------------\n";
-
         return $TRUE; 
     } 
     else {
+
         $self->error_message($rec_hash{'VALID_REASON'});
         error "$0: $rec_hash{'VALID_REASON'} ($patron_server_info)";
         return $FALSE;
