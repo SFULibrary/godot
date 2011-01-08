@@ -203,6 +203,11 @@ sub message_note {
     return $string;
 }
 
+
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
+
 sub _do_not_include {
     my($self) = @_;
 
