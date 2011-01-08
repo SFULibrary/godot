@@ -3,8 +3,6 @@ package GODOT::CUFTS::Search;
 ## Copyright (c) 2003, Kristina Long, Simon Fraser University
 ##
 
-
-
 use Exporter;
 use GODOT::Debug;
 use GODOT::String;
@@ -168,7 +166,6 @@ sub search_no_timeout {
     my($res) = $ua->request($request);
 
     
-
     if (! $res->is_success) {
 
         $self->{'_error_message'} = "failed GET request - $url (" . $res->message . ")";
@@ -177,15 +174,26 @@ sub search_no_timeout {
  
     my $content = GODOT::String::trim_beg_end($res->content);
 
-    #### warn "\n----------------------< query return >-------------------------\n", 
-    ####      $content, 
-    ####      "\n----------------------------------------------------------------\n";
 
+    #### #### !!!!!!!!!!! testing !!!!!!!!!!!!!!
+    #### use Data::Dumper;
+    #### use GODOT::Encode;
+    #### my $tmp = decode_from_octets($content);
+    #### debug "...................................\n"; 
+    #### debug 'is_ascii: ', is_ascii($tmp);
+    #### debug Dumper($tmp);
+    #### debug "...................................\n";
+    #### #### !!!!!!!!!! testing !!!!!!!!!!!!!!!!!
+
+    #### debug "\n----------------------< query return >-------------------------";
+    #### debug $content; 
+    #### debug "----------------------------------------------------------------";
+    
     unless ($content =~ m#^<\?xml version="1.0" \?>#) {
 
         $self->{'_error_message'} = "unexpected response from CUFTS";
         debug "\nunexpected response from CUFTS (no '<?xml version=\"1.0\" ?>'):\n" . $content . "\n";
-	return undef;
+	    return undef;
     } 
 
     if ($content =~ m#<CUFTS>(.*)</CUFTS>#s) {
