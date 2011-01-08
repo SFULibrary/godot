@@ -7,7 +7,9 @@ use Exporter;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
+use GODOT::Encode;
 use GODOT::CatalogueHoldings;
+
 
 @ISA = qw(Exporter GODOT::CatalogueHoldings GODOT::Object);
 @EXPORT = qw($INDICATOR_INDENT);
@@ -26,28 +28,31 @@ my $MARC_TITLE_FIELD              = '245';
 
 my $NUC_BRANCH_DELIM = '.';
 
-my @FIELDS = ('user_site',          ## -single - end user site 
-              'site',               ## -single - site to which holdings belong
-              'source',             ## -single - source of bib/circ info         
-                                    ##
-              'title',              ## -multiple
-              'marc_title',         ## -multiple
-              'call_number',        ## -multiple
-              'issn',               ## -multiple
-              'isbn',               ## -multiple
-                                    ##
-              'collection',         ## -multiple - fiche collection holdings statements (eg. ERIC, Microlog)
-                                    ##
-              'cat_url',            ## -multiple - URL(s) to get to this item via web interface
-              'bib_url',            ## -multiple - URL(s) found in bib record (ie. 856 field values)
-                                    ##
-              'holdings',           ## -multiple - holdings summary statements
-              'circulation',        ## -multiple - circulation information
-              'note',               ## -multiple - notes - temporarily using for DRA circ info....
-                                    ##
-              'citation',           ## -single (incoming citation)
-              'search_type',        ## 
-              'holdings_found'      ## -single 
+my @FIELDS = ('user_site',                       ## -single - end user site 
+              'site',                            ## -single - site to which holdings belong
+              'source',                          ## -single - source of bib/circ info         
+
+              'strip_apostrophe_s',              ## -single - strip apostrophes when searching (15-oct-2010 kl)
+              'title_index_includes_non_ascii',  ## -single - include non-ascii characters (or their escape sequences) when searching (15-oct-2010 kl)
+                                                 
+              'title',                           ## -multiple
+              'marc_title',                      ## -multiple
+              'call_number',                     ## -multiple
+              'issn',                            ## -multiple
+              'isbn',                            ## -multiple
+                                                 ##
+              'collection',                      ## -multiple - fiche collection holdings statements (eg. ERIC, Microlog)
+                                                 ##
+              'cat_url',                         ## -multiple - URL(s) to get to this item via web interface
+              'bib_url',                         ## -multiple - URL(s) found in bib record (ie. 856 field values)
+                                                 ##
+              'holdings',                        ## -multiple - holdings summary statements
+              'circulation',                     ## -multiple - circulation information
+              'note',                            ## -multiple - notes - temporarily using for DRA circ info....
+                                                 ##
+              'citation',                        ## -single (incoming citation)
+              'search_type',                     ## 
+              'holdings_found'                   ## -single 
              );
 
 
@@ -317,10 +322,6 @@ sub holdings_format {
         debug location, ":  bibliographic record not defined";
     }
 
-    #### debug "///////////////////////////////////////////////";
-    #### debug $self->dump;
-    #### debug "///////////////////////////////////////////////";
-
     report_time_location;    
 
     ##
@@ -345,20 +346,17 @@ sub url_link_format  {
     $self->source($user);
     $self->site($user);         ## -assume for now they are the same (ie. $user)
 
-    my $bib = $record->bibliographic;
-    use MARC::Record;
-    my $rec = MARC::Record->new_from_usmarc($bib->rawdata());
-    unless (defined $rec) {
-        debug location, ":  bibliographic record not defined";
-        return; 
-    }
+    ##
+    ## (08-oct-2010 kl) -- only read in once in GODOT::CatalogueHoldings::Record::Z3950::bib_record_read_and_correct
+    ##
+    my $marc = $record->bib_record_object;
 
     ##
     ##
     ## -for now just take first _good_ ISBN 
     ##
     my $isbn;
-    foreach my $field ($rec->field($MARC_ISBN_FIELD), $rec->field($MARC_OTHER_STANDARD_ID_FIELD)) {
+    foreach my $field ($marc->field($MARC_ISBN_FIELD), $marc->field($MARC_OTHER_STANDARD_ID_FIELD)) {
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
 
@@ -367,7 +365,6 @@ sub url_link_format  {
             ##
             ## (07-dec-2006 kl) changed from clean_ISBN to valid_ISBN as part of ISBN-13 changes
             ##
-
             if (my $clean_isbn = valid_ISBN($data)) {
                 $isbn = $clean_isbn; 
                 last;
@@ -376,7 +373,7 @@ sub url_link_format  {
     }
  
     my $issn;   
-    foreach my $field ($rec->field($MARC_ISSN_FIELD)) {
+    foreach my $field ($marc->field($MARC_ISSN_FIELD)) {
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
             my($code, $data) = @{$subfield};           
@@ -390,7 +387,7 @@ sub url_link_format  {
 
     my $title;
     my $marc_title;
-    foreach my $field ($rec->field($MARC_TITLE_FIELD)) {
+    foreach my $field ($marc->field($MARC_TITLE_FIELD)) {
         $marc_title = $field; 
         foreach my $subfield ($field->subfields) {
             next unless defined $subfield;
@@ -416,12 +413,17 @@ sub values_from_cat_rec {
   
     my @field_names = $self->_fields_to_get_from_cat_rec;
 
-    use MARC::Record;
-    my $marc = MARC::Record->new_from_usmarc($record->bibliographic->rawdata());
+    ##
+    ## (08-oct-2010 kl) -- only read in once in GODOT::CatalogueHoldings::Record::Z3950::bib_record_read_and_correct
+    ##
+    #### use MARC::Record;
+    #### my $marc = MARC::Record->new_from_usmarc($record->bibliographic->rawdata());
+
+    my $marc = $record->bib_record_object;
 
     foreach my $field_name (@field_names) {    
         my $func = $field_name . '_from_cat_rec';
-	no strict 'refs';
+	    no strict 'refs';
         $self->$func($record, $marc);
         use strict;
     }
@@ -669,9 +671,9 @@ sub converted {
         push(@{$bib_circ_hash{'bib_circ_note'}}, $note->text); 
     }
 
-    #### use Data::Dumper;
+    #### use Data::Dump;
     #### debug "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
-    #### debug Dumper(%bib_circ_hash);
+    #### debug dump(%bib_circ_hash);
     #### debug "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
 
     return %bib_circ_hash;
@@ -752,10 +754,10 @@ sub divide {
             ${$div}{$site}->site($site);
         }
 
-        use Data::Dumper;
+        #### use Data::Dump;
         #### debug "////////////////////////////////////////////////////////////////////\n",
-        ####      Dumper(${$div}{$site}),
-        ####      "////////////////////////////////////////////////////////////////////\n";
+        ####       dump(${$div}{$site}),
+        ####       "////////////////////////////////////////////////////////////////////\n";
 
         foreach my $circulation (@{$circ_div_hash{$site}}) {
             ${$div}{$site}->circulation($circulation->item_location, $circulation->call_number, $circulation->status);
@@ -905,29 +907,23 @@ sub _url {
     use GODOT::CatalogueHoldings::URL;
     
     if (GODOT::String::aws($url)) {
-
         if (GODOT::String::naws($text)) {
-
             debug "GODOT::CatalogueHoldings::BibCirc::$type was passed text but no URL";
- 	    return ();
+ 	        return ();
         }
     }
     else { 
-
         my $obj = new GODOT::CatalogueHoldings::URL;
-
         unless ((defined $obj->url($url)) && (defined $obj->text($text))) { return (); }
-
         push(@{$self->{$type}}, $obj);
-
     }
 
     my @result = (defined $self->{$type}) ? @{$self->{$type}} : ();
 
-    # use Data::Dumper;
-    # debug "<<<_____________________________>>>";
-    # debug Dumper(@result);
-    # debug "<<<_____________________________>>>"; 
+    #### use Data::Dump;
+    #### debug "<<<_____________________________>>>";
+    #### debug dump(@result);
+    #### debug "<<<_____________________________>>>"; 
 
     return @result;
 }
@@ -963,7 +959,7 @@ sub _clean_up_marc {
 
     my @string;
 
-    foreach my $subfield ($field->subfields) {
+    foreach my $subfield ($field->subfields) {        
         my($code, $data) = @{$subfield};
         push @string, $data;
     }
@@ -979,7 +975,7 @@ sub _keep_subfields_clean_up_marc {
     foreach my $subfield ($field->subfields) {
         my($code, $data) = @{$subfield};
         if (grep {$code eq $_} @{$keep_subfields}) {            
-	    push @string, $data;
+	        push @string, $data;
         }
     }
 
