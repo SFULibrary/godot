@@ -202,6 +202,9 @@ sub wrap {
     return $self->SUPER::wrap($labv, ($strv . "\n"), undef, $manv);
 }
 
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
 
 
 sub _do_not_include {
