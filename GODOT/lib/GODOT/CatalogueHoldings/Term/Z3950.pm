@@ -107,9 +107,6 @@ sub title_use_attrib {
 
     my $use_attrib;
 
-    #### debug "in title_use_attrib:  ", $self->dump, "\n";
-
-
     ##
     ## -use 'title' use attribute unless 'journal title' attribute is explicitly specified
     ##
