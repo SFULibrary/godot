@@ -13,6 +13,7 @@ package GODOT::RefWorks::RIS;
 ##     http://www.refman.com/support/risformat_intro.asp     
 ##     http://www.adeptscience.co.uk/kb/article/A626
 ##
+
 use GODOT::Object;
 use GODOT::Debug;
 
@@ -27,6 +28,11 @@ sub new {
     return bless $self, $class;
 }
 
+##
+## (30-oct-2010 kl)
+## Citation object data is encoded as latin1.  
+## This differs from its normal state in which the data has been decoded and is in perl internal format.
+##
 sub export_citation {
 	my ($self, $citation) = @_;
 	        
