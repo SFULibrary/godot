@@ -9,6 +9,7 @@ use GODOT::CatalogueHoldings::BibCirc;
 use GODOT::String;
 use GODOT::Object;
 use GODOT::Debug;
+use GODOT::Encode;
 use CGI qw(:escape);
 
 use strict;
@@ -20,11 +21,21 @@ sub cat_url {
 
     if (naws($host)) {
 
-        if    (naws($self->isbn))   { $url =  "http://$host/search/i?" . escape($self->isbn);  }
-        elsif (naws($self->issn))   { $url =  "http://$host/search/i?" . escape($self->issn);  }
-        elsif (naws($self->title))  { $url =  "http://$host/search/t?" . escape($self->title); }        
+        if    (naws($self->isbn))   { 
+            $url =  "http://$host/search/i?" . escape($self->isbn);  
+        }
+        elsif (naws($self->issn))   { 
+            $url =  "http://$host/search/i?" . escape($self->issn);  
+        }
+        elsif (naws($self->title))  { 
+            ##
+            ## (14-oct-2010 kl) -- Added GODOT::Encode::encode_catalogue_search_term
+            ##
+            my $octets = encode_catalogue_search_term($self->title, 'III', $self->title_index_includes_non_ascii);
+            $url =  "http://$host/search/t?" . escape($octets);      
+        }        
     }
-
+    #### debug location_plus, $url;
     return $self->_url('cat_url', $url, '');
 }
 
@@ -56,7 +67,7 @@ sub circulation_from_cat_rec {
             elsif ($label eq 'publicNote')     { $status   = $value; }    
         }
 
-	$self->circulation($location, $call, $status);
+	    $self->circulation($location, $call, $status);
     }
 
     return $TRUE;
