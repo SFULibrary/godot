@@ -68,10 +68,13 @@ sub add_data {
     my $request;
     $request = new HTTP::Request POST => $self->url;
     $request->content_type('application/x-www-form-urlencoded');
+    ##
+    ## (27-oct-2010 kl) -- assume for now that none of these field will contain non-ascii data
+    ##
     my $param_string = put_query_fields({ 'db'   => 'pubmed', 
                                           'id'   => $pmid_for_lookup, 
                                           'mode' => 'xml',
-    		                          'tool' => 'CUFTS' });
+    		                              'tool' => 'CUFTS' });
     $request->content($param_string);
     my $response = $ua->request($request);
 
@@ -96,18 +99,12 @@ sub add_data {
             #### debug "$field is_utf8:  ", &is_utf8_octets($data->{$field});  
             #### debug "$field is_cp1252:  ", &is_cp1252_octets($data->{$field});  
 
-    	    #### $citation->parsed($field, $data->{$field});
-            ##
-            ## Andrew Sokolov of Saint-Petersburg State University Scientific Library
-            ##
-   	    ####  $citation->parsed($field, Encode::encode_utf8($data->{$field}));
-
             ##
             ## (20-jan-2010 kl) -- data from pubmed needs to be decoded;  
             ##                  -- not using Encode::decode_utf8 as it does not appear that all data is encoded with utf8 (as I had previously assumed);
             ##                  -- GODOT::Encode::decode_from_octets tests for a few encodings and decodes accordingly;  
             ##
-   	    $citation->parsed($field, decode_from_octets($data->{$field}));            
+   	        $citation->parsed($field, decode_from_octets($data->{$field}));            
     	}
     }
 	
