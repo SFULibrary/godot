@@ -55,7 +55,7 @@ sub dispatch {
     ##
     ## !!!!!!!!!!!!!!!! for testing only !!!!!!!!!!!!!!!!
     ##
-    #### $api_enabled = $TRUE;
+    #### $api_enabled = $FALSE;
 
     $obj->api_enabled($api_enabled) if ($api_enabled eq $TRUE);
     $obj->need_pin($need_pin)       if ($need_pin eq $TRUE);
