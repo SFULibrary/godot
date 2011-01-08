@@ -119,8 +119,6 @@ sub empty {
         $self->{$field} = undef;
     }
 
-    #### debug "\n__________________\n", $self->dump, "\n__________________\n";
-
     return $self;
 }
 
@@ -314,13 +312,27 @@ sub tagged {
     return $string;
 }
 
-
-sub dump {
-    my($self) = @_;
-
-    use Data::Dumper;
-    return Dumper($self);
-}
+##
+## (15-dec-2010 kl) Remove this as it is not being used and is giving 'Subroutine dump redefined at Object.pm line 316.' warnings.
+##
+#### sub dump {
+####    my($self) = @_;
+####
+####    ##
+####    ## (09-oct-2010 kl)
+####    ## -mixing utf8 and latin1 in a file (eg. log file) can cause confusion for editor (eg. emacs)
+####    ## -for debugging purposes use Data::Dumper::Dumper or Data::Dump::dump (best choice) to output any non-ascii data
+####    ## -Data::Dump::dump is the best choice since it escapes all (more?) non-ascii characters;
+####    ##
+####
+####    #### use Data::Dumper;
+####    #### return Dumper($self);
+####    debug location;
+####
+####    #### use Data::Dump qw(dump);
+####    #### return Data::Dump::dump($self);
+#### }
+####
 
 
 1;
