@@ -6,6 +6,9 @@ use GODOT::Config;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
+use GODOT::Email;
+use GODOT::Encode;
+use GODOT::Encode::Transliteration;
 use GODOT::ILL::Site;
 
 use base qw(GODOT::Object);
@@ -86,7 +89,23 @@ sub new {
 
 sub send {
     my($self, $reqno) = @_;
-       
+
+    debug location_plus, ref $self;
+
+    ##
+    ## (30-oct-2010 kl) -- need to know how to transliterate and encode  
+    ##
+    if (aws($self->transliteration)) {
+        $self->error_message("invalid tranliteration (" .  $self->transliteration . ")");
+        return $FALSE;
+
+    }
+
+    if (aws($self->encoding)) {
+        $self->error_message("invalid encoding (" .  $self->encoding . ")");
+        return $FALSE;
+    }
+
     if    ($self->transport eq 'email')  { return $self->send_by_email($reqno); }
     elsif ($self->transport eq 'http')   { return $self->send_by_http($reqno);  }    
     elsif ($self->transport eq 'relais') { return $self->send_by_relais($reqno);   }    
@@ -107,12 +126,18 @@ sub subject {
     my($self, $reqno) = @_;
 
     return "Document Delivery Request $reqno for " . $self->patron_text;
-
 }
 
 sub send_by_email {
     my($self, $reqno) = @_;
 
+    ##
+    ## (30-oct-2010 kl) 
+    ## -format method for the message formats that are emailed does not return a transliterated and encoded string
+    ## -instead transliteration and encoding is done by GODOT::Email::send_email_encoded
+    ## 
+    ## ??? change this behavior so it is symetrical with send_by_http and send_by_relais ???
+    ## 
     my $message = $self->format($reqno);
 
     $self->formatted_content($message);
@@ -128,7 +153,6 @@ sub send_by_email {
     }
 
     ##------------------------------------------------------------
-
     my $sender_name  = $self->sender_name;
     my $sender_email = $self->sender_email;
     my $email        = $self->email;
@@ -144,6 +168,7 @@ $message
 End_of_Message
      
     $self->_log_ill_message($tmp, 'input');
+    ##------------------------------------------------------------
 
     use CGI qw(:remote_host);
 
@@ -151,35 +176,25 @@ End_of_Message
     ## to add back copy add 'CC:  $GODOT::Config::GODOT_ADMIN_MAILLIST' to header below  ( or CC:  klong\@sfu.ca)
     ##
     if (naws($message))   {
-     
-        use FileHandle;
-        my $fh = new FileHandle "| $GODOT::Config::SENDMAIL";
+        ##
+        #### !!!! put back after testing with remote sites !!!!
+        ##
+        #### if (remote_host() eq $GODOT::Config::REMOTE_HOST_FOR_TESTING) {
+        ####    my $original = $email;
+        ####    $email = 'klong@sfu.ca';
+        ####    debug location_plus, "email addresses swapped from $original to $email for testing";
+        #### }
+        ####
 
-        if (defined $fh) { 
+        my $subject      = $self->subject($reqno);
 
-            my $sender_name  = $self->sender_name;
-            my $sender_email = $self->sender_email;
-
-            my $email        = $self->email;
-            if (remote_host() eq $GODOT::Config::REMOTE_HOST_FOR_TESTING) { $email = 'klong@sfu.ca'; }          
-
-            my $subject      = $self->subject($reqno);
-
-	    print $fh <<End_of_Message;
-From: $sender_name <$sender_email>
-To: $email
-Reply-To: $sender_email
-Subject: $subject
-
-$message
-End_of_Message
-	$fh->close;
-       } 
-       else {
-           $self->error_message("Couldn't open mail program.");
-           return $FALSE;
-       }
- 
+        ##
+        ## (01-jun-2010 kl) switched to using GODOT::Email::send_email_encoded
+        ##
+        unless (send_email_encoded($self->sender_name, $self->sender_email, $email, $subject, $message, $self->transliteration, $self->encoding)) {
+            $self->error_message("Emailing interlibrary loan request appears to have failed.");
+            return $FALSE;
+        }
     }               
     return $TRUE;
 }
@@ -203,6 +218,16 @@ sub send_by_http {
     ##
     my $param_string = $self->format($reqno);
 
+    ##
+    ## (31-oct-2010 kl) -- no need to use Data::Dump::dump as is already encoded and uri escaped
+    ##
+    debug '-----------------------------------------------------------------';
+    debug $url;
+    foreach my $field_value (split("&", $param_string)) {
+        debug location_plus, $field_value;
+    }
+    debug '-----------------------------------------------------------------';
+
     $self->formatted_content($param_string);
 
     my $url_to_log = $url . (($url =~ m#\?#) ? '&' : '?') . $param_string;
@@ -219,6 +244,7 @@ sub send_by_http {
     ## (20-jul-2009 kl) -- added for itt dublin for their iii ill form which is configured as two steps (ie. 'MY_WEBPAC=false|2')
     ##
     return $FALSE unless ($self->auth($ua));    ## -default 'auth' method is to do nothing      
+
 
     my $request;
 
@@ -246,17 +272,17 @@ sub send_by_http {
 
     $self->_log_ill_message($res->content, 'output');
 
-
     unless ($self->check_http_return($res->content)) {
-	error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
+	    error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
         ##
         ## -don't overwrite current error message
         ##
-	if (aws($self->error_message)) {
-	    $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
-	}
-	return $FALSE;
+	    if (aws($self->error_message)) {
+	        $self->error_message("Submission of ILL request failed for " . $self->message_url . ".");
+	    }
+	    return $FALSE;
     }
+
     return $TRUE;
 }
 
@@ -279,7 +305,7 @@ sub send_by_relais {
 
     $self->formatted_content($content);
 
-    print STDERR "\n\n$content\n\n";
+    debug Data::Dump::dump(split("\n", "\n\n$content\n\n"));
 
     if (defined $self->error_message) { return $FALSE; }
 
@@ -295,7 +321,7 @@ sub send_by_relais {
 
     unless ($res->is_success) {
         error "Unable to run POST request for $url (" . $res->message . ").";        
-        print STDERR $res->content, "\n\n";
+        debug Data::Dump::dump($res->content), "\n\n";
         $self->error_message("Unable to run POST request for $url.");        
         return $FALSE;
     }
@@ -308,16 +334,16 @@ sub send_by_relais {
     unless ($self->check_http_return($res->content)) {
         error "message GET request did not return the expected text:\nurl:  " . $url . "\ncontent:  " . $res->content . "\n";
         ##
-	## -if we already have an error message then append it to this general one
-	##
+	    ## -if we already have an error message then append it to this general one
+	    ##
         #### debug "------------------------- Message.pm -----------------------";
-        #### debug $self->error_message;
+        #### debug Data::Dump::dump($self->error_message);
         #### debug "------------------------------------------------------------";
         ##
         ## (11-mar-2010 kl) -- 'submission of ill request failed' may be check by template logic so avoid changing ...  
         ##
         my $prepend = (add_trailing_period($self->error_message) . '  ') unless aws($self->error_message);        
-	$self->error_message($prepend . 'Submission of ILL request failed for ' . $self->message_url . '.');
+	    $self->error_message($prepend . 'Submission of ILL request failed for ' . $self->message_url . '.');
         return $FALSE;
     }
     return $TRUE;
@@ -545,6 +571,7 @@ sub publisher_statement {
 
 sub transport { return 'email'; }
 
+
 ##
 ## -default is do nothing and return true
 ##
@@ -659,6 +686,16 @@ sub copy {
 sub use_http_post {
     my($self) = @_;
     return $FALSE;
+}
+
+sub transliteration  { 
+    error location_plus, 'should be using method from subclass';    
+    return undef;
+}
+
+sub encoding   { 
+    error location_plus, 'should be using method from subclass';    
+    return undef;
 }
 
 sub _delim            { return $DELIM; }
