@@ -6,19 +6,16 @@ package GODOT::CatalogueHoldings::BibCirc::Z3950::ENDEAVOR;
 use GODOT::CatalogueHoldings::BibCirc;
 @ISA = qw(GODOT::CatalogueHoldings::BibCirc);
 
-use Data::Dumper;
-
 use GODOT::String;
 use GODOT::Object;
 use GODOT::Debug;
+use GODOT::Encode;
 use CGI qw(:escape);
 
 use strict;
 
 sub cat_url {
     my($self, $host) = @_;
-
-    #### debug $self->dump;
 
     my $url;
 
@@ -38,11 +35,18 @@ sub cat_url {
                     "&Search_Code=ISSN&CNT=75&HIST=1";    
         }
         elsif (naws($self->title))  { 
+            ##
+            ## (14-oct-2010 kl) -- Added GODOT::Encode::encode_catalogue_search_term
+            ##
+            my $octets = encode_catalogue_search_term(remove_leading_article($self->title), 'ENDEAVOR', $self->title_index_includes_non_ascii);
             $url =  "http://$host/cgi-bin/Pwebrecon.cgi?DB=local&SL=None&Search_Arg=" . 
-                    escape(remove_leading_article($self->title)) . 
+                    escape($octets) . 
                     "&Search_Code=TALL&CNT=75&HIST=1";
         }
     }        
+
+    debug location, ":  $url";
+
 
     return $self->_url('cat_url', $url, '');
 }
