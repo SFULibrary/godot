@@ -2,6 +2,9 @@ package GODOT::ILL::Message::RELAIS;
 ##
 ## Copyright (c) 2006, Todd Holbrook, Simon Fraser University
 ##
+
+use Data::Dump qw(dump);
+
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
@@ -327,26 +330,27 @@ sub format {
 
     $writer->end;
 
-
+    ## 
+    ## (27-oct-2010 kl) 
+    ## 
+    ## Have changed call below to reflect the fact that citation data is now being properly decoded on the way in and should be in perl internal format.
+    ## Having said this, it is the case that the patron data may contain non-ascii data and may need decoding but currently is not.
+    ## In this event, the patron data will get mangled for now .... has been put in the to do list.
+    ## 
+    ## Strip some low-order characters as they are not valid in XML.  Relais complains as follows:  An invalid XML character (Unicode: 0x0) was found 
+    ## in the element content of the document.
     ##
-    ## (16-jan-2006 kl) - both XML::Beautify and Relais fail on extended ascii so we need to convert to UTF8;
-    ##                  - extended ascii was showing up in unexpected places as a result of a problem with cutting 
-    ##                    and pasting HTML containing '&#8211;' which results in '\226' in godot; also showing up
-    ##                    for accents;
-    ##                  - also strip some low-order characters as they are not valid in XML.  Relais complains 
-    ##                    as follows:  An invalid XML character (Unicode: 0x0) was found in the element content of 
-    ##                    the document.
-    ##
-   
-    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . latin1_to_utf8_xml($xml); 
+    #### $xml = '<?xml version="1.0" encoding="UTF-8"?>' . latin1_to_utf8_xml($xml); 
+    ####   
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . encode_for_xml($xml); 
 
     my $b = XML::Beautify->new();
     $b->indent_str(' ');
     $xml = $b->beautify(\$xml);
 
-    print STDERR $xml;
+    debug Data::Dump::dump(split("\n", $xml));
 
-    print STDERR "\n\n-=-=-=- RESPONSE -=-=-=-=\n\n";
+    debug "\n\n-=-=-=- RESPONSE -=-=-=-=\n\n";
 
     # Encode XML before sending through SOAP  (<>&")
 
@@ -672,12 +676,18 @@ sub message_note   {
 }
 
 
-
 sub schema_location {
     my($self) = @_;
 
     return 'http://lib-relais.lib.sfu.ca/XML/AddRequest.xsd';
 }
+
+
+sub transliteration  { return 'utf8'; }
+
+
+sub encoding         { return 'utf8'; }
+
 
 sub _delivery_method {
     return 'P';
