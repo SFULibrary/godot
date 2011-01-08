@@ -76,8 +76,7 @@ sub query_url {
         ##                  -- cufts currently expects latin1 but future version will take utf8
         ##                  -- encode as latin1 before uri escaping
         ##  
-        my $escaped_value = escape(encode('iso-8859-1', utf8_to_latin1_transliteration($self->$field)));
-        #### my $escaped_value = escape(utf8_to_latin1_transliteration($self->$field));
+        my $escaped_value = escape(GODOT::String::encode_string('latin1', utf8_to_latin1_transliteration($self->$field)));
 
         $url .= join('', $delim, $field, '=', $escaped_value);                
     }
@@ -86,7 +85,7 @@ sub query_url {
 
         my $sites = $site->site;
 
-        debug location, ":  before assoc_sites: $sites";
+        #### debug location, ":  before assoc_sites: $sites";
          
         if (&GODOT::String::naws($site->assoc_sites)) { 
 
@@ -94,8 +93,8 @@ sub query_url {
             $sites  = join(',', $sites, split(/\s+/, $site->assoc_sites));
         }
 
-        debug location, ":  this is the site list for CUFTS:  $sites";  
-        debug location, ":  bccampus:  ", $site->is_bccampus;  
+        #### debug location, ":  this is the site list for CUFTS:  $sites";  
+        #### debug location, ":  bccampus:  ", $site->is_bccampus;  
 
         $url = $GODOT::Config::CUFTS_SERVER_URL . 
                (($GODOT::Config::CUFTS_SERVER_URL =~ m#\/$#) ? '' : '/' ) . 
