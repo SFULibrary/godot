@@ -90,7 +90,13 @@ sub process_local_submit_configuration_options {
                      
                         my $db_package = "GODOTConfig::DB::Config_" . join('_', map { "\u$_" } split('_', $option_name));
 
-	                $db_package->delete('site' => $self->current_site->id);
+                        ##
+                        ## (18-apr-2010 kl) - changed to search and delete_all as was getting error message:
+                        ##                        Delete as class method is deprecated. Use search and delete_all instead. 
+                        ##
+	                #### $db_package->delete('site' => $self->current_site->id);
+                       
+	                $db_package->search('site' => $self->current_site->id)->delete_all;
 
 	                my $count = 0;
 	                while (defined(my $value = param("${option_name}_value_${count}"))) {
