@@ -127,8 +127,8 @@ sub format {
     if ($message) {
                               
         $message .= $self->wrap("ORIGIN OF INFO", $self->source);
-	$message .= $self->wrap("MAX COST",       $self->max_cost);
-	$message .= $self->wrap("INSTRUCTIONS",   "Request for " . $self->nuc . ".");
+	    $message .= $self->wrap("MAX COST",       $self->max_cost);
+	    $message .= $self->wrap("INSTRUCTIONS",   "Request for " . $self->nuc . ".");
         $message .= "REMARKS:\n";                                
         $message .= $self->message_note($reqno);
     }
@@ -141,6 +141,12 @@ sub subject {
 
     return "REQ. NO. $reqno for " . $self->patron_text . " (GODOT Holdings/Requesting)";
 }
+
+
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
+
 
 sub _delim { return $DELIM; }
 
