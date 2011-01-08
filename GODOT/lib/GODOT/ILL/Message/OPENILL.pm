@@ -117,6 +117,17 @@ sub date {
     return join('-', $citation->parsed('YEAR'), $citation->parsed('MONTH'), $citation->parsed('DAY'));
 }
 
+##
+## (04-nov-2010 kl)
+## Only two godot sites are still using OpenILL (BRC and BCLF).
+## Test sent to BCLF using latin1 encoding did not display correctly from within OPENILL staff interface so try changing to utf8 encoding....
+##
+#### sub transliteration  { return 'latin1'; }
+#### sub encoding         { return 'latin1'; }
+
+sub transliteration  { return 'utf8'; }
+sub encoding         { return 'utf8'; }
+
 
 1;
 
