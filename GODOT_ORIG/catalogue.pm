@@ -15,7 +15,7 @@ use GODOT::CatalogueHoldings::Source;
 use GODOTConfig::Configuration;
 use GODOTConfig::Cache;
 
-use Data::Dumper;
+use Data::Dump qw(dump);
 
 use strict;
 
@@ -303,10 +303,9 @@ sub get_on_fly_holdings {
         $start_time = time;
     }
 
-    use Data::Dumper;
-    #### debug "++++++++++++++++++++++ holdings_hash_ref +++++++++++++++++++++++++++\n", 
-    ####      Dumper($holdings_hash_ref), 
-    ####      "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    #### debug "++++++++++++++++++++++ holdings_hash_ref +++++++++++++++++++++++++++";
+    #### debug Data::Dump::dump($holdings_hash_ref);
+    #### debug "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
 
     return($TRUE, '', $db_user_source_name);
 }
@@ -332,7 +331,6 @@ sub cat_search  {
 
     my $site               = $db_config->name;
     my $system_type        = $db_config->system_type;
-    my $strip_apostrophe_s = $db_config->strip_apostrophe_s;
 
     my $lender_name = $db_config->name;
 
@@ -346,8 +344,16 @@ sub cat_search  {
 
     my $search          = GODOT::CatalogueHoldings::Search->dispatch({'site' => $site, 'system' => $system_type});
     my $search_no_title = GODOT::CatalogueHoldings::Search->dispatch({'site' => $site, 'system' => $system_type});
-         
 
+    ##
+    ## (15-oct-2010 kl) -- added strip_apostrophe_s and title_index_includes_non_ascii
+    ##
+    $search->strip_apostrophe_s($db_config->strip_apostrophe_s);
+    $search_no_title->strip_apostrophe_s($db_config->strip_apostrophe_s);
+
+    $search->title_index_includes_non_ascii($db_config->title_index_includes_non_ascii);
+    $search_no_title->title_index_includes_non_ascii($db_config->title_index_includes_non_ascii);
+     
     ##
     ## -do we want to do a unique search based on a system id or use a combination of ISSN, ISBN and title
     ##
@@ -361,8 +367,7 @@ sub cat_search  {
 
         if (! $db_config->zsysid_search_avail) {
 
-            return($FALSE, 0, 
-                   "Search type is $UNIQUE_ONLY_SEARCH but Z3950_SYSID_SEARCH_AVAIL_FIELD is not true ($lender_name).");
+            return($FALSE, 0, "Search type is $UNIQUE_ONLY_SEARCH but Z3950_SYSID_SEARCH_AVAIL_FIELD is not true ($lender_name).");
         }
     }
 
@@ -411,11 +416,11 @@ sub cat_search  {
         ##  
 
         ##
-        ## - also look at 'good_enough' logic......ask when series search would not be a good idea....
+        ## - also look at 'good enough' logic......ask when series search would not be a good idea....
         ##
-     
+
         if ($citation->parsed('TITLE')) {
-            $search->title_terms($citation, $strip_apostrophe_s);
+            $search->title_terms($citation);
         }
     }
 
@@ -469,9 +474,7 @@ sub cat_search  {
                                                                                
     }
         
-    #### select(STDOUT); $!= 1;    ## set in case z3950 query changed it up .....add to z3950 logic later...
-
-    debug ">>>> ($search_type) after catalogue::get_record --res--$res--docs--$docs\n";
+    debug location_plus, "($search_type) after catalogue::get_record --" . $db_config->name . "--res--$res--docs--$docs\n";
 
     my $succ_search_str;
 
@@ -490,6 +493,16 @@ sub cat_search  {
         foreach my $record (@rec_arr)   {   ## each record is a GODOT::CatalogueHoldings::Record or a subclass       
 
             ##
+            ## (08-oct-2010 kl) 
+            ## Read MARC record into an object of a suitable classs.  Currently only MARC::Record is being used but other classes could be used.
+            ## Object gets used in:  GODOT::CatalogueHoldings::Record::Z3950::good_match
+            ##                       GODOT::CatalogueHoldings::BibCirc::url_link_format 
+            ##                       GODOT::CatalogueHoldings::BibCirc::holdings_format          
+            ##
+
+            next unless ($record->bib_record_read_correct_decode);  
+               
+            ##
             ## -is match good enough? 
             ##
             ## -This second pass is necessary because one may not have much control over the way 
@@ -501,20 +514,25 @@ sub cat_search  {
                 
             if ($match_res)  {         
                             
-                #### debug "\n<...........after successful good match ($site)...........................>\n",
-                ####      Dumper($record), 
-	        ####      "\n<......................................................>";
+                debug location_plus, "after successful good match ($site)";
 
                 my $bib_circ = GODOT::CatalogueHoldings::BibCirc->dispatch({'site' => $site, 'system' => $system_type});           
                 $bib_circ->user_site($config->name);
                 $bib_circ->citation($citation);
                 $bib_circ->search_type($search_type);
  
+                ##
+                ## (15-oct-2010 kl) -- added strip_apostrophe_s and title_index_includes_non_ascii
+                ##
+                $bib_circ->strip_apostrophe_s($db_config->strip_apostrophe_s);
+                $bib_circ->title_index_includes_non_ascii($db_config->title_index_includes_non_ascii);
+ 
                 if ($fmt_type eq $URL_LINK_TYPE) { $bib_circ->url_link_format($db_config, $record); }
                 else                             { $bib_circ->holdings_format($db_config, $record); }
                 
+                #### debug location;
                 #### debug "================= ($site) =============================================";
-                #### debug Dumper($bib_circ);
+                #### debug Data::Dump::dump($bib_circ);
                 #### debug "==============================================================";
 
                 if (! $bib_circ->is_empty) { push(@{$bib_circ_arr_ref}, $bib_circ);  }
@@ -527,9 +545,9 @@ sub cat_search  {
         }
     }
 
-    #### debug "//////////////////////////////////////////////////////////////\n",
-    ####       Dumper($bib_circ_arr_ref),
-    ####      "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n";
+    #### debug "//////////////////////////////////////////////////////////////",
+    #### debug Data::Dump::dump($bib_circ_arr_ref);
+    #### deubg "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\";
 
     return($res, $docs, $reason);      
 }
@@ -538,7 +556,6 @@ sub cat_search  {
 ## (10-sep-2003 kl) - added this routine to handle the transition between the original search code
 ##                    and the redesigned search code
 ##
-
 sub get_record {
     my($db_config, $elemname, $condition, $max_hits, $reqtype, $search, $rec_arr_ref, $succ_arr_ref) = @_;
 
@@ -590,7 +607,6 @@ sub get_record {
     $succ_arr_ref = $search->successful_search_terms;
 
     #### debug "-----------------------------------------------------";
-    #### debug $search->dump, "\n";
     #### debug "   res:  $res";
     #### debug "  docs:  $docs";
     #### debug "reason:  $reason";
@@ -670,14 +686,14 @@ sub get_title_from_bib_circ {
             ## $marc_title is a MARC::Field
             ##
             my @string;
-	    foreach my $subfield ($marc_title->subfields) {
-		my($code, $data) = @{$subfield};
-		if (grep {$code eq $_} qw(a b)) {
-		    push @string, $data;
-		}
-	    }
+	        foreach my $subfield ($marc_title->subfields) {
+		        my($code, $data) = @{$subfield};
+		        if (grep {$code eq $_} qw(a b)) {
+		            push @string, $data;
+		        }
+	        }
             
-	    my $title = join(' ', @string);
+	        my $title = join(' ', @string);
 
             ##
             ## (11-apr-2010 kl) -- changed from normalize_marc8 to normalize as $marc_title (and therefore $title) is now utf8
@@ -783,7 +799,7 @@ sub fmt_bib_circ {
     my($html_incl, $text_incl, $len, $tmp_str, $no_call_number_text);
 
     #### debug "+++---------------------++++ bib_circ_hash_ref +++-------------------------+++\n"; 
-    #### debug Dumper($bib_circ_hash_ref);
+    #### debug Data::Dump::dump($bib_circ_hash_ref);
     #### debug "+++------------------------------------------------------------------------+++\n";
 
     report_time_location;        
@@ -797,6 +813,12 @@ sub fmt_bib_circ {
     ##
     my $bib_circ = GODOT::CatalogueHoldings::BibCirc->dispatch({'site'   => $db_config->name,
                                                                 'system' => $db_config->system_type});
+
+    ##
+    ## (15-oct-2010 kl) -- added strip_apostrophe_s and title_index_includes_non_ascii
+    ##
+    $bib_circ->strip_apostrophe_s($db_config->strip_apostrophe_s);
+    $bib_circ->title_index_includes_non_ascii($db_config->title_index_includes_non_ascii);
 
     my $num_holdings = (scalar @{${$bib_circ_hash_ref}{$BIB_CIRC_HOLDINGS}}) if defined ${$bib_circ_hash_ref}{$BIB_CIRC_HOLDINGS};
     my $num_circ     = (scalar @{${$bib_circ_hash_ref}{$BIB_CIRC_CIRC}}) if defined ${$bib_circ_hash_ref}{$BIB_CIRC_CIRC};
@@ -1041,7 +1063,7 @@ sub get_locations_for_source {
     my($source, $live_source, $citation, $source_arr_ref) = @_;
 
     #### debug location;
-    #### debug Dumper($source_arr_ref);
+    #### debug Data::Dump::dump($source_arr_ref);
     #### debug "---------------------------------------------";
 
     my @location_arr;
