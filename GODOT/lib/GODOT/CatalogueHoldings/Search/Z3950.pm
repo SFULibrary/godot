@@ -37,10 +37,6 @@ my $DEFAULT_SYNTAX = 'USMARC';
 sub search_no_timeout {
     my($self, $system, $condition, $max_hits) = @_;
 
-    #### debug "///////////////////";
-    #### debug $system->dump;
-    #### debug "///////////////////";
-    
     ##
     ## -Net::Z3950 Connection is picky about leading or trailing whitespace 
     ##
@@ -79,12 +75,12 @@ sub search_no_timeout {
     ## -make the connection
     ##
 
-    debug ">>>> ", join('--', $host, $port, $database, $syntax_res);
+    #### debug ">>>> ", join('--', $host, $port, $database, $syntax_res);
 
     my $conn = new Net::Z3950::Connection($host,
                                           $port,
                                           databaseName => $database,    		   		          
-    		   		          preferredRecordSyntax => $syntax_res, 
+    		   		                      preferredRecordSyntax => $syntax_res, 
                                          );                       
 
     if (! $conn) {
@@ -114,10 +110,6 @@ sub search_no_timeout {
         if (! ($rs = $conn->search($cmd))) { 
 
             $self->{'_error_message'} = "search failed:  " . $conn->errmsg();
-
-            ## (12-mar-2005 kl) - if search fails don't return -- try other searches instead.
-            #### return undef;
-
             next;
         } 
         
@@ -144,7 +136,6 @@ sub search_no_timeout {
         }
 
         $total_hits += $rs->size;
-
         
         ##
         ## -check for too many hits in total
@@ -163,41 +154,35 @@ sub search_no_timeout {
 
         for (my $i = 0; $i < $n; $i++) {
 
-	    my $rec = $rs->record($i+1);
+	        my $rec = $rs->record($i+1);
 
-	    if (!defined $rec) {
-
-                 #### debug "Record ", $i+1,  ", error ", $rs->errcode(),  " (",  $rs->errmsg(), "): ", $rs->addinfo(), "\n";
-	    }
-	    else {
+	        if (!defined $rec) {
+                debug "Record ", $i+1,  ", error ", $rs->errcode(),  " (",  $rs->errmsg(), "): ", $rs->addinfo(), "\n";
+	        }
+	        else {
 
                 ##
                 ## -deduping logic       
                 ##
-
                 my $key = &key($rec);
 
                 if (! defined $rec_hash{$key}) {
 
-                    $self->{'_docs'}++;
-               
-                    my $record = GODOT::CatalogueHoldings::Record->dispatch({'site'   => $system->Site, 
-                                                                             'system' => $system->Type});                    
-        
+                    $self->{'_docs'}++;              
+
+                    my $record = GODOT::CatalogueHoldings::Record->dispatch({'site'   => $system->Site, 'system' => $system->Type});                    
+
                     if (! $record) {
                         $self->{'_error_message'} = "Unable to dispatch GODOT::CatalogueHoldings::Record.";
                         return undef;
                     }
 
                     $record->record($rec);                                        
-
-	            push(@{$self->{'_records'}}, $record);
-
-		    $rec_hash{$key} = $TRUE;
-	        }
-	    }
+	                push(@{$self->{'_records'}}, $record);
+		            $rec_hash{$key} = $TRUE;
+	            }
+            }
         }
-
 
         if ($done) { last; }              ## break out of search term loop 
     }
@@ -213,10 +198,22 @@ sub key {
     ##
     ## -dedup based on bibliographic, holdings and circulation information
     ## 
-
     unless (defined $rec) { return ''; }
+    
+    #### debug "($$) before render ****************************************";
 
-    my $string = $rec->render;    
+    ##
+    ## fails on bad utf8;
+    ##
+    #### my $string = $rec->render;
+    ####
+
+    use Data::Dump qw(dump);        
+    my $string = dump($rec);
+    
+    #### debug "$string";
+    #### debug "($$) after render ******************************************";
+
     $string =~ s#\n# #g;
 
     return $string;
