@@ -241,6 +241,7 @@ __PACKAGE__->config_columns(qw(
         zcompl_att_journal_title
 
         strip_apostrophe_s
+        title_index_includes_non_ascii
         
         disable_journal_details
         disable_non_journal_details
