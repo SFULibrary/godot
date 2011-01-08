@@ -6,6 +6,7 @@ package GODOT::ILL::Message::RSS_FORM;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
+use GODOT::Encode::Transliteration;
 
 use base qw(GODOT::ILL::Message);
 
@@ -169,16 +170,16 @@ sub format {
 
     $form{'NoteFromPatron'} = $self->message_note($reqno);      
 
-    return put_query_fields(\%form);
+    ##
+    ## (27-oct-2010 kl) -- find out what encoding should be used
+    ##
+    return put_query_fields(\%form, $self->encoding);
 }
 
 sub message_url {
     my($self) = @_;
     return 'http://' . $self->host . '/DLL~ISC17';
 }
-
-
-
 
 sub message_note {
     my($self, $reqno) = @_;
@@ -209,7 +210,8 @@ sub message_note {
 sub fill_field {
     my($self, $value, $rss_field, $form_ref) = @_;
 
-    ${$form_ref}{$rss_field} = $value unless (aws($value));
+    my $transliterated_value = transliterate_string($self->transliteration, $value);
+    ${$form_ref}{$rss_field} = $transliterated_value unless (aws($transliterated_value));
 }
 
 sub check_http_return {
@@ -219,8 +221,11 @@ sub check_http_return {
 }
 
 
+sub transport        { return 'http'; }
 
-sub transport { return 'http'; }
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
 
 
 sub _do_not_include {
@@ -229,7 +234,6 @@ sub _do_not_include {
     return qw(holdings_site eric_no eric_av mlog_no umi_diss_no fax type not_req_after email pickup 
               department province phone_work building street city postal_code);
 }
-
 
 sub _wrap_indent { return $WRAP_INDENT; }
 
