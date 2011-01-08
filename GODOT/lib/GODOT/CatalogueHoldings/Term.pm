@@ -3,11 +3,15 @@ package GODOT::CatalogueHoldings::Term;
 ## Copyright (c) 2003, Kristina Long, Simon Fraser University
 ##
 
+use Data::Dump qw(dump);
+
 use GODOT::Object;
 use GODOT::CatalogueHoldings;
 @ISA = qw(GODOT::CatalogueHoldings GODOT::Object);
 
 use GODOT::String;
+use GODOT::Encode;
+use GODOT::Debug;
 
 use strict;
 
@@ -35,7 +39,9 @@ my @FIELDS = qw(Index
 sub dispatch {
     my ($class, $param)= @_;
 
-    return $class->SUPER::dispatch($param);
+    my $obj = $class->SUPER::dispatch($param);
+    $obj->system(${$param}{'system'});
+    return $obj;
 }
 
 sub new {
@@ -52,9 +58,6 @@ sub new {
 sub title {
     my($self, $title, $strip_apostrophe_s, $is_journal) = @_;
 
-    
-
-
     $self->Index('TITLE');
     $self->is_journal($TRUE) if $is_journal; 
 
@@ -64,6 +67,8 @@ sub title {
     ##
     $title =~ s#\055# #g;
     $title =~ s#\'s##gi if $strip_apostrophe_s;
+
+    #### debug dump($self);
 
     return $self->Term($title);
 }
@@ -79,7 +84,23 @@ sub strip_trailing_year_title {
     if ($title =~ m#\d\d\d\d\055\d\d\d\d[\.]?\s*$#) { $title =~ s#\d\d\d\d\055\d\d\d\d[\.]?\s*$##; }
     else                                            { $title =~ s#\d\d\d\d[\.]?\s*$##i;            }
 
-    return $self->Term($title);
+    ##
+    ## (10-oct-2010 kl) -- use '$self->title($title)' instead so that catalogue vendor specific processing is done
+    ##
+    #### return $self->Term($title);
+    return $self->title($title);
+}
+
+
+sub encode {
+    my($self, $title_index_includes_non_ascii) = @_;
+
+    #### report_location;
+    #### debug dump($self);
+
+    my $string = $self->Term;
+    $string = encode_catalogue_search_term($string, $self->system, $title_index_includes_non_ascii);        ## from GODOT::Encode
+    $self->Term($string);
 }
 
 
