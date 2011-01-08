@@ -205,12 +205,17 @@ EOM
 }
 
 
+
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
+
+
 sub _do_not_include {
     my($self) = @_;
 
     return qw(reqno type not_req_after department email pickup);
 }
-
 
 
 sub _add_leading_char { return $TRUE; }
