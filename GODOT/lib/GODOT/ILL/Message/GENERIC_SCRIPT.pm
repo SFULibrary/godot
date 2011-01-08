@@ -178,6 +178,11 @@ sub wrap_lf {
 }
 
 
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
+
+
 sub _delim { return $DELIM; }
 
 sub _wrap_indent { return $WRAP_INDENT; }
