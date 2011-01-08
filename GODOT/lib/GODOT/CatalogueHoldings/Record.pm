@@ -20,6 +20,7 @@ my $FALSE = 0;
 my $TRUE  = 1;
 
 my @FIELDS = ('record',                   
+              'bib_record_object',
               '_error_message');
 
 ##
