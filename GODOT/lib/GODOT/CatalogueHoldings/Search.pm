@@ -6,6 +6,9 @@
 package GODOT::CatalogueHoldings::Search;
 
 use Exporter;
+
+use Data::Dumper;
+
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
@@ -38,7 +41,9 @@ my @ALL_INDEX = qw(TITLE ISSN ISBN SYSID);
 ##                  
 my @ALL_INDEX_RANKED = qw(SYSID ISSN ISBN TITLE); 
 
-my @FIELDS = ('_records',                    ## GODOT::CatalogueHoldings::Record
+my @FIELDS = ('strip_apostrophe_s',              ## -single - strip apostrophes when searching (15-oct-2010 kl)
+              'title_index_includes_non_ascii',  ## -single - include non-ascii characters (or their escape sequences) when searching (15-oct-2010 kl)
+              '_records',                        ## -GODOT::CatalogueHoldings::Record
               '_TITLE',
               '_ISSN',
               '_ISBN',
@@ -132,10 +137,6 @@ sub error_message {
 sub search {
     my($self, $system, $condition, $max_hits) = @_;
 
-    #### debug ".................................";
-    #### debug $self->dump;
-    #### debug ".................................";
-
     my $timeout = $system->Timeout;
 
     $SIG{ALRM} = sub { 
@@ -167,16 +168,12 @@ sub search {
       else {
         
          alarm(0);
-	 $self->{'_error_message'} = "A problem occurred during searching ($eval_res).";
+    	 $self->{'_error_message'} = "A problem occurred during searching ($eval_res).";
       }
      
       return undef; 
    }
 
-
-    #### debug ".....................................................................";
-    #### debug $self->dump;
-    #### debug ".....................................................................";
 }
 
 
@@ -231,24 +228,22 @@ sub terms {
 ##
 ## (28-apr-2005 kl) - Adds 'TITLE' GODOT::Term objects. 
 ##
-
-##
-## !!!!!!!!!!!!!!! when move to new config tool for all options, query re 'strip apostrophe s' in this function 
-##                 and remove from param 
-## !!!!!!!!!!!!!!!
-##
-
 sub title_terms {
-    my($self, $citation, $strip_apostrophe_s) = @_;
+    my($self, $citation) = @_;
 
     my(@terms);
 
     my $site = $self->site; 
     my $system = $self->system;
 
+    my $strip_apostrophe_s = $self->strip_apostrophe_s;
+
     my $title = $citation->parsed('TITLE');
 
-    $title =~ s#/# #g;                     ## -replace (instead of remove) forward slashes as they confuse zclient
+    ##
+    ## -replace (instead of remove) forward slashes as they confuse zclient
+    ##
+    $title =~ s#/# #g;            
            
     my $term = GODOT::CatalogueHoldings::Term->dispatch({'site' => $site, 'system' => $system});
     $term->title($title, $strip_apostrophe_s, $citation->is_journal);
@@ -285,12 +280,13 @@ sub title_terms {
         if ($term->Term ne $sty_term->Term) { $self->terms($sty_term); }
     }
 
-    #### debug "/////////////////////////////////////////////////////////////////////////", "\n",
-    ####      $self->dump,
-    ####      "/////////////////////////////////////////////////////////////////////////", "\n";
-
+    ##
+    ## (25-mar-2010 kl) -- encode search term with GODOT::Encode subroutine;
+    ##					      
+    foreach my $term ($self->terms('TITLE')) {
+        $term->encode($self->title_index_includes_non_ascii);
+    }
 }
-
 
 sub issn_terms {
     my($self, $citation) = @_;
