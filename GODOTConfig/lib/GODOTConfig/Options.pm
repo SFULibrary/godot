@@ -53,8 +53,6 @@ sub verify {
     my $function;
     my $option = $self->option;
 
-    #### debug $self->dump;
-
     # Check for verification routine.
    
     if (defined $GODOTConfig::Config::GODOT_OPTION_CONFIG{$option}) {
