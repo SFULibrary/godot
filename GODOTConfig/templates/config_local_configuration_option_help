@@ -754,6 +754,13 @@ Strip apostrophe-s at the end of search term words before searching (ex. maclean
 [% END %]
 
 
+[%# (15-oct-2010 kl) -- added 'title_index_includes_non_ascii' option %]
+
+[% config_local_configuration_option_help.title_index_includes_non_ascii = BLOCK %]
+Title indexes include non-ascii characters (eg. UTF-8 encoded unicode) or escape sequences of non-ascii characters (eg. III uses '{u00e9}' for e-acute).
+[% END %]
+
+
 [% config_local_configuration_option_help.disable_journal_details = BLOCK %]
 Do not display link on GODOT screen to check <b>journal</b> holdings in detail (eg. Check detailed holdings).
 [% END %]
