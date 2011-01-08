@@ -493,10 +493,7 @@ sub main_holdings_screen {
     ##
     ## -put back values in citation hash, until citation object is being used in all the code
     ##
-
     %citation = $citation->godot_citation();
-
-
     $check_citation_result = &process_citation($citation, '', \%citation, \$message, $parse::CITN_CHECK_FOR_SEARCH);
 
     ##
@@ -519,12 +516,9 @@ sub main_holdings_screen {
     if (($check_citation_result eq $parse::CITN_NEED_ARTICLE_INFO)  || ($check_citation_result eq $parse::CITN_SUCCESS)) {  
 
         ##
-        ## (14-mar-2003 kl) -now that we have decided that there is enough data to do a search,
-        ##                   find out if we need more citation data for an ILL request
+        ## (14-mar-2003 kl) -now that we have decided that there is enough data to do a search, find out if we need more citation data for an ILL request
         ##
-  
-	$check_citation_result = &process_citation($citation, '', \%citation, \$message, $parse::CITN_CHECK_FOR_REQ);
-
+	    $check_citation_result = &process_citation($citation, '', \%citation, \$message, $parse::CITN_CHECK_FOR_REQ);
 
         ##
         ## -determine which table components you want
@@ -616,8 +610,11 @@ sub main_holdings_screen {
         $page->has_check_link($session->var($HAS_CHECK_LINK_FIELD));
         $page->has_auto_req_link($session->var($HAS_AUTO_REQ_LINK_FIELD));
         $page->has_hidden_record($session->var($HAS_HIDDEN_RECORD_FIELD));        
-        
+            
         my $holdings_hash_ref = $session->var($HOLDINGS_HASH_FIELD);
+        #### debug location_plus, "------------------- holdings_hash_ref from session --------------------";
+        #### debug Data::Dump::dump($holdings_hash_ref);
+        #### debug location_plus, "-----------------------------------------------------------------------";
 
         ## 
         ## (02-feb-2006 kl) - for reasons not completely clear to me right now this is required in order for 
@@ -649,7 +646,9 @@ sub main_holdings_screen {
                                                  $search_group,
                                                  $scrno);
 
-        
+        #### debug location_plus, "------------------- holdings_hash_ref to session --------------------";
+        #### debug Data::Dump::dump($holdings_hash_ref);
+        #### debug location_plus, "-----------------------------------------------------------------------";
 
         $session->var($HOLDINGS_HASH_FIELD, $holdings_hash_ref);
 
@@ -746,9 +745,9 @@ sub main_holdings_screen {
             my ($action, $next_action) = &get_act_for_req_button($config, $check_citation_result, '', $citation, '');
             my($param_str) = "$user=$REQUEST_NEW";
 
-            if ($next_action ne '')     { $param_str .= "=$next_action";                    }
+            if ($next_action ne '')     { $param_str .= "=$next_action";  }
 
-	    param(-name=>$ACTION_PARAM_FIELD, '-values'=>[$param_str]);
+	        param(-name=>$ACTION_PARAM_FIELD, '-values'=>[$param_str]);
             $cgi->skipped_main_no_holdings($TRUE);
             return $action;
         }
@@ -764,9 +763,12 @@ sub main_holdings_screen {
         $cgi->new_screen('error_screen');       
     }
 
+    #### debug '----------------------------------------------------------';
+    #### debug location;
+    #### debug Data::Dump::dump($page);
+    #### debug '----------------------------------------------------------';
 
     report_time_location;
-
 
     return $TRUE;
 }
@@ -824,11 +826,18 @@ sub catalogue_screen {
     my $user = $config->site->key;
 
     ## 
-    ## -from cat_scr we were not getting article input screen for journals found in 
-    ##  item databases (ex. UBC), so added &process_citation(...) logic below
+    ## -from cat_scr we were not getting article input screen for journals found in item databases (ex. UBC), so added &process_citation(...) logic below
     ##
 
-    foreach (@gconst::CITN_ARR) { $citation{$_} = param($_); }
+    ##
+    ## (04-jul-2010 kl) -- switch to using GODOT::Citation::godot_citation as below;
+    ##
+    #### foreach (@gconst::CITN_ARR) { $citation{$_} = param($_); }
+
+    ##
+    ## -put back values in citation hash, until citation object is being used in all the code
+    ##
+    %citation = $citation->godot_citation();
 
     $check_citation_result = &process_citation($citation, '', \%citation, \$dummy, $parse::CITN_CHECK_FOR_REQ);  
 
@@ -882,9 +891,10 @@ sub catalogue_screen {
     $page->search_messages($para_server_msg_string . $main_msg_string);
 
 
-    #### debug "------------------catalogue_screen page object-----------------";
-    #### debug Dumper($page);
-    #### debug "---------------------------------------------------------------";
+    #### debug '----------------------------------------------------------';
+    #### debug location;
+    #### debug Data::Dump::dump($page);
+    #### debug '----------------------------------------------------------';
 
     return $TRUE;
 }
@@ -939,6 +949,7 @@ sub catalogue_interface_screen {
     my($para_server_res, $para_server_msg_string) = &para::run(\%queue_hash,
                                                                [$query],
                                                                $config,
+                                                               $cgi,
                                                                $GODOT::Config::PARA_SERVER_TIMEOUT,
                                                                $FALSE); 
 
@@ -1120,8 +1131,8 @@ sub check_patron_screen {
     }
 
     ##
-    ## -need to check that we have all required citation info as this screen could have been called from
-    ##  article input screen
+    ## ??? get rid of this comment or add related code ... ???
+    ## -need to check that we have all required citation info as this screen could have been called from article input screen
     ##
 
     my $button = new GODOT::PageElem::Button;
@@ -1152,21 +1163,20 @@ sub request_screen {
 	my $new_screen     = $cgi->new_screen;
 	my $session        = $cgi->session;
 
-        ##
-        ## !!! we are now running this with mod_perl so these need to be initialized as they are globals !!!
-        ##
+    ##
+    ## !!! we are now running this with mod_perl so these need to be initialized as they are globals !!!
+    ##
 
 	use vars qw(%ill_fields);
 	
-        %ill_fields      = ();
+    %ill_fields      = ();
 
-
-        ##
+    ##
 	## Copy data to expected fields
-        ##    
+    ##    
 
-        my(%patron_hash);
-        my($error_msg, $result);
+    my(%patron_hash);
+    my($error_msg, $result);
  
 	if ( param('ILL_SUBMIT') ) { $ill_fields{'ILL_SUBMIT'}       = param('ILL_SUBMIT'); }
 	if ( param($BRANCH_FIELD) ) { $ill_fields{'hold_tab_branch'} = param($BRANCH_FIELD); }
@@ -1176,30 +1186,30 @@ sub request_screen {
 	if ( param($SCREEN_FIELD))          { $ill_fields{$SCREEN_FIELD}     = param($SCREEN_FIELD); }
 	if ( param($PATR_CHECKED_OK_FIELD)) { $ill_fields{$PATR_CHECKED_OK_FIELD} = param($PATR_CHECKED_OK_FIELD); }
 
-        ##
-        ## (01-mar-2001 kl) - added as part of adding OpenURL logic
-        ##
+    ##
+    ## (01-mar-2001 kl) - added as part of adding OpenURL logic
+    ##
 
 	if ( param($SYNTAX_FIELD) )         { $ill_fields{$SYNTAX_FIELD}      = param($SYNTAX_FIELD); }
 	if ( param($DBASE_TYPE_FIELD) )     { $ill_fields{$DBASE_TYPE_FIELD}  = param($DBASE_TYPE_FIELD); }
 	if ( param($DBASE_LOCAL_FIELD) )    { $ill_fields{$DBASE_LOCAL_FIELD} = param($DBASE_LOCAL_FIELD); }
 
-        ##
-        ## -change value from array to scalar as CGI.pm is not used in this part of the code
-        ##
-        ## !!!! -do not change format with regards to using space as delimiters as RSS 'NextPartners' !!!!
-        ## !!!!  comma logic needs the spaces                                                         !!!!
-        ##
+    ##
+    ## -change value from array to scalar as CGI.pm is not used in this part of the code
+    ##
+    ## !!!! -do not change format with regards to using space as delimiters as RSS 'NextPartners' !!!!
+    ## !!!!  comma logic needs the spaces                                                         !!!!
+    ##
 
-        if (param($HOLDINGS_SITE_FIELD))  {
-            $ill_fields{$HOLDINGS_SITE_FIELD} = join(' ', param($HOLDINGS_SITE_FIELD) );
-        }
-
-
-        #### debug "*** ", location, " - HOLDINGS_SITE_FIELD:  ", $ill_fields{$HOLDINGS_SITE_FIELD};
+    if (param($HOLDINGS_SITE_FIELD))  {
+         $ill_fields{$HOLDINGS_SITE_FIELD} = join(' ', param($HOLDINGS_SITE_FIELD) );
+    }
 
 
-        # moved HTTP_REFERER logic to main_hold_scr so that it would get URL of database CGI instead this one (kl)
+    #### debug "*** ", location, " - HOLDINGS_SITE_FIELD:  ", $ill_fields{$HOLDINGS_SITE_FIELD};
+
+
+    ## -moved HTTP_REFERER logic to main_hold_scr so that it would get URL of database CGI instead this one (kl)
 
 	if (param($BACK_URL_FIELD)) 
 	{ 
@@ -1216,55 +1226,53 @@ sub request_screen {
                   $ill_fields{'hold_tab_msg_req_type'}) = split(/=/, param($hold_tab::ACTION_PARAM_FIELD));
 	}
 
+    if (aws($ill_fields{'hold_tab_msg_req_type'})) { &glib::send_admin_email("$0: blank hold_tab_msg_req_type"); }
 
-        if (aws($ill_fields{'hold_tab_msg_req_type'})) { &glib::send_admin_email("$0: blank hold_tab_msg_req_type"); }
+    ##
+    ## (13-feb-1998 kl) - give up trying to pass all info about lending site in CGI submit 'NAME' string
+    ##                    as over time we are going to need more and more lending site info 
+    ##                  - makes more sense to simply do call to users database - if this turns out 
+    ##                    to be a performance problem we can re-think.
+    ## 
 
-        ##
-        ## (13-feb-1998 kl) - give up trying to pass all info about lending site in CGI submit 'NAME' string
-        ##                    as over time we are going to need more and more lending site info 
-        ##                  - makes more sense to simply do call to users database - if this turns out 
-        ##                    to be a performance problem we can re-think.
-        ## 
+    my $lender_config = GODOTConfig::Cache->configuration_from_cache($ill_fields{'hold_tab_lender'});
 
-        my $lender_config = GODOTConfig::Cache->configuration_from_cache($ill_fields{'hold_tab_lender'});
+    unless (defined $lender_config) {
 
-        unless (defined $lender_config) {
-
-            my $tmp = "Unable to get user information ($ill_fields{'hold_tab_lender'}).";
-            &glib::send_admin_email($tmp);
+        my $tmp = "Unable to get user information ($ill_fields{'hold_tab_lender'}).";
+        &glib::send_admin_email($tmp);
            
-            $page->messages([$tmp]);
-            $cgi->new_screen('request_other_error_screen');
+        $page->messages([$tmp]);
+        $cgi->new_screen('request_other_error_screen');
 
-            return $TRUE;
-        }
+        return $TRUE;
+    }
 
-        ##-----------------------------------------------------------------------------------------------
+    ##-----------------------------------------------------------------------------------------------
 
-        debug "1 ****>> $ill_fields{'hold_tab_lender'} -- $ill_fields{'hold_tab_msg_req_type'}\n";
+    debug "1 ****>> $ill_fields{'hold_tab_lender'} -- $ill_fields{'hold_tab_msg_req_type'}\n";
 
-        use GODOT::ILL::Request;
-        my $request = GODOT::ILL::Request->dispatch($citation, {'site' => $config->name});
+    use GODOT::ILL::Request;
+    my $request = GODOT::ILL::Request->dispatch($citation, {'site' => $config->name});
 
-        ##
-        ## -use scalar variable $patron_type, as otherwise there are problems with passing values to $request->type below
-        ##
-        my $patron_type = param('PATR_PATRON_TYPE_FIELD');
+    ##
+    ## -use scalar variable $patron_type, as otherwise there are problems with passing values to $request->type below
+    ##
+    my $patron_type = param('PATR_PATRON_TYPE_FIELD');
 
-        $ill_fields{'hold_tab_msg_req_type'} = $request->type($ill_fields{'hold_tab_msg_req_type'}, 
-                                                              $citation,
-                                                              $patron_type, 
-                                                              $ill_fields{'hold_tab_lender'});
+    $ill_fields{'hold_tab_msg_req_type'} = $request->type($ill_fields{'hold_tab_msg_req_type'}, 
+                                                          $citation,
+                                                          $patron_type, 
+                                                          $ill_fields{'hold_tab_lender'});
  
-        debug "2 ****>> $ill_fields{'hold_tab_lender'} -- $ill_fields{'hold_tab_msg_req_type'}\n";
+    debug "2 ****>> $ill_fields{'hold_tab_lender'} -- $ill_fields{'hold_tab_msg_req_type'}\n";
 
+    ##-----------------------------------------------------------------------------------------------
 
-        ##-----------------------------------------------------------------------------------------------
-
-        ##
-        ## -don't put this in @PATR_ARR because we don't want it printed out as a hidden field
-        ##
-        if ( param('PATR_PIN_FIELD') ) { $ill_fields{'PATR_PIN_FIELD'} = param('PATR_PIN_FIELD'); }          
+    ##
+    ## -don't put this in @PATR_ARR because we don't want it printed out as a hidden field
+    ##
+    if ( param('PATR_PIN_FIELD') ) { $ill_fields{'PATR_PIN_FIELD'} = param('PATR_PIN_FIELD'); }          
 
 	foreach (@PATR_ARR)
 	{
@@ -1276,151 +1284,132 @@ sub request_screen {
 		if ( defined param($_) && naws(param($_)) ) { $ill_fields{$_} = param($_); }
 	}
 
-        ##
-        ## -replace call number with that deterimined from holdings for institution from which you are requesting
-        ##
+    ##
+    ## -replace call number with that deterimined from holdings for institution from which you are requesting
+    ##
 
-        my(%call_no_save_hash) = param($CALL_NO_SAVE_FIELD);
+    my(%call_no_save_hash) = param($CALL_NO_SAVE_FIELD);
 
-        ##
-        ## -save only call number string for lending site
-        ##
+    ##
+    ## -save only call number string for lending site
+    ##
 
-        if (defined  $call_no_save_hash{$ill_fields{'hold_tab_lender'}}) {      
-            $ill_fields{$gconst::CALL_NO_FIELD} = $call_no_save_hash{$ill_fields{'hold_tab_lender'}};
-        }
+    if (defined  $call_no_save_hash{$ill_fields{'hold_tab_lender'}}) {      
+        $ill_fields{$gconst::CALL_NO_FIELD} = $call_no_save_hash{$ill_fields{'hold_tab_lender'}};
+    }
 
 	#####################################################################
-	# Begin execution logic
+	## Begin execution logic
     
-        if ($action eq $REQ_CANCEL_ACT)
-	{
-                $cgi->action($START_ACT);
-                $cgi->new_screen('main_holdings_screen');   
-                &main_holdings_screen($cgi, $page, $config, $citation);
-
+    if ($action eq $REQ_CANCEL_ACT) {
+        $cgi->action($START_ACT);
+        $cgi->new_screen('main_holdings_screen');   
+        &main_holdings_screen($cgi, $page, $config, $citation);
 	}
-        elsif ($action eq $REQ_SEND_ACT) 
-	{                                     
-                $error_msg = &ill_verify_input($config, $citation);
+    elsif ($action eq $REQ_SEND_ACT) {                                     
+        $error_msg = &ill_verify_input($config, $citation);
 
-		unless ($error_msg)     
-		{
-                        # added patron info cache logic (kl)
+		unless ($error_msg)     {
 
-                        if (&cache_patron_info($config->ill_cache_patron_info, $ill_fields{$USERNO_FIELD}))
-                        {
-                                &ill_set_patron_cache;
-                        }
+            ## added patron info cache logic (kl)
 
-			if ($config->use_request_confirmation_screen)
-			{
+            if (&cache_patron_info($config->ill_cache_patron_info, $ill_fields{$USERNO_FIELD})) {
+                &ill_set_patron_cache;
+            }
+
+			if ($config->use_request_confirmation_screen) {
 				&request_confirmation_screen($cgi, $page, $config, $citation);
 			}
-			else
-			{
+			else {
 				&ill_process_request($cgi, $page, $session, $config, $lender_config, $citation);  
 			}
 		}
-		else
-		{
-   		        $cgi->error_message($error_msg);
+		else {
+   		    $cgi->error_message($error_msg);
 			&request_input_error_screen($cgi, $page, $config, $citation);
 		}
 	}
-        elsif ($action eq $REQ_ACCEPT_ACT) 	
-	{
+    elsif ($action eq $REQ_ACCEPT_ACT) 	{
 		&ill_process_request($cgi, $page, $session, $config, $lender_config, $citation);
 	}
-	else
-	{
-                $result = $FALSE;
+	else {
+        $result = $FALSE;
 
-                #
-                # -added patron cache file logic from spmail (kl)
-                #
-
-                if (&cache_patron_info($config->ill_cache_patron_info, $ill_fields{$USERNO_FIELD})) 
-                {
+        ##
+        ## -added patron cache file logic from spmail (kl)
+        ##
+        if (&cache_patron_info($config->ill_cache_patron_info, $ill_fields{$USERNO_FIELD})) {
                         $result = &ill_get_patron_cache;
-                }
+        }
 
-                if (! $result) {
+        if (! $result) {
 
-                    ##
-                    ## -set password, otherwise parameters won't be passed right below
-                    ## -reason is that in a list context a non-existent param() will return an empty
-                    ##  list instead of ''
-                    ##
+            ##
+            ## -set password, otherwise parameters won't be passed right below
+            ## -reason is that in a list context a non-existent param() will return an empty
+            ##  list instead of ''
+            ##
 
-                    my($password) = param($PASSWORD_FIELD);     
+            my($password) = param($PASSWORD_FIELD);     
 
-                    if (! &ill_check_password($password, $config, $citation, \$error_msg))    {
+            if (! &ill_check_password($password, $config, $citation, \$error_msg))    {
+                $page->messages([&GODOT::String::add_trailing_period($error_msg)]);                                     
+                $cgi->new_screen('password_error_screen');
+                goto _end_request_scr;    
+            }
 
-                       $page->messages([&GODOT::String::add_trailing_period($error_msg)]);                                     
-                       $cgi->new_screen('password_error_screen');
-                       goto _end_request_scr;    
-                    }
+            ##
+            ## (14-jul-1999) - changed so that modified ID is carried through to next step
+            ##
+            if (naws($config->patr_library_id_def)) {  
+                $ill_fields{'PATR_LIBRARY_ID_FIELD'} = $config->patr_library_id_def . $ill_fields{'PATR_LIBRARY_ID_FIELD'};
+            }
 
-                    ##
-                    ## (14-jul-1999) - changed so that modified ID is carried through to next step
-                    ##
-
-                    if (naws($config->patr_library_id_def)) {  
-
-                        $ill_fields{'PATR_LIBRARY_ID_FIELD'} = $config->patr_library_id_def . $ill_fields{'PATR_LIBRARY_ID_FIELD'};
-                    }
-
-                    if ($ill_fields{$PATR_CHECKED_OK_FIELD}) {		        
-
-                        ##
-                        ## (30-may-2004 kl) - will never get here -- see same date below 
-                        ##
-                    }
-                    elsif (&ill_get_patron_record('', 
-                                                  $ill_fields{'PATR_LIBRARY_ID_FIELD'}, 
-                                                  $ill_fields{'PATR_PIN_FIELD'},
-                                                  $config, 
-                                                  $citation,
-                                                  \$error_msg)) {
-
-                        ##
-                        ## (30-may-2004 kl) 
-                        ##
-                        #### $ill_fields{$PATR_CHECKED_OK_FIELD} = $TRUE;
-                    }
-                    else {
-
-                        $cgi->new_screen('check_patron_error_screen');
-                        $page->messages([&GODOT::String::add_trailing_period($error_msg)]);
-                        goto _end_request_scr;                
-                    }
-                }             
+            if ($ill_fields{$PATR_CHECKED_OK_FIELD}) {		        
 
                 ##
-                ## (31-aug-2000 kl) - is patron allowed to submit an ILL request with no holdings attached?
+                ## (30-may-2004 kl) - will never get here -- see same date below 
                 ##
+            }
+            elsif (&ill_get_patron_record('', 
+                                          $ill_fields{'PATR_LIBRARY_ID_FIELD'}, 
+                                          $ill_fields{'PATR_PIN_FIELD'},
+                                          $config, 
+                                          $citation,
+                                          \$error_msg)) {
 
-                if ($ill_fields{'hold_tab_msg_req_type'} eq $REQUEST_NEW) { 
+                ##
+                ## (30-may-2004 kl) 
+                ##
+                #### $ill_fields{$PATR_CHECKED_OK_FIELD} = $TRUE;
+            }
+            else {
+                $cgi->new_screen('check_patron_error_screen');
+                $page->messages([&GODOT::String::add_trailing_period($error_msg)]);
+                goto _end_request_scr;                
+            }
+        }             
 
-                    my $irf_msg = $config->ill_req_form_message($ill_fields{'PATR_PATRON_TYPE_FIELD'});
+        ##
+        ## (31-aug-2000 kl) - is patron allowed to submit an ILL request with no holdings attached?
+        ##
 
-                    if (defined $irf_msg) {             
-                    
-                        ##
-                        ## -screen warning users that they are not allowed to submit an ILL request for which no holdings have
-                        ##  been found
-                        ##
+        if ($ill_fields{'hold_tab_msg_req_type'} eq $REQUEST_NEW) { 
 
-                        $page->messages([($irf_msg ne '') ? $irf_msg : $ILL_REQ_FORM_LIMIT_MSG_DEFAULT_TEXT]);
-                        $cgi->new_screen('permission_denied_screen');
+            my $irf_msg = $config->ill_req_form_message($ill_fields{'PATR_PATRON_TYPE_FIELD'});
 
-                        goto _end_request_scr;  
-                    }
-                }
+            if (defined $irf_msg) {                                 
+                ##
+                ## -screen warning users that they are not allowed to submit an ILL request for which no holdings have been found
+                ##
+                $page->messages([($irf_msg ne '') ? $irf_msg : $ILL_REQ_FORM_LIMIT_MSG_DEFAULT_TEXT]);
+                $cgi->new_screen('permission_denied_screen');
 
-                &request_form_screen($cgi, $page, $config, $citation, $lender_config);
+                goto _end_request_scr;  
+            }
+        }
 
+        &request_form_screen($cgi, $page, $config, $citation, $lender_config);
 	}
 	
 _end_request_scr:
@@ -1965,9 +1954,9 @@ sub print_hold_tab  {
     ####    $holdings_details->{$item->{'name'}} = $item;
     #### }
     
-    #### !!!!!!!!!!!!!!!! debug !!!!!!!!!!!!!!!
-
     unless ($config->use_javascript) { $print_waitscr = $FALSE; } 
+
+    #### !!!!!!!!!!!!!!!! debug !!!!!!!!!!!!!!!
     if (grep {remote_host() eq $_} qw(stalefish.lib.sfu.ca godot.lib.sfu.ca)) { $print_waitscr = $TRUE; }
                                     
     ##
@@ -1976,24 +1965,18 @@ sub print_hold_tab  {
 
     if ($print_waitscr) { 
 
-        #### print STDOUT header; 
         ##
         ## Display page in utf-8. (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
         ##
         print STDOUT header(-type=>'text/html', -charset=>'utf-8');
-
-        $cgi->header_printed($TRUE);           ## -so we don't print HTTP header twice
-    }
-
-    print STDOUT &waitscr($print_waitscr,
-                          "\n\n<script language=JavaScript>\n" .
-                          "waitscr = window.open(\"\", \"waitscreen\", \"scrollbars=1,width=400,height=600\");\n" .
-                          "waitscr.document.writeln('<HTML><HEAD><TITLE> Please Wait...</TITLE></HEAD>');\n" .
-                          "waitscr.document.writeln('<BODY BGCOLOR=white><BR><P><CENTER><P><H2>Working...</H2></CENTER>');\n" . 
-                          "</script>\n");   
-    
-
-
+        $cgi->header_printed($TRUE);                                         ## -so we don't print HTTP header twice
+        $cgi->flush_to_stdout("\n\n<script language=JavaScript>\n" .
+                              "waitscr = window.open(\"\", \"waitscreen\", \"scrollbars=1,width=400,height=600\");\n" .
+                              "waitscr.document.writeln('<HTML><HEAD><TITLE> Please Wait...</TITLE></HEAD>');\n" .
+                              "waitscr.document.writeln('<BODY BGCOLOR=white><P><CENTER><H2>Working...</H2></CENTER></P>');\n" . 
+                              "</script>\n");   
+    } 
+ 
     my(%waitscr_hash);
 
     my $is_bccampus = (defined $page->local) ? $page->local->is_bccampus : $FALSE;
@@ -2223,28 +2206,27 @@ sub print_hold_tab  {
         }
 
         report_time_location;
-        debug "before parallel....";
+        debug location_plus, "before parallel....";
 
         ##
         ## -print out messages related to queries that are going to be run 
         ##
 
-        foreach my $query (@query_to_run_arr) {
- 
-            print STDOUT &waitscr($print_waitscr, $waitscr_hash{$query}); 
+        foreach my $query (@query_to_run_arr) { 
+            if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_hash{$query}); }
         }
 
         my($num_para_cmd) = @query_to_run_arr;
 
         ($waitscr_msg, $main_msg) = &glib::searching_msg('', $gconst::SEARCH_MSG_RUNNING_PARA_TYPE, $config, [$num_para_cmd]);
 
-        print STDOUT &waitscr($print_waitscr, $waitscr_msg);
+        if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }        
+
         
-        
-	#### use Data::Dumper;
+	    #### use Data::Dumper;
         #### debug "//////////////////////////////////////////////////////////////\n";
         #### debug Dumper(\%queue_hash);
-	#### debug "//////////////////////////////////////////////////////////////\n";
+	    #### debug "//////////////////////////////////////////////////////////////\n";
 
         ##
         ## -if the parallel server query fails, then we must skip all steps that depend on the related data structures existing
@@ -2254,7 +2236,8 @@ sub print_hold_tab  {
 
         ($para_server_res, $tmp_msg) =  &para::run(\%queue_hash, 
                                                    \@query_to_run_arr,
-                                                   $config, 
+                                                   $config,
+                                                   $cgi,  
                                                    $GODOT::Config::PARA_SERVER_TIMEOUT, 
                                                    $print_waitscr); 
 
@@ -2262,7 +2245,7 @@ sub print_hold_tab  {
 
         #### debug "para_server_msg_string:  $para_server_msg_string";
 
-        debug "after parallel....";
+        debug location_plus, "after parallel....";
         report_time_location;
 
 
@@ -2288,7 +2271,7 @@ sub print_hold_tab  {
                 if ($parallel->reason) {
                     ($waitscr_msg, $main_msg) = &glib::searching_msg('', $parallel->reason, $config, [$parallel->source_name]);
 
-                    print STDOUT &waitscr($print_waitscr, "<FONT COLOR=RED>$waitscr_msg</FONT>");
+                    if ($print_waitscr) { $cgi->flush_to_stdout("<FONT COLOR=RED>$waitscr_msg</FONT>"); }
 
                     $main_msg_string .= "<FONT COLOR=RED>$main_msg</FONT>";
                 }
@@ -2368,7 +2351,7 @@ sub print_hold_tab  {
                     $link_from_cat_found = $TRUE; 
                     $page->has_get_link($TRUE);
                 }                         
-	    }            
+	        }            
         }
     
         report_time_location;
@@ -2412,7 +2395,7 @@ sub print_hold_tab  {
             $loop_counter++;
 
             if ($loop_counter == $loop_max) {
-		&glib::send_admin_email("$0: too many times through search loop");
+		        &glib::send_admin_email("$0: too many times through search loop");
                 last;
             }
 
@@ -2420,7 +2403,7 @@ sub print_hold_tab  {
 
                 foreach my $query (@{$tab_comp_queue_hash{$GODOT::Page::HOLDINGS_RESULT_COMP}}) {
 
-		    my $parallel = &para::from_queue(\%queue_hash, $query);
+		            my $parallel = &para::from_queue(\%queue_hash, $query);
 
                     ##
                     ## -Don't print messages more than once
@@ -2429,7 +2412,8 @@ sub print_hold_tab  {
                     if ($parallel->reason && (! $skip_msg_hash{$query})) {
                         ($waitscr_msg, $main_msg) = &glib::searching_msg('', $parallel->reason, $config, [$parallel->source_name]);
                         
-                        print STDOUT &waitscr($print_waitscr, "<FONT COLOR=RED>$waitscr_msg</FONT>");
+                        if ($print_waitscr) { $cgi->flush_to_stdout("<FONT COLOR=RED>$waitscr_msg</FONT>"); }
+
                         $main_msg_string .= "<FONT COLOR=RED>$main_msg</FONT>";
                     }
 
@@ -2437,7 +2421,8 @@ sub print_hold_tab  {
                    
                     if ($parallel->result) {
 
-                        $hold_found = $TRUE;  $on_fly_match = $TRUE;
+                        $hold_found = $TRUE;  
+                        $on_fly_match = $TRUE;
 
                         my %data = %{ $parallel->data };
        
@@ -2470,8 +2455,7 @@ sub print_hold_tab  {
                     ## -figure out which queries we want to run for the next pass
                     ##
 
-		    @query_to_run_arr = ();       
-
+		            @query_to_run_arr = ();       
 
                     for (1 .. $GODOT::Config::MAX_QUERY_IN_PARALLEL) {
 
@@ -2495,26 +2479,25 @@ sub print_hold_tab  {
 
                         if (! $search_all_sources) {
 
-	    		    ($waitscr_msg, $main_msg) = &glib::searching_msg('', 
+	    		            ($waitscr_msg, $main_msg) = &glib::searching_msg('', 
                                                                        $gconst::SEARCH_MSG_MORE_HOLDINGS_SEARCHES_TYPE, 
                                                                        $config, 
                                                                        [$num_branch_with_holdings,
                                                                         $GODOT::Config::MIN_BRANCH_WITH_HOLDINGS]);
  
-                            print STDOUT &waitscr($print_waitscr, $waitscr_msg);
+                            if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }
 
-		        }
+		                }
 
                         report_time_location;
-                        debug "before parallel....";
+                        debug location_plus, "before parallel....";
 
                         ##
                         ## -print out messages related to queries that are going to be run 
                         ##
 
                         foreach my $query (@query_to_run_arr) { 
-
-                            print STDOUT &waitscr($print_waitscr, $waitscr_hash{$query}); 
+                            if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_hash{$query}); }
                         }
 
                         my($num_para_cmd) = @query_to_run_arr;
@@ -2524,32 +2507,30 @@ sub print_hold_tab  {
                                                                    $config,
                                                                    [$num_para_cmd]);
 
-                        print STDOUT &waitscr($print_waitscr, $waitscr_msg);
-        
+                        if ($print_waitscr) { $cgi->flush_to_stdout($waitscr_msg); }
                         ##
                         ## -if the parallel server query fails, then we must skip all steps that depend on 
                         ##  the related data structures existing
                         ##
 
-	                $para_server_res = $FALSE;
-
+	                    $para_server_res = $FALSE;
 
                         ($para_server_res, $tmp_msg) = &para::run(\%queue_hash, 
                                                                   \@query_to_run_arr, 
                                                                   $config,
+                                                                  $cgi,
                                                                   $GODOT::Config::PARA_SERVER_TIMEOUT, 
                                                                   $print_waitscr); 
-
-			$para_server_msg_string .= $tmp_msg;
+			            $para_server_msg_string .= $tmp_msg;
 
                         if (! $para_server_res) {
                             #### debug "search loop - done 2";
                             $done = $TRUE;
                         }                       
  
-                        debug "after parallel....";
+                        debug location_plus, "after parallel....";
                         report_time_location;
-		    }
+		            }
                     else {
                         #### debug "search loop - done 3";
                         $done = $TRUE;
@@ -2613,7 +2594,8 @@ sub print_hold_tab  {
                     my $error_message = (defined $cufts_search) ? $cufts_search->error_message : 'Error';
                     ($waitscr_msg, $main_msg) = &glib::searching_msg('', $error_message, $config, [$parallel->source_name]);
 
-                    print STDOUT &waitscr($print_waitscr, "<FONT COLOR=RED>$waitscr_msg</FONT>"); 
+                    if ($print_waitscr) { $cgi->flush_to_stdout("<FONT COLOR=RED>$waitscr_msg</FONT>"); }
+
                     $main_msg_string .=  "<FONT COLOR=RED>$main_msg</FONT>";             
                 }  
 	    }
@@ -2672,7 +2654,9 @@ sub print_hold_tab  {
             ##
             ## -if no contents in @{$lender_arr_ref} then there were no holdings for the branches that we wanted to display
             ##  
+            #### debug location_plus, "1 -- hold_found:  $hold_found";
             if (! @{$lender_arr_ref}) { $hold_found = $FALSE }
+            #### debug location_plus, "2 -- hold_found:  $hold_found";
         }
     }
 
@@ -2702,7 +2686,8 @@ sub print_hold_tab  {
         defined ${$tab_comp_hash_ref}{$GODOT::Page::ERIC_COLL_COMP}       ||
         defined ${$tab_comp_hash_ref}{$GODOT::Page::MLOG_COLL_COMP})            {
 
-        #### debug "hold_found:  $hold_found";
+        #### debug location_plus, "hold_found:  $hold_found";
+        #### debug Data::Dump::dump(${$tab_comp_hash_ref}{$GODOT::Page::HOLDINGS_RESULT_COMP});
 
         if ($hold_found) {
 
@@ -2738,7 +2723,7 @@ sub print_hold_tab  {
 	    if (ref($record_arr_ref)) { $page->records($record_arr_ref); }
 
             #### debug "........................................."; 
-	    #### debug Dumper($record_arr_ref);
+    	    #### debug Dumper($record_arr_ref);
             #### debug ".........................................";
 
             $elapsed = time - $start_time; 
@@ -2785,11 +2770,25 @@ sub print_hold_tab  {
     ##
 
     my $fulltext_hold_found = $config->include_fulltext_as_holdings && $page->has_get_link;
-                        
+
+    #### debug location_plus, "hold_found -- $hold_found";
+    #### debug location_plus, "fulltext_hold_found -- $fulltext_hold_found";
+    #### debug location_plus, "no_ill_form_comp -- $no_ill_form_comp";                        
+
+    ##
+    ## (17-nov-2010 kl) -- should 'do not offer an ILL form' logic use '$page->has_auto_req_link' or 'length($page->auto_req_records)' in logic below?
+    ##                  -- currently it does not match logic found in 'main_holdings_auto_req' template which uses 'page.auto_req_records.size';
+    ##                  -- issue is that '$page->has_auto_req_link' is saved as part of session whereas 'page->auto_req_records' is not, so this means if you have
+    ##                     an auto request link generated on the first iteration of 'main_holdings_screen' it will affect display of the 'main_holdings_auto_req' 
+    ##                     template on the second iteration of 'main_holdings_screen'  
+    ##
+
     if (($reqtype eq $PREPRINT_TYPE) || $page->has_auto_req_link || $no_ill_form_comp) {
         ##
-        ## -don't offer ILL form
+        ## -do not offer an ILL form
         ##
+        #### debug location_plus, 'do not offer an ill form';
+        #### debug location_plus, 'page has auto req link:  ', $page->has_auto_req_link;
     }
     elsif ($hold_found || $fulltext_hold_found) {
 
@@ -2813,7 +2812,7 @@ sub print_hold_tab  {
         }
     }
     else {
-        
+        #### debug location_plus, 'no_holdings_req:', $config->no_holdings_req;
         if (($reqtype eq $JOURNAL_TYPE) && $config->no_holdings_req) { 
             ${$tab_comp_hash_ref}{$GODOT::Page::ILL_FORM_COMP}   = ''; 
         }
@@ -2829,7 +2828,7 @@ sub print_hold_tab  {
         $record_arr_ref = &print_ill_form_row($screen, $config, $check_citation_result, 
                                               \%warning_type_hash, $hold_found, $citation);
 
-	if (ref($record_arr_ref)) { $page->records($record_arr_ref); }
+	    if (ref($record_arr_ref)) { $page->records($record_arr_ref); }
     }
 
     ##
@@ -2847,32 +2846,31 @@ sub print_hold_tab  {
 
         if ($more_to_search) {
 
-	    my $more_to_search_record = new GODOT::PageElem::Record;
-	    my $more_to_search_button = new GODOT::PageElem::Button;
+	        my $more_to_search_record = new GODOT::PageElem::Record;
+	        my $more_to_search_button = new GODOT::PageElem::Button;
 
-	    $more_to_search_button->action($MAIN_HOLD_ACT);
-	    $more_to_search_button->param("=$SEARCH_ALL_SOURCES=$scrno");
+	        $more_to_search_button->action($MAIN_HOLD_ACT);
+	        $more_to_search_button->param("=$SEARCH_ALL_SOURCES=$scrno");
             $more_to_search_button->label(&generic_search_all_button_text());
 
-	    $more_to_search_record->type($GODOT::Page::SEARCH_ALL_COMP);
-	    $more_to_search_record->buttons($more_to_search_button);
+	        $more_to_search_record->type($GODOT::Page::SEARCH_ALL_COMP);
+	        $more_to_search_record->buttons($more_to_search_button);
 
-	    $page->records([ $more_to_search_record ]);
-
+	        $page->records([ $more_to_search_record ]);
         }
         elsif ($page->has_auto_req_link && $page->has_hidden_record) {
       
-	    my $show_all_record = new GODOT::PageElem::Record;
-	    my $show_all_button = new GODOT::PageElem::Button;
+	        my $show_all_record = new GODOT::PageElem::Record;
+	        my $show_all_button = new GODOT::PageElem::Button;
 
-	    $show_all_button->action($MAIN_HOLD_ACT);
-	    $show_all_button->param("=$SHOW_ALL_HOLDINGS=$scrno");
+	        $show_all_button->action($MAIN_HOLD_ACT);
+	        $show_all_button->param("=$SHOW_ALL_HOLDINGS=$scrno");
             $show_all_button->label(&generic_show_all_button_text());
 
-	    $show_all_record->type($GODOT::Page::SHOW_ALL_COMP);
-	    $show_all_record->buttons($show_all_button);
+	        $show_all_record->type($GODOT::Page::SHOW_ALL_COMP);
+	        $show_all_record->buttons($show_all_button);
 
-	    $page->records([ $show_all_record ]);
+	        $page->records([ $show_all_record ]);
         }
 
         ##
@@ -2908,7 +2906,7 @@ sub print_hold_tab  {
 
 	    unless ($site_has_holdings{$site}) {
 
-   	        my $record = new GODOT::PageElem::Record;
+   	            my $record = new GODOT::PageElem::Record;
                 my $type = ($holdings_sources_tried{$source}) ? $GODOT::Page::TRIED_NO_HOLDINGS : $GODOT::Page::NOT_TRIED;
                 $record->type($type);
                 $record->user($site);
@@ -2916,15 +2914,11 @@ sub print_hold_tab  {
             }
         }
     }
-
-    report_time_location;
-
-
-    ##--------------------------------------------------------------------------------------------
     
-    print STDOUT &waitscr($print_waitscr, "<script language=JavaScript>\n" . 
-                                          "waitscr.close()\n" . 
-                                          "</script>\n");            
+    if ($print_waitscr) { 
+        $cgi->flush_to_stdout("<script language=JavaScript>\n" .  "waitscr.document.writeln('</BODY></HTML>');\n" ."waitscr.close();\n" .  "</script>\n"); 
+    }
+
     my $table_string;
 
     report_time_location;
@@ -2934,13 +2928,6 @@ sub print_hold_tab  {
             $table_string, 
             $hold_found, 
             $num_cat_link);
-}
-
-
-sub waitscr {
-    my($use_waitscr, $waitscr_msg) = @_;
-
-    $use_waitscr  ? $waitscr_msg : '';
 }
 
 ##--------------------------------------------------------------------------------------
@@ -3241,8 +3228,7 @@ sub print_result_row {
             
             if (${$table_request_hash_ref}{$location}) {
 
-
-   	        #### debug "<________________> ", $record->user($location);
+   	            #### debug "<________________> ", $record->user($location);
 
                 my($action, $next_action) = &get_act_for_req_button($config, 
                                                                     $check_citation_result, 
@@ -3276,16 +3262,16 @@ sub print_result_row {
                         $session->var($AUTO_REQ_ACTION_FIELD, $auto_req_action);
                         $session->var($AUTO_REQ_PARAM_FIELD,  $auto_req_param);
                     }
-		} 
+		        } 
                 else {
 
                     $button->label($button_text);
                     $button->action($action);
                     $button->param($param_str);
-		    $record->buttons($button);
+		            $record->buttons($button);
 
                     $num_request_link++;
-	        }
+	            }
             }
 
             my $location_config = GODOTConfig::Cache->configuration_from_cache($location);
@@ -3296,8 +3282,7 @@ sub print_result_row {
 
             my $user_name_text = naws($location_config->abbrev_name) ? $location_config->abbrev_name
                                : naws($location_config->full_name)   ? $location_config->full_name
-                               :                                       $location_config->name
-	                       ;
+                               :                                       $location_config->name;
    
             $record->description(&GODOT::String::trim_beg_end($user_name_text));
 
@@ -3365,7 +3350,7 @@ sub print_result_row {
                             $first_time = $FALSE; 
                         }
                         else {
-			    $text_string .= '<P>';
+			                $text_string .= '<P>';
                         }
 
                         $text_string .= $html_str;    
@@ -3387,8 +3372,8 @@ sub print_result_row {
             if ($row_holdings_found) { 
 
                 #### debug "\n//////////////////////";
-		#### debug Dumper($auto_req_hash_ref);
-    		#### debug "\n//////////////////////";
+		        #### debug Dumper($auto_req_hash_ref);
+    		    #### debug "\n//////////////////////";
 
                 ##    
                 ## -if auto requesting is on, then only display holdings if so configured or if $auto_req_show_all is true
@@ -3430,22 +3415,22 @@ sub print_result_row {
     ## -if auto requesting is on, then add another result row
     ##
 
-    #### debug "auto_req:  $auto_req -- no_auto_req_comp: $no_auto_req_comp -- auto_req_action:  $auto_req_action";
+    #### debug location_plus, "auto_req:  $auto_req -- no_auto_req_comp: $no_auto_req_comp -- auto_req_action:  $auto_req_action";
 
     if ($auto_req && (! $no_auto_req_comp) && (naws($auto_req_action))) {        
 
-	my $auto_req_record = new GODOT::PageElem::Record;
-	my $auto_req_button = new GODOT::PageElem::Button;
+	    my $auto_req_record = new GODOT::PageElem::Record;
+	    my $auto_req_button = new GODOT::PageElem::Button;
 
-	$auto_req_button->label(&generic_auto_req_button_text());
+	    $auto_req_button->label(&generic_auto_req_button_text());
 
-	$auto_req_button->action($auto_req_action);
-	$auto_req_button->param($auto_req_param);
+	    $auto_req_button->action($auto_req_action);
+	    $auto_req_button->param($auto_req_param);
 
-	$auto_req_record->type($GODOT::Page::AUTO_REQ_COMP);
-	$auto_req_record->buttons($auto_req_button);
-	$auto_req_record->description();
-	$auto_req_record->text($auto_req_text);
+	    $auto_req_record->type($GODOT::Page::AUTO_REQ_COMP);
+	    $auto_req_record->buttons($auto_req_button);
+	    $auto_req_record->description();
+	    $auto_req_record->text($auto_req_text);
 
         $has_auto_req_link++;
 
@@ -3473,9 +3458,9 @@ sub print_result_row {
 
     param(-name=>$CALL_NO_SAVE_FIELD, '-values'=>[%call_no_save_hash]);         
 
-    #### debug "\n*******************************";
-    #### debug Dumper(@record_arr); 
-    #### debug "\n*******************************";
+    #### debug location_plus, "*******************************";
+    #### debug Data::Dump::dump(@record_arr); 
+    #### debug location_plus, "*******************************";
 
     report_time_location;
 
@@ -3663,6 +3648,12 @@ sub get_table_info {
 
         $branch_has_holdings = ($branch_has_holdings || $branch_has_fulltext);    
     } 
+
+    #### debug location_plus, 'ordered_branch_arr_ref >>>>>>>>>>>>>>>>>>>>>>>>';
+    #### debug Data::Dump::dump($ordered_branch_arr_ref);
+    #### debug location_plus, 'holdings_hash_ref >>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
+    #### debug Data::Dump::dump($holdings_hash_ref);
+    #### debug location_plus, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
     ##
     ## -@branch_arr based on rank info (from borrower info) and english name (from lender info)
@@ -3855,9 +3846,9 @@ sub get_table_info {
                 ##
                 ## (01-sep-2004 kl) - avoid duplicates due to multiple main_holdings_screen iterations - see note above 
                 ##
-	        unless (grep {$lender_site->description eq $_} param($HOLDINGS_SITE_FIELD)) {
+	            unless (grep {$lender_site->description eq $_} param($HOLDINGS_SITE_FIELD)) {
                     param(-name=>$HOLDINGS_SITE_FIELD, '-values'=>[param($HOLDINGS_SITE_FIELD), $lender_site->description]);
-	        }
+	            }
             }
         }
     }
@@ -4198,14 +4189,22 @@ sub process_citation {
     my $first_time;
     if (param($ART_FORM_ONCE_THRU_FIELD) != $TRUE) { $first_time = $TRUE; }
 
+    foreach (@gconst::CITN_ARR) {
+        #### debug ">>> $_:  ", ${$citation_ref}{$_};
+    }
+
     ##
     ## -get all info that has already been parsed and if available, get user entered article info
     ##
-        
+    use GODOT::Encode;        
     foreach (@gconst::CITN_ARR) { 
 
-        if (defined param($_) && (! ${$citation_ref}{$_})) {          ## -get item info from param, but don't overwrite 
-
+        ## ?????????????? is this the correct behaviour ????????????????
+        ##
+        ## -get item info from param, but don't overwrite 
+        ## 
+        if (defined param($_) && (! ${$citation_ref}{$_})) {          
+            #### debug "... added to citation ($_)";
             ${$citation_ref}{$_} = param($_);  
        }
     }    
@@ -4385,9 +4384,6 @@ sub generic_show_all_button_text {
     return "ALL";
 }
 
-
-
-
 ##--------------------------------------------------------------------------
 sub session_to_from_param  {
     my($session, $save) = @_;
@@ -4415,8 +4411,8 @@ sub session_to_from_param  {
                       ) {
         if ($save) { 
             if (defined(param($field))) { $session->session->{$field} = param($field);  } 
-	}
-	else { 
+	    }
+	    else { 
             if (defined($session->session->{$field}) && (! defined(param($field)))) { 
                 param(-name=>$field,  '-values'=>[$session->session->{$field}]); 
             }
@@ -4428,7 +4424,7 @@ sub session_to_from_param  {
         if ($save) { 
             if (defined(param($field))) { $session->session->{$field} = [ param($field) ];  } 
         }
-	else { 
+	    else { 
             if (defined($session->session->{$field}) && ! defined(param($field))) { 
                 param(-name=>$field,  '-values'=>[@{$session->session->{$field}}]); 
             }           
@@ -4441,11 +4437,11 @@ sub session_to_from_param  {
         if ($save) { 
              if (defined(param($field))) { $session->session->{$field} = { param($field) };  } 
         }
-	else { 
+	    else { 
              if (defined($session->session->{$field}) && ! defined(param($field))) { 
                  param(-name=>$field,  '-values'=>[%{$session->session->{$field}}]); 
              }
-	    my %hash = param($field);
+	         my %hash = param($field);
         }
     }
 
@@ -4459,7 +4455,7 @@ sub session_to_from_param  {
             if (defined(param($field)) && (param($field) ne '')) {  $session->session->{$field} = param($field); } 
         }
         else {
-	    if (defined($session->session->{$field}) && ! defined(param($field))) {
+	        if (defined($session->session->{$field}) && ! defined(param($field))) {
                 param(-name=>$field,  '-values'=>[$session->session->{$field}]);
             }
         }                  
@@ -4612,6 +4608,9 @@ sub dev_copy_url {
     ##
     debug "path_info:  $ENV{'PATH_INFO'}";
 
+    ##
+    ## (27-oct-2010 kl) -- don't pass any encoding instructions to &put_query_fields_from_array -- just pass on data unchanged;
+    ##
     return $url . $ENV{'PATH_INFO'}  . '?' . put_query_fields_from_array(\@url_arr); 
 }
 
@@ -4657,7 +4656,7 @@ sub ill_verify_input
 {
         my($config, $citation) = @_;       
  
-	my ($key);
+	    my ($key);
  
         require password;
 
@@ -4681,7 +4680,7 @@ sub ill_verify_input
 		        {                                                        
 			        debug "required information was not supplied:  $key\n";
 			        return "Some required information was not supplied -- $map_field -- $key.";   # include period
-                        }
+                }
 	        }
 	
         }
@@ -4946,7 +4945,12 @@ sub ill_process_request  {
                 ##
 
 	        if (grep {$config->ill_local_system eq $_} @GODOT::ILL::Message::Config::SEND_TO_LOCAL) 
-                {                        
+                {
+                        ##
+                        ## (01-jun-2010 kl) -- was missing and likely has for a long time ... hopefully won't break anything ... 
+                        ##
+                        $patron_text = $ill_fields{'PATR_LAST_NAME_FIELD'};
+                        
                         $msg_fmt = $config->ill_local_system;
                         $msg_email = $config->ill_local_system_email;
                         $msg_host = $config->ill_local_system_host;
@@ -5047,10 +5051,6 @@ sub ill_process_request  {
         $message_to_copy->not_req_after($ill_fields{'PATR_NOT_REQ_AFTER_FIELD'});             
         $message_to_copy->max_cost($config->ill_max_cost);
 
-        #### debug "----------------------------------------------";
-        #### debug $message_to_copy->dump;
-        #### debug "----------------------------------------------";
-
         my $site = $config->name; 
 
         my $error_msg;
@@ -5077,10 +5077,6 @@ sub ill_process_request  {
                 $message->host($msg_host) if naws($msg_host);
                 
                 $result = $message->send($ill_reqno);
-
-                #### debug "result after 'main request' message send:  $result";
-                #### debug $message->dump;
-                #### debug "----------------------------------------------";
                        
                 $error_msg = $message->error_message;
                 $ill_local_system_request_number = $message->ill_local_system_request_number;
