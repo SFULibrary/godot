@@ -6,13 +6,11 @@ package GODOT::CatalogueHoldings::BibCirc::Z3950::ALEPH;
 use GODOT::CatalogueHoldings::BibCirc;
 @ISA = qw(GODOT::CatalogueHoldings::BibCirc);
 
-use Data::Dumper;
-
 use GODOT::String;
 use GODOT::Object;
 use GODOT::Debug;
+use GODOT::Encode;
 use CGI qw(:escape);
-
 use strict;
 
 ##
@@ -27,17 +25,23 @@ sub cat_url {
     unless (aws($host)) {
 
         if    (naws($self->isbn))   { 
-            $url = $self->cat_url_isbn_index . '&request=' . escape($self->isbn);
+           $url = $self->cat_url_isbn_index . '&request=' . escape($self->isbn);
         }
         elsif (naws($self->issn))   { 
-            $url = $self->cat_url_issn_index . '&request=' . escape($self->issn);
+           $url = $self->cat_url_issn_index . '&request=' . escape($self->issn);
         }
         elsif (naws($self->title))  { 
-            $url = $self->cat_url_title_index . '&request=' . escape(remove_leading_article($self->title)) . '&adjacent=Y';
+            ##
+            ## (14-oct-2010 kl) -- Added GODOT::Encode::encode_catalogue_search_term.
+            ##
+            my $octets = encode_catalogue_search_term(remove_leading_article($self->title), 'ALEPH', $self->title_index_includes_non_ascii);
+            $url = $self->cat_url_title_index . '&request=' . escape($octets) . '&adjacent=Y';
         }
 
         $url = ($url_root . $url) if naws($url);        
     }
+  
+    debug location, "  $url";
 
     return $self->_url('cat_url', $url, '');
 }
