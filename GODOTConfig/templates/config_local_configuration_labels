@@ -1,5 +1,8 @@
-[%#  PROCESS local_configuration_option_text %]
+[%# PROCESS local_configuration_option_text %]
 [%# SET option = local_configuration_option_text  %]
+
+[%# (15-oct-2010 kl) -- added 'title_index_includes_non_ascii' option %]
+
 
 [% SET text.journal  = 'journal' %]
 [% SET text.non_journal = 'non-journal' %]
@@ -153,6 +156,7 @@
 'source_name'                            => 'Target name',
 'system_type'                            => 'System type',
 'strip_apostrophe_s'                     => 'Strip apostrophe-s from search term words',
+'title_index_includes_non_ascii'         => 'Title indexes include non-ascii characters',
 
 'use_z3950'                              => 'Use Z39.50 to search', 
 'zhost'                                  => 'Host',
