@@ -5,6 +5,7 @@ package GODOT::ILL::Message::RSS_FORM_2;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
+use GODOT::Encode::Transliteration;
 
 use base qw(GODOT::ILL::Message);
 
@@ -227,12 +228,15 @@ sub format {
     ## and may be necessary for the final release
     ##
 
-    $self->fill_field('4','DefCon',\%form);	                 ## Used by RSS Web Form = SUBMIT
+    $self->fill_field('4','DefCon',\%form);	                     ## Used by RSS Web Form = SUBMIT
     $self->fill_field('illVerify.tpl', 'CurrentTPL', \%form);    ## Not sure, seems to work
     $self->fill_field('ENU','Language',\%form);
     $self->fill_field('TRUE','LanguageVerified',\%form);
 
-    return put_query_fields(\%form);    
+    ##
+    ## (27-oct-2010 kl) -- find out what encoding should be used
+    ##
+    return put_query_fields(\%form, $self->encoding);    
 }
 
 
@@ -336,12 +340,16 @@ sub next_partner {
 sub fill_field {
     my($self, $value, $rss_field, $form_ref) = @_;
 
-    ${$form_ref}{$rss_field} = $value unless (aws($value));
+    my $transliterated_value = transliterate_string($self->transliteration, $value);
+    ${$form_ref}{$rss_field} = $transliterated_value unless (aws($transliterated_value));
 }
 
 
 sub transport { return 'http'; }
 
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
 
 sub check_http_return {
     my($self, $string) = @_;
