@@ -2,10 +2,13 @@ package GODOT::ILL::Message::III;
 ##
 ## Copyright (c) 2007, Kristina Long, Simon Fraser University
 ##
+use Data::Dump qw(dump);
+
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Object;
 use GODOT::Constants;
+use GODOT::Encode::Transliteration;
 
 use base qw(GODOT::ILL::Message);
 
@@ -13,6 +16,11 @@ use strict;
 
 my $WRAP_INDENT = 0;
 my $WRAP_LEN    = 999;
+
+##
+## (02-nov-2010 kl) -- appears that field order may be important for godot-to-iii ill messaging;
+##
+my @FORM_FIELD_ORDER = qw(main0 main1 publ0 publ1 publ2 publ3 publ4 main3 info0 info1 info2 main5 needby_Month needby_Day needby_Year email0 extpatid extpatpw name barcode subill);
 
 sub format {
     my($self, $reqno) = @_;
@@ -27,20 +35,25 @@ sub format {
     $self->fill_field('SUBMIT THIS REQUEST', 'subill', \%form);
 
     ##
-    ## -patron fields
+    ## (05-nov-2010 kl) -- Method has_separate_auth_step added for Lethbridge when they moved to an integrated login.  
     ##
-    ## (20-aug-2007 kl) - added for ALU for their LDAP authentication which is implemented using III's 'External Patron Verification' product
-    ##
-    my $extpatid = $self->extpatid;
-    my $extpatpw = $self->extpatpw;
+    unless ($self->has_separate_auth_step) {
+        ##
+        ## -patron fields
+        ##
+        ## (20-aug-2007 kl) - added for ALU for their LDAP authentication which is implemented using III's 'External Patron Verification' product
+        ##
+        my $extpatid = $self->extpatid;
+        my $extpatpw = $self->extpatpw;
 
-    if ($self->external_patron_verification && naws($extpatid) && naws($extpatpw)) {
-        $self->fill_field($extpatid, 'extpatid', \%form);
-        $self->fill_field($extpatpw, 'extpatpw', \%form);    
-    }
-    else {
-        $self->fill_field($patron->last_name . ", " . $patron->first_name, 'name', \%form);
-        $self->fill_field($patron->library_id, 'barcode', \%form);
+        if ($self->external_patron_verification && naws($extpatid) && naws($extpatpw)) {
+            $self->fill_field($extpatid, 'extpatid', \%form);
+            $self->fill_field($extpatpw, 'extpatpw', \%form);    
+        }
+        else {
+            $self->fill_field($patron->last_name . ", " . $patron->first_name, 'name', \%form);
+            $self->fill_field($patron->library_id, 'barcode', \%form);
+        }
     }
 
     ##
@@ -133,12 +146,24 @@ sub format {
     $self->fill_field($self->message_note,         'info0', \%form);
 
     #### debug "----------------------------------------------";
+    #### debug location_plus;
     #### foreach my $field (sort keys %form) {
-    ####   debug "$field = $form{$field}";
+    ####     debug "$field = ", Data::Dump::dump($form{$field});
     #### }
     #### debug "----------------------------------------------";
 
-    return put_query_fields(\%form);
+    ##
+    ## (02-nov-2010 kl) 
+    ## Seems that the III ILL input form processing likes fields to be passed in an order that is the same (or similar?) to the order used on their input forms.
+    ## Current thought is that sending authentication related fields (eg. name, barcode, extpatid and extpatpw) at the beginning of the parameter list produces
+    ## the 'Unable to run request for http://darius.uleth.ca/illj~S1 (Moved Permanently)' type message.
+    ## 
+    my @form = $self->order_fields({ %form });
+          
+    ##
+    ## (27-oct-2010 kl) -- find out what encoding should be used
+    ##
+    return put_query_fields_from_array([@form], $self->encoding);
 }
 
 sub message_url   {
@@ -148,10 +173,10 @@ sub message_url   {
     my $form_type = ($citation->is_journal)       ? 'j' 
                   : ($citation->is_book_article)  ? 'c'
                   : ($citation->is_thesis)        ? 'd'
-		  : ($citation->is_conference)    ? 'p'
+		          : ($citation->is_conference)    ? 'p'
                   : ($citation->is_book)          ? 'b'
                   : ($citation->is_tech)          ? 'b'
-		  :                                 '';
+		          :                                 '';
 
     unless ($form_type) { return ('', 'Unexpected request type.'); }
 
@@ -285,12 +310,49 @@ sub valid_date {
 sub fill_field {
     my($self, $value, $rss_field, $form_ref) = @_;
 
-    ${$form_ref}{$rss_field} = $value unless (aws($value));
+    my $transliterated_value = transliterate_string($self->transliteration, $value);
+    ${$form_ref}{$rss_field} = $transliterated_value unless (aws($transliterated_value));
 }
-
 
 sub transport { return 'http'; }
 
+sub transliteration  { return 'latin1'; }
+
+sub encoding         { return 'latin1'; }
+
+   
+##
+## (02-nov-2010 kl)
+## -input is reference to hash containing field/value pairs;
+## -output is array of field/value pairs; 
+##
+sub order_fields {
+    my($self, $form_ref) = @_;
+
+    my @form;
+    ##
+    ## -make a copy so as not to modify the original
+    ##
+    my %remaining = %{$form_ref};        
+
+    foreach my $field ($self->form_field_order) {
+        if (defined($remaining{$field} && naws($remaining{$field}))) {
+            push @form, [ $field, $remaining{$field} ];
+            delete $remaining{$field};
+        }
+    }
+
+    ##
+    ## -put any remaining field/value pairs at the end
+    ##    
+    foreach my $field (keys %remaining) {
+        push @form, [ $field, $remaining{$field} ] unless aws($remaining{$field});        
+    }
+
+    return @form;
+}
+
+sub form_field_order {  return @FORM_FIELD_ORDER;  }
 
 sub check_http_return {
     my($self, $string) = @_;
@@ -306,6 +368,11 @@ sub check_http_return {
     else {
         return ($string =~ m#your request has been sent to the library#i);
     }
+}
+
+sub has_separate_auth_step {
+    my($self) = @_;
+    return $FALSE;
 }
 
 sub external_patron_verification {
