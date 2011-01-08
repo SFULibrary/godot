@@ -28,7 +28,7 @@ sub title {
     $title =~ s#\s+# #g;                                ## compress
 
     ##
-    ## - remove period followed by whitepace or period at the end of the string
+    ## -remove period followed by whitepace or period at the end of the string
     ## -we want to keep periods in the middle of initials - ex. 'u.s'
     ##
     $title =~ s#\.\s+# #g;    
