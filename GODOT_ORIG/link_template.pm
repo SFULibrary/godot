@@ -3,6 +3,8 @@ package link_template;
 require gconst;
 require glib;
 
+use GODOT::Encode;
+
 use CGI qw(-no_xhtml :standard);
 
 @LINK_TEMPLATE_FIELD_ARR = (
@@ -105,7 +107,7 @@ sub link_template_text {
 sub replace_variable {
     my($variable, $map_ref) = @_;
 
-    (defined ${$map_ref}{$variable}) ? &CGI::escape(param(${$map_ref}{$variable})) : "{$variable}";
+    (defined ${$map_ref}{$variable}) ? &CGI::escape(link_template_field(param(${$map_ref}{$variable}))) : "{$variable}";
 
 }
 
