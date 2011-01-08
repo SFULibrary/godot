@@ -1048,10 +1048,17 @@ my @REQUEST_TYPES = qw(N M D I);
         'zcompl_att_journal_title' => {
                 'choices' => ['', @COMPLETENESS_ATTRIBS]
 	},
-
 	'strip_apostrophe_s'  => {
                 'verification' => 'boolean_default_false'
-	},        
+	},
+        
+    ##
+    ## (15-oct-2010 kl) 
+    ##
+	'title_index_includes_non_ascii'  => {
+                'verification' => 'boolean_default_false'
+	},
+        
 	'disable_journal_details'  => {
                 'verification' => 'boolean_default_false'
 	},
