@@ -1,3 +1,5 @@
+[%# (15-oct-2010 kl) -- added 'title_index_includes_non_ascii' option %]
+
 [% SET config_local_configuration_form_fields = [
 
 { name => 'parallel_server_msg',            type => 'CHECKBOX_BOOL',   section => 'display', help => 'display' },
@@ -156,9 +158,11 @@
 { name => 'disable_non_journal_details',          type => 'CHECKBOX_BOOL', section => 'site_holdings', help => 'site_holdings' },
 
 
-{ name => 'source_name',                  type => 'TEXTFIELD',     section => 'system', help => 'system' },
-{ name => 'system_type',                  type => 'POPUP',         section => 'system', help => 'system' },
-{ name => 'strip_apostrophe_s',           type => 'CHECKBOX_BOOL', section => 'system', help => 'system' },
+{ name => 'source_name',                          type => 'TEXTFIELD',     section => 'system', help => 'system' },
+{ name => 'system_type',                          type => 'POPUP',         section => 'system', help => 'system' },
+{ name => 'strip_apostrophe_s',                   type => 'CHECKBOX_BOOL', section => 'system', help => 'system' },
+{ name => 'title_index_includes_non_ascii',       type => 'CHECKBOX_BOOL', section => 'system', help => 'system' },
+
 
 { name => 'use_z3950',                    type => 'CHECKBOX_BOOL', section => 'z3950', help => 'z3950' },
 { name => 'zhost',                        type => 'TEXTFIELD',     section => 'z3950', help => 'z3950' },
