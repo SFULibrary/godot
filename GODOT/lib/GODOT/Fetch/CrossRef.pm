@@ -82,12 +82,15 @@ sub add_data {
     my $request;
     $request = new HTTP::Request POST => $self->url;
     $request->content_type('application/x-www-form-urlencoded');
-    my $param_string = put_query_fields({'type'    => $qtype,
-                                          'usr'    => $self->auth_name,
-                                          'pwd'    => $self->auth_passwd,
-                                          'area'   => 'live',
-                                          'format' => 'piped',
-                                          'qdata'  => $qdata});
+    ##
+    ## (27-oct-2010 kl) -- assume for now that none of these field will contain non-ascii data
+    ##
+    my $param_string = put_query_fields({'type'   => $qtype,
+                                         'usr'    => $self->auth_name,
+                                         'pwd'    => $self->auth_passwd,
+                                         'area'   => 'live',
+                                         'format' => 'piped',
+                                         'qdata'  => $qdata});
     $request->content($param_string);
 
     my $response = $ua->request($request);
