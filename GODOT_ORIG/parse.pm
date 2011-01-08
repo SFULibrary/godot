@@ -292,8 +292,7 @@ use vars qw(@ITEM_ART_INP_ARR
 ##
 ## -cleanup that we want to apply seperately from the &parse() logic 
 ##
-## -(article data from user does not currently go through &parse(), however
-##   we still want some cleanup done)
+## -article data from user does not currently go through &parse(), however we still want some cleanup done
 ##
 sub second_pass_field_cleanup {
     my($citation_ref) = @_;
