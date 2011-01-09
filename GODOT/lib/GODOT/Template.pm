@@ -16,9 +16,11 @@ use GODOT::Config;
 
 use GODOT::Debug;
 use GODOT::String;
+use GODOT::Encode::Transliteration;
 
 use GODOT::Template::Object;
 use GODOT::Template::Config;
+
 
 @ISA = qw(Exporter GODOT::Template::Object);
 
@@ -119,9 +121,18 @@ $Template::Stash::SCALAR_OPS->{'escape'} = sub {
 
 $Template::Stash::SCALAR_OPS->{'encode_utf8'} = sub { 
     my $x = shift; 
-    return encode_utf8($x);
+    return GODOT::String::encode_string('utf8', $x);
 };
 
+$Template::Stash::SCALAR_OPS->{'transliterate_to_latin1'} = sub { 
+    my $x = shift; 
+    return GODOT::String::transliterate_string('latin1', $x);
+};
+
+$Template::Stash::SCALAR_OPS->{'encode_latin1'} = sub { 
+    my $x = shift; 
+    return GODOT::String::encode_string('latin1', $x);
+};
 
 
 
@@ -252,7 +263,7 @@ sub new {
 sub format {
     my($self, $vars) = @_;
    
-    debug("GODOT::Template::format using template: " . $self->{'name'});
+    #### debug("GODOT::Template::format using template: " . $self->{'name'});
     
     my $template = new Template({'INCLUDE_PATH' => $self->include_path, 
                                  'ENCODING'     => 'utf8',
@@ -280,7 +291,7 @@ sub format {
 sub dump {
     my($self, $vars) = @_;
 
-    debug location, "--", $SANDBOX_OBJECT_COOKIE, "--", cookie($SANDBOX_OBJECT_COOKIE), "--", $SANDBOX_OBJECT_TRUE;
+    #### debug location, "--", $SANDBOX_OBJECT_COOKIE, "--", cookie($SANDBOX_OBJECT_COOKIE), "--", $SANDBOX_OBJECT_TRUE;
     
     unless (cookie($SANDBOX_OBJECT_COOKIE) eq $SANDBOX_OBJECT_TRUE) { return; }
 
