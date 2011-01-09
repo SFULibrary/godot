@@ -16,9 +16,10 @@ use Exporter ();
 	warning
 	send_admin_email
 	report_location
-        report_time_location
-        location
-        log_message_to_file
+    report_time_location
+    location
+    location_plus
+    log_message_to_file
 );
 
 @EXPORT_OK = qw(
@@ -26,23 +27,24 @@ use Exporter ();
 	error
 	warning
 	report_location
-        report_time_location
-        location
-        log_message_to_file
+    report_time_location
+    location
+    location_plus
+    log_message_to_file
 );
 
 use GODOT::Config;
+use Data::Dump qw(dump);
 use CGI qw(:standard);
 use Time::HiRes qw(gettimeofday tv_interval);
 use strict;
 
-
-
 BEGIN {
     my $time = gettimeofday;
+
     sub report_time_location {
-	my ($pack1, $file1, $line1, $subname1, $hasargs1, $wantarray1) = caller(1);
-	my ($pack0, $file0, $line0, $subname0, $hasargs0, $wantarray0) = caller();
+	    my ($pack1, $file1, $line1, $subname1, $hasargs1, $wantarray1) = caller(1);
+	    my ($pack0, $file0, $line0, $subname0, $hasargs0, $wantarray0) = caller();
 
         my $delta = tv_interval([$time]);
         if ($delta < 0.0001) { $delta = 0; }  
@@ -76,27 +78,27 @@ sub location {
 	return $subname;
 }
 
-
-sub send_admin_email {
-    my($maillist, $message) = @_; 
-    local(*SENDMAIL);
-    my($subject);   
-
-    $subject = "Message from GODOT"; 
-    my($sendmail) = '/usr/lib/sendmail -t -n';
-    $message = "\n\nremote_host: " . &CGI::remote_host  . "\n\nreferer: " . &CGI::referer . "\n\n" . $message;
-    open (SENDMAIL, "| $sendmail") || return;
-    print SENDMAIL <<End_of_Message;
-From: 
-To: $GODOT::Config::MAILLIST_HASH{$maillist}
-Reply-To:
-Subject: $subject
-
-$message
-End_of_Message
-
-    close(SENDMAIL);
+sub location_plus {
+	my ($pack, $file, $line, $subname, $hasargs, $wantarray) = caller(1);
+	return "$subname:  ";
 }
+
+##
+## (01-jul-2010 kl) comment out instead as no longer being used; 
+## (01-jul-2010 kl) switched to using GODOT::Email;
+##
+#### sub send_admin_email {
+####    my($maillist, $message) = @_; 
+####
+####    use GODOT::Email;
+####
+####    my $to = $GODOT::Config::MAILLIST_HASH{$maillist};
+####    my $subject = "Message from GODOT"; 
+####    $message = "\n\nremote_host: " . &CGI::remote_host  . "\n\nreferer: " . &CGI::referer . "\n\n" . $message;
+####
+####    send_email('', '', $to, $subject, $message);
+#### }
+####
 
 ##
 ## -useful for comparing structures/objects of production and development copies
@@ -112,7 +114,7 @@ sub log_message_to_file {
     use FileHandle;
     my $fh = new FileHandle;
     $fh->open("> $filename") || return;
-    print $fh $message, "\n";
+    print $fh Data::Dump::dump($message), "\n";
     $fh->close;  
 }
 
@@ -138,12 +140,6 @@ GODOT::Debug - Debug routines for the GODOT system
 =item error($message)
 
 All these routines write I<$message> to STDERR.
-
-=item send_admin_email($maillist, $message)
-
-Sends I<$message> by email to the mailing list specified by
-I<$maillist>. Possible values for I<$maillist> include:
-'parser' for parser admin and 'godot' for GODOT admin.
 
 =back
 
