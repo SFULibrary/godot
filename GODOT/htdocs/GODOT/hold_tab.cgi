@@ -1,4 +1,3 @@
-
 unless (exists $ENV{'MOD_PERL'}) {
     use CGI qw(:header :end_html);
     print header, start_html(-dtd=>$gconst::DTD), "Please run using apache with mod_perl.", end_html;
@@ -31,7 +30,7 @@ use File::Basename;
 use CGI qw(-no_xhtml :standard :unescape :escape);
 use Time::HiRes qw(gettimeofday);
 
-use Data::Dumper;
+use Data::Dump qw(dump);
 
 use GODOT::String;
 use GODOT::Debug;
@@ -51,13 +50,19 @@ require hold_tab;
 use Carp ();
 #### $SIG{'USR1'} = sub { Carp::confess('caught SIGUSR1!'); };
 
+##
+## (15-dec-2010 kl) -- troubleshooting an out of memory error on SRU patron authentication
+##
+#### use Apache::Debug level => 4;
+#### $SIG{'__DIE__'} = sub { Carp::confess('caught die'); };
+
+
 ##-----------------------------------------------------------------
 ##                     global 'constants'
 ##-----------------------------------------------------------------
 use vars qw($TRUE $FALSE);
 $TRUE = 1;
 $FALSE = 0;
-
 
 my($OPENURL_COOKIE_PUSHER_IMAGE) = 'http://godot.lib.sfu.ca/godot/images/cookie_pusher_godot.gif';
 
@@ -82,7 +87,7 @@ sub main {
     foreach my $param_label (param()) {   
          my @param_arr = param($param_label);                     ## OpenURL 1.0 may have multiple occurrences of the same field 
          foreach my $value (@param_arr) {
-             debug "<incoming> $param_label = ", $value;      
+             debug "<incoming> $param_label = ", Data::Dump::dump($value);      
          }
     }
     debug "<--------------------------------------------------------------------------------->";
@@ -95,18 +100,17 @@ sub main {
     ##                    assumes that this is a delimeter between a field=value pair (using a semicolon
     ##                    instead of an ampersand as a delimeter is the new style)
     ##
-
     if (param('sid') =~ m#^IOP:#) {
 
         &CGI::delete_all();
 
-	my @qs = split(/&/, $ENV{'QUERY_STRING'});
+        my @qs = split(/&/, $ENV{'QUERY_STRING'});
 
-	foreach my $i (0 .. $#qs)  {
-	    $qs[$i] = unescape($qs[$i]);
-	    my ($name,$value) = split(/=/, $qs[$i], 2);
-	    param(-name=>$name,  '-values'=>[$value]);
-	}
+	    foreach my $i (0 .. $#qs)  {
+	        $qs[$i] = unescape($qs[$i]);
+	        my ($name,$value) = split(/=/, $qs[$i], 2);
+	        param(-name=>$name,  '-values'=>[$value]);
+	    }
 
         ##
         ## -'pid' contains patent info but this gets split because it is in the form 
@@ -124,22 +128,14 @@ sub main {
 
         &CGI::delete_all();
 
-	my @qs = split(/&/, $ENV{'QUERY_STRING'});
+	    my @qs = split(/&/, $ENV{'QUERY_STRING'});
 
-	foreach my $i (0 .. $#qs)  {
-	    $qs[$i] = unescape($qs[$i]);
-	    my ($name,$value) = split(/=/, $qs[$i], 2);
-	    param(-name=>$name,  '-values'=>[$value]);
-	}
+	    foreach my $i (0 .. $#qs)  {
+	        $qs[$i] = unescape($qs[$i]);
+	        my ($name,$value) = split(/=/, $qs[$i], 2);
+	        param(-name=>$name,  '-values'=>[$value]);
+	    }
     }
-    ##
-    ## (26-mar-2009 kl) -- can now stomach sid and rfr_id that are not known so there is no reason for this case
-    ##
-    #### elsif (param('sid') =~ m#^ukoln:#) {
-    ####
-    ####    param(-name=>'sid',  '-values'=>['ukoln:ukoln']);
-    #### }
-    ####
   
     ##--------------------------------------------------------------------------------------------------
     ##
@@ -163,12 +159,10 @@ sub main {
     use GODOT::Authentication;
     my $authentication = GODOT::Authentication->new;
 
-
     ##
     ## -(09-mar-2001) - initially set up for Insitute of Physics journal links in 'References' and 'Abstracts'
     ## -image for OpenURL link invoked by cookie pusher script
     ##
-
     if ($ENV{'PATH_INFO'} eq '/sfx.gif')  {
    
         ##
@@ -179,10 +173,10 @@ sub main {
         my $user = $authentication->get_site();
         my $config = GODOTConfig::Cache->configuration_from_cache($user);
 
-	unless (defined $config) {
-	    &glib::send_admin_email("$0: Failed to get configuration information for OpenURL cookie pusher image.");
+ 	    unless (defined $config) {
+	        &glib::send_admin_email("$0: Failed to get configuration information for OpenURL cookie pusher image.");
             print redirect($OPENURL_COOKIE_PUSHER_IMAGE);
-	}
+	    }
 
         if (naws($config->openurl_cookie_pusher_image)) {
             print redirect($config->openurl_cookie_pusher_image);
@@ -194,13 +188,30 @@ sub main {
         return;
     }
 
+    ##
+    ## (29-aug-2010 kl) -- moved from GODOT::Citation::clean_field so that decode logic can be applied to all incoming fields including those coming from article form and request form;
+    ## 
+    use GODOT::Encode;
+
+    #### debug "<------ decoding incoming values ------------------------------------------------>";
+    foreach my $param_label (param()) {   
+         my @param_arr = param($param_label);                     ## OpenURL 1.0 may have multiple occurrences of the same field 
+         foreach my $value (@param_arr) {
+             #### debug "<decode incoming> $param_label = ", $value;     
+	         param(-name=>$param_label,  '-values'=>[decode_from_octets($value)]);
+
+         }
+    }
+    #### debug "<--------------------------------------------------------------------------------->";
+    debug;
+
 
     ##----------------------------new session logic----------------------------------------------
 
     $prev_screen = &hold_tab::get_screen();
     $action      = &hold_tab::get_action($prev_screen);
 
-    #### debug "prev_screen:  $prev_screen, action:  $action"; 
+    debug "prev_screen:  $prev_screen, action:  $action"; 
 
     use GODOT::Session;
 
@@ -264,13 +275,12 @@ sub main {
     ##
     ## -check that essential fields have been passed -- problem may be MS Internet Explorer bug 
     ##
-
     if (aws(param($hold_tab::DBASE_FIELD)) && aws($database->dbase_local()) ) {
  
-	&glib::send_admin_email("$0: Both $hold_tab::DBASE_FIELD and $hold_tab::DBASE_LOCAL_FIELD were empty (". &user_agent() . ")");
+	    &glib::send_admin_email("$0: Both $hold_tab::DBASE_FIELD and $hold_tab::DBASE_LOCAL_FIELD were empty (". &user_agent() . ")");
         print header, start_html(-dtd=>$gconst::DTD), "Link to script failed.", end_html;
         foreach (param()) { debug "<*> param($_): ", param($_); }
-	goto _end;
+	    goto _end;
     }
 
     ##
@@ -279,7 +289,7 @@ sub main {
     if ($action ne $hold_tab::START_ACT) {
         foreach my $field (@gconst::CITN_ARR) { 
             if (param($field)) {
-  	        param(-name=>$field, '-values'=>[unescape(param($field))]);   
+  	            param(-name=>$field, '-values'=>[unescape(param($field))]);   
             }
         }
     }
@@ -328,7 +338,7 @@ sub main {
               "email to klong\@sfu.ca.<\/H3>\n", 
               end_html;
 
-	goto _end;
+	    goto _end;
     }
 
 
@@ -343,7 +353,7 @@ sub main {
 
     unless ($res) {
 
-	debug "message -> $message";
+	    debug "message -> $message";
 
         if ($message =~ m#does not currently work with database#) {
 
@@ -357,7 +367,7 @@ sub main {
             }
         } 
         else {
-	    &glib::send_admin_email("$0: $message");
+	        &glib::send_admin_email("$0: $message");
         } 
   
         ##
@@ -366,9 +376,7 @@ sub main {
 
         print header, start_html(-dtd=>$gconst::DTD), $message, end_html;
         goto _end;
-
     }
-
 
     ##
     ## -save as a param so will be available to subsequent invocations
@@ -382,45 +390,39 @@ sub main {
     ## -has citation data already been parsed or not?
     ## -(13-mar-2003) - change from 'title' to 'title or issn or isbn'
     ##
-
-    ##
-    ## !!! move this to citation or parser modules ??????
-    ##
-
-    if (naws(param($gconst::TITLE_FIELD)) || naws(param($gconst::ISSN_FIELD)) || naws(param($gconst::ISBN_FIELD)))       {
+    if (naws(param($gconst::TITLE_FIELD)) || naws(param($gconst::ISSN_FIELD)) || naws(param($gconst::ISBN_FIELD)))  {
 
         $citation->init_from_godot_parsed_params();
     }
     else {
-	require GODOT::Parser;
+	    require GODOT::Parser;
 
         ##
-	## Set some information on the citation before initializing the param fields
+	    ## Set some information on the citation before initializing the param fields
         ##
 
         ##
-	## Check for BRS/III flags - taken out of parse.pm
+	    ## Check for BRS/III flags - taken out of parse.pm
         ## 
-	if (defined $database->source) { 
+	    if (defined $database->source) { 
         
             my $source = $database->source;
             my $tmp_config = GODOTConfig::Cache->configuration_from_cache($source); 
 
             unless (defined $tmp_config) {
-	        &glib::sae("$0: Unable to get user information for $source.");
-	        goto _end;
+	            &glib::sae("$0: Unable to get user information for $source.");
+	            goto _end;
             }
 
             if ($tmp_config->system_type eq 'III') { $citation->is_iii_database(1); }
-	}
+	    }
 
-
-	$citation->init_from_params();
+	    $citation->init_from_params();
 
         ##
         ## (06-feb-2002 kl) - !!!!! added Database object as another parameter -- can probably be changed later so that all that gets passed is the Database object !!!!
         ##
-	my $parser = GODOT::Parser->dispatch($citation->dbase(), $database, $user);
+	    my $parser = GODOT::Parser->dispatch($citation->dbase(), $database, $user);
 
         unless ($parser) {
             my $usr_msg = 'Not enough information available for searching.  Administrator has been informed.';
@@ -431,10 +433,11 @@ sub main {
             goto _end;
         }
 
-	$parser->parse($citation);
+	    $parser->parse($citation);
     }
     
-    debug "\n-- GODOT::Citation --\n", Dumper($citation), "\n--------\n\n";
+    debug location_plus;
+    debug Data::Dump::dump($citation);
 
     use GODOT::CGI; 
     my $cgi = new GODOT::CGI;
@@ -447,9 +450,7 @@ sub main {
     my $brake;
 
     my $page = new GODOT::Page;
-
     $page->form_url(&hold_tab::form_url());
-
     $page->local($page_local);
 
     ##
@@ -460,8 +461,16 @@ sub main {
 
         $brake++;
         if ($brake > 2) { last; }                ## -!!! put on the brakes during debugging !!!
+    
+        ##
+        ## (04-jul-2010 kl) -- this was not being initialized with GODOT::Citation object as it is for other calls to hold_tab::process_citation; 
+        ##
+        #### my(%citation);   
+        ##
+        ## -put back values in citation hash, until citation object is being used in all the code
+        ##
+        my %citation = $citation->godot_citation();
 
-        my(%citation);   
         my($process_citation_msg);     
 
         if ($cgi->prev_screen ne $hold_tab::NO_SCR) {
@@ -478,20 +487,18 @@ sub main {
         #### debug "from state table: (", $cgi->prev_screen, " ",  $cgi->action, ") ->  ", $cgi->subroutine_name;
 
         unless ($cgi->result) {
-	    &glib::send_admin_email("$0: state (" .  $cgi->prev_screen . " " .  $cgi->action . ") not in state table");
-
+	        &glib::send_admin_email("$0: state (" .  $cgi->prev_screen . " " .  $cgi->action . ") not in state table");
             print header, 
                   start_html, 
                   h2("Please use button to submit form"),
                   "If you did use a button to submit the previous screen and are still getting this message, then please notify $GODOT::Config::ADMIN_ID_TEXT.", 
                   end_html;
-
             goto _end;
         }
        
-	no strict;
-	$cgi->subroutine(\&{'hold_tab::' . $cgi->subroutine_name});
-	use strict;
+	    no strict;
+	    $cgi->subroutine(\&{'hold_tab::' . $cgi->subroutine_name});
+	    use strict;
 
         ##----------------------------------------------------------------------------------
 
@@ -503,7 +510,7 @@ sub main {
         ## -run screen function to fill GODOT::Page object and modify GODOT::CGI object
         ##
 
-	$cgi->screen($page, $config, $citation);
+	    $cgi->screen($page, $config, $citation);
 
         param(-name=>$hold_tab::SCREEN_FIELD, '-values'=>[$cgi->new_screen]);     
 
@@ -539,15 +546,15 @@ sub main {
                 ## !!!!!!!!!!!! CGI::header changes state of CGI object so don't run just for string value !!!!!!!!!
                 ##
                 #### print header unless ($cgi->header_printed);
+
                 ##
                 ## Display page in utf-8 (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
                 ##
-	        print header(-type=>'text/html', -charset=>'utf-8') unless ($cgi->header_printed);
+	            print header(-type=>'text/html', -charset=>'utf-8') unless ($cgi->header_printed);
 
                 print $page->format($cgi->new_screen, $citation, $config); 
             }
         }
-        ##----------------------------------------------------------------------------------
     }
 
     unless ($cgi->result) {
