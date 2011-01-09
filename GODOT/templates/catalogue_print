@@ -25,15 +25,21 @@
             <br />
         [% END  %]
 
+
+        [%# (11-oct-2010 kl) -- removed 'g' flag as this is the default behavior for Template::Toolkit::VMethods::text_replace 
+                                version 2.16 (current cpan version);  including the flag was generating error messages in httpd log.
+        %]        
+
         [%
         string = record.text;
-        string = string.replace('(?gi)<br><p>', '<br>');        
-        string = string.replace('(?gi)<p>', '<br>');        
-        string = string.replace('(?gi)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');        
-        string = string.replace('(?gi)<table>', '<table class="results-hidden">');        
+        string = string.replace('(?i)<br><p>', '<br>');        
+        string = string.replace('(?i)<p>', '<br>');        
+        string = string.replace('(?i)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');        
+        string = string.replace('(?i)<table>', '<table class="results-hidden">');        
         %]
 
-        [% string  %]
+		[%# (11-oct-2010 kl) -- may contain non-ascii char (eg. title) %]
+        [% string.encode_utf8 %]
 
         </div>
 
