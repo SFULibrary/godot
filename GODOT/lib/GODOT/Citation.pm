@@ -11,14 +11,18 @@ package GODOT::Citation;
 use GODOT::Object;
 push @ISA, 'GODOT::Object';
 
+use Encode;
+
+use URI::Escape;
+
 use GODOT::Constants;
 use GODOT::Config;
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Database;
-use GODOT::Encode;
 use GODOT::Encode::Transliteration;
-use URI::Escape;
+
+
 #### use Text::Striphigh 'striphigh';      ## -removed as no longer being used
 
 use strict;
@@ -46,13 +50,13 @@ use vars qw(
 	'PT'   => 'hold_tab_pt',
 	'DT'   => 'hold_tab_dt',        
 
-        ##
-        ## (02-mar-2009 kl) -- added 'btitle' and 'rft.btitle' for openurl 1.0 support
-        ##
+     ##
+     ## (02-mar-2009 kl) -- added 'btitle' and 'rft.btitle' for openurl 1.0 support
+     ##
 	'TI'   => ['hold_tab_ti', 'ti', 'title', 'jtitle', 'rft.title', 'rft.jtitle', 'btitle', 'rft.btitle'],   
 	'PB'   => ['hold_tab_pb', 'p'],
 	'CT'   => 'hold_tab_ct',
-        'ST'   => 'hold_tab_st',
+    'ST'   => 'hold_tab_st',
 	'CA'   => ['hold_tab_ca', 'ca'],
 	'AU'   => ['hold_tab_au'],
 	'PY'   => 'hold_tab_py',
@@ -116,9 +120,8 @@ use vars qw(
 	'JT'   => 'hold_tab_jt',       ## CWI
 	'DL'   => 'hold_tab_dl',       ## ERIC document link field
 
-        't'    => 't',                 ## Ebscohost - HTML Full Text available 
-        'p'    => 'p',                 ## Ebscohost - PDF Full Text available
-
+    't'    => 't',                 ## Ebscohost - HTML Full Text available 
+    'p'    => 'p',                 ## Ebscohost - PDF Full Text available
 
 	'T000' => 'hold_tab_t000',     ## MARC leader
 	'T001' => 'hold_tab_t001',     ## MARC 001
@@ -171,13 +174,13 @@ use vars qw(
 	'ssn' => ['ssn', 'rft.ssn'],
 	'quarter' => ['quarter', 'rft.quarter'],
 
-        ##
-        ## (27-feb-2009 kl) - improving openurl 1.0 support
-        ##                  - some of these fields (as marked below) may occur multiple times in an OpenURL 1.0
-        ##
+    ##
+    ## (27-feb-2009 kl) - improving openurl 1.0 support
+    ##                  - some of these fields (as marked below) may occur multiple times in an OpenURL 1.0
+    ##
 
 	'ausuffix' => ['ausuffix', 'rft.ausuffix'],       
-        'au'    => ['au', 'rft.au'],                    ## multiple 
+    'au'    => ['au', 'rft.au'],                    ## multiple 
 	'aucorp' => ['aucorp', 'rft.aucorp'],             
 	'pub' => ['pub', 'rft.pub'],                      
 	'place' => ['place', 'rft.place'],                
@@ -186,9 +189,9 @@ use vars qw(
 	'series' => ['series', 'rft.series'],             
 	'chron' => ['chron', 'rft.chron'],                
 
-        ##
-        ##  (02-mar-2009 kl) more openurl 1.0 fields
-        ##        
+    ##
+    ##  (02-mar-2009 kl) more openurl 1.0 fields
+    ##        
 
 	'co' => ['co', 'rft.co'],                      ## country of publication for dissertation
 	'cc' => ['cc', 'rft.cc'],                      ## country of publication code for dissertation
@@ -196,12 +199,12 @@ use vars qw(
 	'advisor' => ['advisor', 'rft.advisor'],       ## dissertation advisor
 	'degree' => ['degree', 'rft.degree'],          ## degree conferred for dissertation
         
-        'rfr_id' => 'rfr_id',                          ## multiple;  a "referrer id" to say who made the ContextObject, eg. info:sid/elsevier.com:ScienceDirect
-        'rft_id' => 'rft_id',                          ## multiple;  an identifier for the thing you are describing, eg. info:doi/10.1002/bies.20239, info:oclcnum/148887403, info:pmid/16029089, urn:ISBN:978-0-691-07788-8
-        'url_ver' => 'url_ver',                        ## OpenURL version
-        'rft_val_fmt' => 'rft_val_fmt',                ## metadata format used by ContextObject; "kev" stands for key-encoded-value;  eg. info:ofi/fmt:kev:mtx:journal, info:ofi/fmt:dev:mtx:book 
-        'url_ctx_fmt' => 'url_ctx_fmt',                ## format of ContextObject;  fixed value;  eg. info:ofi/fmt:kev:mtx:ctx 
-        'rfe_dat' => 'rfe_dat'                         ## private data (like 'pid' in version 0.1);  eg. <accessionnumber>958948</accessionnumber>
+    'rfr_id' => 'rfr_id',                          ## multiple;  a "referrer id" to say who made the ContextObject, eg. info:sid/elsevier.com:ScienceDirect
+    'rft_id' => 'rft_id',                          ## multiple;  an identifier for the thing you are describing, eg. info:doi/10.1002/bies.20239, info:oclcnum/148887403, info:pmid/16029089, urn:ISBN:978-0-691-07788-8
+    'url_ver' => 'url_ver',                        ## OpenURL version
+    'rft_val_fmt' => 'rft_val_fmt',                ## metadata format used by ContextObject; "kev" stands for key-encoded-value;  eg. info:ofi/fmt:kev:mtx:journal, info:ofi/fmt:dev:mtx:book 
+    'url_ctx_fmt' => 'url_ctx_fmt',                ## format of ContextObject;  fixed value;  eg. info:ofi/fmt:kev:mtx:ctx 
+    'rfe_dat' => 'rfe_dat'                         ## private data (like 'pid' in version 0.1);  eg. <accessionnumber>958948</accessionnumber>
 );
 
 
@@ -217,10 +220,10 @@ use vars qw(
 	'AUT'                => '_ht_aut',
 	'ARTAUT'             => '_ht_artaut',
 	'PUB'                => '_ht_pub',
-        'PUB_PLACE'          => '_ht_pub_place',      ## (14-jan-2009 kl) -- added for upei for evergreen to refworks export
+    'PUB_PLACE'          => '_ht_pub_place',      ## (14-jan-2009 kl) -- added for upei for evergreen to refworks export
 	'ISSN'               => '_ht_issn',
 	'ISBN'               => '_ht_isbn',
-	'SICI'		     => '_ht_sici',     
+	'SICI'		         => '_ht_sici',     
 	'VOLISS'             => '_ht_voliss',
 	'VOL'                => '_ht_vol',
 	'ISS'                => '_ht_iss',
@@ -246,16 +249,16 @@ use vars qw(
 	'PMID'               => '_ht_pmid',
 	'BIBCODE'            => '_ht_bibcode',
 	'OAI'                => '_ht_oai',
-        'OCLCNUM'            => '_ht_oclcnum',         ## (25-mar-2009 kl) -- 
+    'OCLCNUM'            => '_ht_oclcnum',         ## (25-mar-2009 kl) -- 
 	'CODEN'              => '_ht_coden',           ## (13-mar-2009 kl) -- added during review of GODOT::Parser::openurl package
 	'BICI'               => '_ht_bici',            ## (13-mar-2009 kl) -- added during review of GODOT::Parser::openurl package      
 	'URL_MSG'            => '_ht_url_msg', 
-        'WARNING'            => '_ht_warning',
-        'GENRE'              => '_ht_genre',           ## for OpenURL links
-        'PATENT_NO'          => '_ht_patent_no',
-        'PATENTEE'           => '_ht_patentee',
-        'PATENT_YEAR'        => '_ht_patent_year',
-        'NO_HOLDINGS_SEARCH' => '_ht_no_holdings_search',   
+    'WARNING'            => '_ht_warning',
+    'GENRE'              => '_ht_genre',           ## for OpenURL links
+    'PATENT_NO'          => '_ht_patent_no',
+    'PATENTEE'           => '_ht_patentee',
+    'PATENT_YEAR'        => '_ht_patent_year',
+    'NO_HOLDINGS_SEARCH' => '_ht_no_holdings_search',   
 );
 
 @PRE_FIELDS = keys(%HOLD_TAB_PARAM_MAPPINGS);
@@ -528,8 +531,7 @@ sub parsed {
 # ---------- Extra stuff to support hooking into existing GODOT code ---------
 
 
-# godot_citation - Converts the internal parsed citation into the GODOT
-# $citation{$hold_tab::XXX_FIELD} format
+# godot_citation - Converts the internal parsed citation into the GODOT $citation{$hold_tab::XXX_FIELD} format
 
 sub godot_citation {
 	my ($self) = @_;
@@ -552,21 +554,23 @@ sub godot_citation {
 #
 sub init_from_params {
 	my ($self) = @_;
+
+    report_location;
 	
 	require CGI;
         
-        #### use Data::Dumper;
-        #### debug "------------- before ----------------";
-        #### debug Dumper($self->{'pre'});
+    #### use Data::Dumper;
+    #### debug "------------- before ----------------";
+    #### debug Dumper($self->{'pre'});
 
 	foreach my $field (keys %HOLD_TAB_PARAM_MAPPINGS) {
 		my @values;
 		
 		if (ref($HOLD_TAB_PARAM_MAPPINGS{$field}) eq 'ARRAY') {
 			foreach my $field2 (@{$HOLD_TAB_PARAM_MAPPINGS{$field}}) {
-                                ##
-                                ## -need to call param in a list context as there may be multiple occurences of the same field
-                                ##
+                ##
+                ## -need to call param in a list context as there may be multiple occurences of the same field
+                ##
 				@values = CGI::param($field2);                      
 				last if scalar @values;
 			}
@@ -576,16 +580,16 @@ sub init_from_params {
                                
 		chomp(@values);
 
-                ##
-                ## (09-mar-2009 kl) -- use 'pre' method instead of assigning directly to 'pre' hash;
-                ## 
-                $self->pre($field, [ map { $self->clean_field($_) } @values ]);
-        }
+        ##
+        ## (09-mar-2009 kl) -- use 'pre' method instead of assigning directly to 'pre' hash;
+        ## 
+        $self->pre($field, [ map { $self->clean_field($_) } @values ]);
+    }
         
-        #### debug "------------- end of init_from_params ----------------";
-        #### use Data::Dumper;
-        #### debug Dumper($self->{'pre'});
-        #### debug;
+    #### debug "------------- end of init_from_params ----------------";
+    #### use Data::Dumper;
+    #### debug Dumper($self->{'pre'});
+    #### debug;
 
 	return $self;
 }
@@ -598,6 +602,8 @@ sub init_from_params {
 sub init_from_parsed_params {
 	my ($self) = @_;
 	
+    report_location;
+
 	require CGI;
 
 	# Grab the citation fields (parsed) from CGI params matching mostly
@@ -627,6 +633,8 @@ sub init_from_parsed_params {
 
 sub init_from_godot_parsed_params {
 	my ($self) = @_;
+
+    report_location;
 	
 	require CGI;
 
@@ -645,7 +653,7 @@ sub init_from_godot_parsed_params {
 	# Grab a few extra parameters that are not in the %CITATION_MAPPINGS hash
 
 	# Database is not set in current old godot _ht_fields
-#	$self->{'Database'}->dbase(CGI::param('DBASE'));
+    # $self->{'Database'}->dbase(CGI::param('DBASE'));
 
 	$self->req_type(CGI::param('_ht_reqtype'));
 
@@ -655,59 +663,98 @@ sub init_from_godot_parsed_params {
 #
 # Cleans up citation fields by doing stuff like stripping ERL highlighting 
 # characters, unescaping URI %XX characters, etc. 
-# Takes: $string
-# Returns: $string
 #
-
 sub clean_field {
-	my ($self, $octets) = @_;
+	my ($self, $string) = @_;
 	
-	return $octets if !defined($octets) || $octets eq '';
+	return $string if !defined($string) || $string eq '';
 
-        #### debug "clean_field octets:  $octets";
+    #### debug "clean_field string:  $string";
 
 	## Strip out weird escape sequences introduced by highlighting codes in webspirs
-	$octets =~ s#%1bh##ig;        
-	$octets =~ s#\x1bh##ig;
+	$string =~ s#%1bh##ig;        
+	$string =~ s#\x1bh##ig;
 
 	# Translate %xx to their character equivalents
-	$octets = uri_unescape($octets);
+	$string = uri_unescape($string);
 
-        ##
-        ## (13-nov-2009 kl) -- remove as this breaks for incoming utf8 (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
-        ##
-	## Change high characters to their low character equivalents
-        ##
+    ##
+    ## (13-nov-2009 kl) -- remove as this breaks for incoming utf8 (Andrew Sokolov of Saint-Petersburg State University Scientific Library)
+    ##
+   	## Change high characters to their low character equivalents
+    ##
 	#### $octets = striphigh($octets);
-        ##
+    ##
 
-        ##
-        ## (01-jan-2010 kl) -- decode logic that can be overridden as needed 
-        ##
-	my $string = decode_from_octets($octets);
+    ##
+    ## (01-jan-2010 kl) -- decode logic that can be overridden as needed; 
+    ## (29-aug-2010 kl) -- moved to hold_tab.cgi so that decode logic can be applied to all incoming fields including those coming from article form and request form;
+    ## 
+    #### use GODOT::Encode;
+	#### my $string = decode_from_octets($octets);
+    #### 
 
-        ##
+    ##
 	## If it's a BRS database, then further stuff needs doing.
-        ##		
+    ##		
 	if ($self->is_brs_database()) {		
 		$string = strip_extra_leading_subfield($string);		
 		## Temporary fix for ECDB
 		$string =~ s#\174([a-z0-9])#\037$1#g;
 	}
 
-        #### debug "clean_field string:  $string\n";
+    #### debug "clean_field string:  $string\n";
 
 	return $string;
 }	
 
-
 ##
-## (26-jan-2007 kl) -- added so that Brandon could add an OpenURL link to Relais to their templates 
-## (06-feb-2007 kl) -- added $skip_list logic so can omit fields if needed.  This logic is useful when there
-##                     is a local OpenURL (eg. Relais) field that you would prefer to use (eg.  'AU' instead of 'aulast')
+## same as openurl_utf8 for backwards compatibility
 ##
 sub openurl {
     my($self, $base_url, $sid, $skip) = @_;
+
+    return $self->openurl_utf8($base_url, $sid, $skip);
+}
+
+sub openurl_utf8 {
+    my($self, $base_url, $sid, $skip) = @_;
+
+    $self->openurl_encoding($base_url, $sid, $skip, 'utf8');
+}
+
+sub openurl_latin1 {
+    my($self, $base_url, $sid, $skip) = @_;
+
+    $self->openurl_encoding($base_url, $sid, $skip, 'latin1');
+}
+
+sub openurl_ascii {
+    my($self, $base_url, $sid, $skip) = @_;
+
+    $self->openurl_encoding($base_url, $sid, $skip, 'ascii');
+}
+
+## 
+## (28-oct-2010 kl) -- added more general transliteration and encoding logic
+##                  -- changed $mode to $encoding;
+##
+## (26-jun-2010 kl) -- added $mode logic 
+##                  -- default is 'encode as utf8 then uri encode'
+##                  -- other option is 'covert to latin1 transliterating any characters outside of latin1 then uri encode'          
+##
+## (06-feb-2007 kl) -- added $skip_list logic so can omit fields if needed.  This logic is useful when there
+##                     is a local OpenURL (eg. Relais) field that you would prefer to use (eg.  'AU' instead of 'aulast')
+##
+## (26-jan-2007 kl) -- added so that Brandon could add an OpenURL link to Relais to their templates 
+## 
+sub openurl_encoding {
+    my($self, $base_url, $sid, $skip, $encoding) = @_;
+
+    unless (grep { $encoding eq $_ } qw(ascii latin1 utf8)) {
+        error location_plus, 'encoding is invalid ($encoding)';
+        return '';
+    }
 
     my $genre = (defined $REQTYPE_TO_GENRE_MAP{$self->req_type}) ? $REQTYPE_TO_GENRE_MAP{$self->req_type} : '';
     
@@ -726,11 +773,11 @@ sub openurl {
 
         $date = $self->parsed('YEAR');
 
-	if ($self->parsed('MONTH') =~ m#^\d{1,2}$#) {
+    	if ($self->parsed('MONTH') =~ m#^\d{1,2}$#) {
 
             $date .= '-' . $self->parsed('MONTH');		
             $date .= ('-' . $self->parsed('DAY')) if ($self->parsed('DAY') =~ m#^\d{1,2}$#);
-	}
+	    }
     }
 
     ##
@@ -780,10 +827,22 @@ sub openurl {
         my $delim = ($count) ? '&' : '?';
         $count++;
 
-        $url .= join('', $delim, $label, '=', uri_escape(trim_beg_end($value)));        
+        #### debug location_plus, Data::Dump::dump($value);
+
+        my $transliterated_value = transliterate_string($encoding, $value);
+
+        #### debug location_plus, Data::Dump::dump($transliterated_value);
+
+        my $octets = GODOT::String::encode_string($encoding, trim_beg_end($transliterated_value));
+
+        #### debug location_plus, Data::Dump::dump($octets);
+
+        $url .= join('', $delim, $label, '=', uri_escape($octets));        
     }
 
     $url = $base_url . $url;
+
+    debug "+++ url:  $url";
 
     return $url; 
 }
