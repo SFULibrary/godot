@@ -1,5 +1,9 @@
 <html>
 <head>
+
+[%# (23-aug-2010 kl) -- for overkill .... added 'HTML meta tag equivalent to the Content-Type HTTP header'  %]
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 [% INCLUDE html_header %]
 </head>
 <body leftmargin="0" rightmargin="0" onload="" topmargin="0" marginwidth="0" marginheight="0">
@@ -9,7 +13,9 @@
 
 <div id="content">
 <span id="page-title">[% page.title %]</span>
-<form method="post" action="[% page.form_url %]">
+
+[%# (23-aug-2010 kl) -- added 'accept-charset' so that utf8 encoded data would be read in from input fields on forms correctly %]
+<form method="post" action="[% page.form_url %]" accept-charset="utf-8">
 
 [% page.hidden_fields %]
 
