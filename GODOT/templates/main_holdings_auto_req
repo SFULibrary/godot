@@ -1,4 +1,5 @@
 [% RETURN UNLESS page.auto_req_records.size %]
+
 [% SET config_auto_req = {} %][% PROCESS config_auto_req %]
 <div id="main-holdings-auto-req" class="results-display">
 <span class="results-from">[% config_auto_req.heading %]</span>
