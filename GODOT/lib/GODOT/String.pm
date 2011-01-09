@@ -10,6 +10,7 @@ package GODOT::String;
 
 use CGI qw(:escape);
 use Encode;
+use MARC::Charset qw(marc8_to_utf8);
 use GODOT::Debug;
 
 use Exporter;
@@ -25,13 +26,15 @@ use Exporter;
              valid_ISSN_s_ok
              valid_ISSN_no_hyphen_s_ok
              is_ascii
+             not_ascii
              is_latin1
-             is_cp1252
-             is_utf8
+             is_latin1_or_marc_delim
+             is_marc8_octets
+             is_cp1252_octets             
+             is_utf8_octets
              normalize_marc8 
              normalize 
-             latin1_to_utf8
-             latin1_to_utf8_xml
+             encode_for_xml            
              is_single_word 
              aws 
              naws 
@@ -55,7 +58,10 @@ use Exporter;
              rm_arr_dup_str
              put_query_fields
              put_query_fields_from_array
-             uri_encode_string
+             decode_string
+             encode_string
+             uri_encode_octets
+             encode_utf8_encode_mimeq 
              valid_email
              curly_brace_utf8_escape_format);
 
@@ -319,15 +325,80 @@ sub is_ascii {
 ##
 ## -input is a string consisting of perl characters (ie. octets have already been decoded)
 ##
+sub not_ascii {
+    my($string) = @_;
+
+    return (&is_ascii($string)) ? $FALSE : $TRUE;
+}
+
+##
+## -input is a string consisting of perl characters (ie. octets have already been decoded)
+##
 sub is_latin1 {
     my($string) = @_;  
 
     foreach my $char (split('', $string)) {
-	my $ord = ord($char);
-        return $FALSE unless (($ord >= 32) && ($ord <= 126)) || (($ord >= 160) && ($ord <= 255));  
+	    my $ord = ord($char);
+        unless ((($ord >= 32) && ($ord <= 126)) || (($ord >= 160) && ($ord <= 255))) {
+            #### debug location_plus, "failed on character dec-$ord";
+            return $FALSE; 
+        }
     } 
     return $TRUE;
 }
+
+sub is_latin1_or_marc_delim {
+    my($string) = @_;  
+
+    foreach my $char (split('', $string)) {
+	    my $ord = ord($char);
+        ##
+        ## (23-oct-2010 kl) -- dec-29, dec-30 and dec-31 are record, field and subfield delimiters in marc records
+        ##
+        unless ((($ord >= 29) && ($ord <= 31)) || (($ord >= 32) && ($ord <= 126)) || (($ord >= 160) && ($ord <= 255))) {
+            #### debug location_plus, "failed on character dec-$ord";
+            return $FALSE; 
+        }
+    } 
+    return $TRUE;
+}
+
+##
+## Catches some errors but not all.  For instance, will not fail on latin1 e-acute (octal-351) but does fail on pi (U+03A0).
+##
+sub is_marc8_octets {
+    my($octet) = @_;
+
+    my $prev_ignore = MARC::Charset->ignore_errors();
+    MARC::Charset->ignore_errors(0);
+
+    ##
+    ## (21-oct-2010 kl) -- from koha C4::Charset;
+    ## trap warnings raised by MARC::Charset
+    ##
+    my @errors = ();
+    local $SIG{__WARN__} = sub {
+        my $msg = $_[0];
+        if ($msg =~ /MARC.Charset/) {
+            $msg =~ s/at [\/].*?.MARC.Charset\.pm line \d+\.\n$//;
+        }
+        push @errors, $msg;
+    };
+
+    eval { marc8_to_utf8($octet);  };
+    my $eval_res = $@;
+    if ($eval_res) {
+        push @errors, $eval_res;
+    }
+    MARC::Charset->ignore_errors($prev_ignore);
+   
+    if (@errors) {
+        for my $error (@errors) { debug location, ":  $error"; }
+    }
+
+    return (@errors) ? $FALSE : $TRUE;
+}
+
 
 sub is_cp1252_octets {
     my($octets) = @_;
@@ -338,9 +409,11 @@ sub is_cp1252_octets {
 
 sub is_utf8_octets {
     my($octets) = @_;
-
+  
     eval {  my $string = decode_utf8($octets, Encode::FB_CROAK);  };
-    return ($@) ? $FALSE : $TRUE;
+    my $eval_res = $@;
+    #### debug location_plus, $eval_res;
+    return ($eval_res) ? $FALSE : $TRUE;
 }
 
 
@@ -356,6 +429,13 @@ sub normalize_marc8 {
 ##
 sub normalize {
         my($string) = @_;
+
+        ##
+        ## (23-oct-2010) Otherwise you get 'Use of uninitialized value in substitution ...' in the logs. 
+        ##
+        unless (defined $string) { $string = ''; };
+
+        #### debug location_plus, Data::Dump::dump($string);
 
         my(@clean);
 
@@ -379,25 +459,40 @@ sub normalize {
         return trim_beg_end(join(' ', @clean));
 }
 
+##
+## (27-oct-2010 kl)
+## Incoming citation data is now being properly decoded into the perl internal format and as such can include any character within the Universal Character Set.
+##
+####
+#### sub latin1_to_utf8 {
+####    my($string) = @_;
+####
+####    use Unicode::String qw(latin1 utf8);    
+####
+####    my $u = latin1($string);
+####    return $u->utf8;    
+#### }
+####
+#### sub latin1_to_utf8_xml {
+####    my($string) = @_;
+####
+####    ## A valid XML document cannot contain ASCII characters below hexadecimal value 0x20 -- with 
+####    ## the exception of horizontal tab (0x9), line feed (0xA), and carriage return (0xD).
+####
+####    $string =~ s#[\000-\010,\013,\014,\016-\037]##g; 
+####
+####    return (latin1_to_utf8($string));
+#### }
+####
 
-sub latin1_to_utf8 {
-    my($string) = @_;
-
-    use Unicode::String qw(latin1 utf8);    
-
-    my $u = latin1($string);
-    return $u->utf8;    
-}
-
-sub latin1_to_utf8_xml {
+sub encode_for_xml {
     my($string) = @_;
 
     ## A valid XML document cannot contain ASCII characters below hexadecimal value 0x20 -- with 
     ## the exception of horizontal tab (0x9), line feed (0xA), and carriage return (0xD).
 
-    $string =~ s#[\000-\010,\013,\014,\016-\037]##g; 
-
-    return (latin1_to_utf8($string));
+     $string =~ s#[\000-\010,\013,\014,\016-\037]##g; 
+     return encode_string('utf8', $string);
 }
 
 sub is_single_word {
@@ -565,7 +660,7 @@ sub marc8_to_latin1 {
 		'%E2%49' => 'CD', '%E3%49' => 'CE', '%E4%49' => '49',
 		'%E8%49' => 'CF', '%E3%4A' => '4A', '%E2%4B' => '4B', 
 		'%E3%4B' => '4B', '%F0%4B' => '4B', '%F2%4B' => '4B',
-        	'%E2%4C' => '4C', '%E3%4C' => '4C', '%F0%4C' => '4C', 
+        '%E2%4C' => '4C', '%E3%4C' => '4C', '%F0%4C' => '4C', 
 		'%E2%4D' => '4D', '%E1%4E' => '4E', '%E2%4E' => '4E',
 		'%E4%4E' => 'D1', '%F0%4E' => '4E', '%E1%4F' => 'D2', 
 		'%E2%4F' => 'D3', '%E3%4F' => 'D4', '%E4%4F' => 'D5',
@@ -587,9 +682,9 @@ sub marc8_to_latin1 {
 		'%E8%68' => '68', '%F0%68' => '68', '%E1%69' => 'EC',
 		'%E2%69' => 'ED', '%E3%69' => 'EE', '%E4%69' => '69', 
 		'%E8%69' => 'EF', '%E3%6A' => '6A', '%E2%6B' => '6B',
-        	'%E3%6B' => '6B', '%F0%6B' => '6B', '%F2%6B' => '6B', 
+        '%E3%6B' => '6B', '%F0%6B' => '6B', '%F2%6B' => '6B', 
 		'%E2%6C' => '6C', '%E3%6C' => '6C', '%F0%6C' => '6C',
-        	'%E2%6D' => '6D', '%E1%6E' => '6E', '%E2%6E' => '6E', 
+        '%E2%6D' => '6D', '%E1%6E' => '6E', '%E2%6E' => '6E', 
 		'%E4%6E' => 'F1', '%F0%6E' => '6E', '%E1%6F' => 'F2',
 		'%E2%6F' => 'F3', '%E3%6F' => 'F4', '%E4%6F' => 'F5', 
 		'%E8%6F' => 'F6', '%E2%70' => '70', '%E2%72' => '72',
@@ -742,24 +837,36 @@ sub rm_arr_dup_str {
         if (! $found{$elem}) {
             push(@new_arr, $elem);
             $found{$elem} = 1;
-	}
+	    }
     }
     @{$arr_ref} = @new_arr;
     return;
 }
 
-
+##
+## (25-oct-2010 kl) -- pass one of 'none', 'ascii', 'latin1' and 'utf8' as encoding
+##
 sub put_query_fields {
-    my ($ref) = @_;
+    my ($ref, $encoding) = @_;
+
+    $encoding = 'none' if $encoding eq 'ascii';
+    $encoding = 'none' unless defined $encoding;
+
+    unless (grep { $encoding eq $_ } qw(none latin1 utf8)) {
+        error location_plus, 'encoding is invalid ($encoding)';
+        return '';
+    }
 
     unless (ref($ref) eq 'HASH') {
-        debug location, ' -- ', 'expected parameter to be a reference to a hash';
+        error location_plus, 'expected parameter to be a reference to a hash';
         return '';
     }
 
     my @arr;
     while (my($field, $value) = each %{$ref}) {
-        push(@arr, uri_encode_string($field) . '=' . uri_encode_string($value));
+        my $encoded_field = encode_string($encoding, $field); 
+        my $encoded_value = encode_string($encoding, $value);
+        push(@arr, uri_encode_octets($encoded_field) . '=' . uri_encode_octets($encoded_value));
     }
 
     return join('&', @arr);
@@ -767,36 +874,134 @@ sub put_query_fields {
 
 
 ##
+## (25-oct-2010 kl) -- pass one of 'none', 'ascii', 'latin1' and 'utf8' as encoding
+##
 ## -same as above, but $ref is for an array of field/value pairs
 ## -allows there to be multiple occurrences of the same field name
-##
+## -also means that order of fields is maintained (eg. appears to be required for godot-to-iii ill messaging -- 02-nov-2010);
+## 
 sub put_query_fields_from_array {
-    my ($ref) = @_;
+    my ($ref, $encoding) = @_;
+
+    $encoding = 'none' if $encoding eq 'ascii';
+    $encoding = 'none' unless defined $encoding;
+
+    unless (grep { $encoding eq $_ } qw(none latin1 utf8)) {
+        error location_plus, 'encoding is invalid ($encoding)';
+        return '';
+    }
 
     unless (ref($ref) eq 'ARRAY') {
-        debug location, ' -- ', 'expected parameter to be a reference to an array';
+        error location_plus, 'expected parameter to be a reference to an array';
         return '';
     }
 
     my @arr;
     foreach my $pair_ref (@{$ref}) {
         my($field, $value) = @{$pair_ref};
-        push(@arr, uri_encode_string($field) . '=' . uri_encode_string($value));
+        my $encoded_field = encode_string($encoding, $field); 
+        my $encoded_value = encode_string($encoding, $value);
+        push(@arr, uri_encode_octets($encoded_field) . '=' . uri_encode_octets($encoded_value));
     }
     return join('&', @arr);
 }
 
+
+
 ##
-## -using this method instead of calling CGI::escape so logic matches previous code and makes testing easier
+## (27-oct-2010 kl) 
+## - accept one of 'none', 'ascii', 'latin1', 'utf8'
+## - assumption is that incoming string will not have already been decoded;
+## - fails on error;
 ##
-sub uri_encode_string {
-    my($string) = @_;
-    
-    $string =~ s# #+#g;
-    $string =~ s#([^0-9a-zA-Z\+])#sprintf("%%%02x", ord($1))#eg;    
+sub decode_string {
+    my($encoding, $octets) = @_;
+
+    $encoding = 'none' if $encoding eq 'ascii';
+
+    my $string;
+
+    unless (grep { $encoding eq $_ } qw(none latin1 utf8)) {
+        error location_plus, 'encoding is invalid ($encoding)';
+        return '';
+    }
+   
+    if ($encoding eq 'utf8') {
+        $string = Encode::decode_utf8($octets, Encode::FB_CROAK);
+    }
+    elsif ($encoding eq 'latin1') {
+        $string = Encode::decode('iso-8859-1', $octets, Encode::FB_CROAK);
+    }
+    else {
+        $string = $octets;
+    }
+
     return $string;
 }
 
+##
+## (27-oct-2010 kl) 
+## - accept one of 'none', 'ascii', 'latin1' and 'utf8'
+## - first assumption is that incoming string will be in perl internal format;
+## - second assumption is that any required transliteration will have already been done; 
+## - fails on error;
+##
+sub encode_string {
+    my($encoding, $string) = @_;
+
+    my $octets;
+
+    $encoding = 'none' if $encoding eq 'ascii';
+
+    unless (grep { $encoding eq $_ } qw(none latin1 utf8)) {
+        error location_plus, 'encoding is invalid ($encoding)';
+        return '';
+    }
+   
+    if ($encoding eq 'utf8') {
+        $octets = Encode::encode_utf8($string);            ## All possible characters have a UTF-8 representation so this function cannot fail.
+    }
+    elsif ($encoding eq 'latin1') {
+        $octets = Encode::encode('iso-8859-1', $string, Encode::FB_CROAK);
+    }
+    else {
+        $octets = $string;
+    }
+
+    ##
+    ## -converts in-place
+    ##
+    utf8::downgrade($octets);       
+    return $octets;
+}
+
+
+##
+## (27-oct-2010 kl) -- assumption is that any other encoding (eg. latin1, utf8) will have already been done by the time we get here
+##
+sub uri_encode_octets {
+    my($octets) = @_;
+    
+    $octets =~ s# #+#g;
+    $octets =~ s#([^0-9a-zA-Z\+])#sprintf("%%%02x", ord($1))#eg;    
+    return $octets;
+}
+
+
+##
+## (24-oct-2010 kl) -- for now GODOT::Email will fail if header data is non-ascii;
+##                  -- need to consider further how header data is being created to make sure decoding and encoding are being done as required;
+##
+#### sub encode_utf8_encode_mimeq {
+####    my($string) = @_;
+####    ##
+####    ## - $string needs to be internally utf8  -- see 'http://markmail.org/message/ymx4fa2gp7uoewbv'
+####    ## - upgrades in-place;
+####    ##
+####    utf8::upgrade($string);
+####    return Encode::encode('MIME-Q', $string);
+#### }
+####
 
 sub valid_email {
     my($string) = @_;
