@@ -12,10 +12,6 @@ use GODOT::String;
 
 use strict;
 
-##
-## -????? should these be in Constants.pm instead ????
-##
-
 use vars qw($ILL_FORM_COMP
             $INSTRUCTIONS_COMP          
 
