@@ -27,7 +27,6 @@ my $FALSE = 0;
 ##
 ## -need logic to check that the correct types of values are being saved to the fields
 ##
-
 my @FIELDS = ('prev_screen', 
               'session',
               'action', 
@@ -43,7 +42,7 @@ my @FIELDS = ('prev_screen',
               'subroutine_name',
               'subroutine',
               'redirect', 
-              'config_cache');              
+              'config_cache');             
 
 my %STATE_MAPPING = (
     ##           
@@ -169,6 +168,20 @@ sub get_state {
     $self->{'result'} = $TRUE;
     return $TRUE;
 }
+
+##
+## (27-nov-2010) -- replaced '$self->httpd_request->rflush' with 'Apache2::RequestRec->rflush' so no need for this to be here;
+##               -- ???? move later ????;
+## (26-nov-2010) -- required in order to get search update messages to print out before whole page is loaded;  
+##               -- still does not work for all browsers (eg. safari on mac);
+##
+sub flush_to_stdout {
+    my($self, $message) = @_;
+
+    print STDOUT $message;
+    Apache2::RequestRec->rflush;
+}
+
 
 
 1;
