@@ -41,14 +41,23 @@
 		[% END %]
 		[% SET button_text = button_text _ '</ul>' %]
 
+        [%# (11-oct-2010 kl) -- removed 'g' flag as this is the default behavior for Template::Toolkit::VMethods::text_replace 
+                                version 2.16 (current cpan version);  including the flag was generating error messages in httpd log.
+        %]        
+
  		[% holdings_text = record.text;
- 		   holdings_text = holdings_text.replace('(?gi)<br><p>', '<br />');
- 		   holdings_text = holdings_text.replace('(?gi)<p>', '<br />');
- 		   holdings_text = holdings_text.replace('(?gi)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');
- 		   holdings_text = holdings_text.replace('(?gi)<table>', '<table class="results-hidden">');
+ 		   holdings_text = holdings_text.replace('(?i)<br><p>', '<br />');
+ 		   holdings_text = holdings_text.replace('(?i)<p>', '<br />');
+ 		   holdings_text = holdings_text.replace('(?i)^(<br>)+|(<br>)+$|^(<p>)+|(<p>)+$', '');
+ 		   holdings_text = holdings_text.replace('(?i)<table>', '<table class="results-hidden">');
  		%]
 	 		
- 		[% SET message = record.description.escapeHTML.escapeHTML %]
+        [%# (25-aug-2010 kl) -- from http://perldoc.perl.org/CGI.html -- 'escapeHTML()  expects the supplied string to be a character (as oppoesed to byte or octet) string.  %]
+
+        [%# (29-oct-2010 kl) -- why is there a double escapeHTML here ?? %]
+ 		[%# SET message = record.description.escapeHTML.escapeHTML %]
+
+ 		[% SET message = record.description.escapeHTML %]
 	 		
  		<li>
 		<a href="javascript:void(0)" onClick="toggleServicesLayer('[% layer_id %]', '[% message %]', '[% message %]' )">
@@ -56,7 +65,10 @@
 		</a>
 		<span class="results-hidden" [% UNLESS config.expand_holdings_by_default %]style="display: none"[% END %] id="others[% layer_id %]">
 		[% button_text %]
-		[% holdings_text %]
+
+        [%# (11-oct-2010 kl) -- may contain non-ascii char (eg. title) %]
+        [% holdings_text.encode_utf8 %]
+
 		</span>
 		</li>
 	 		
