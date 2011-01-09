@@ -163,10 +163,6 @@ sub modules {
     push(@local,  $local_class);
     push(@global, $class);
 
-    foreach my $name (@local, @global) { 
-        #### debug "GODOT::Dispatch::modules:  $name"; 
-    }
-
     return (@local, @global);
 }
 
