@@ -75,7 +75,6 @@ sub add_data {
 
         #### debug '2 -- auth_name:  ',       $fetch_crossref->auth_name;
         #### debug '2 -- auth_passwd:  ',     $fetch_crossref->auth_passwd;       
-        #### debug $fetch_crossref->dump;
      
         unless ($fetch_crossref->add_data($citation)) {
             error $fetch_crossref->error_message;
