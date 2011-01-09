@@ -5,7 +5,7 @@ Check the web for this item:
 [% SET query = citation.parsed('ARTTIT') || citation.parsed('TITLE') %]
 
 [% IF query %]
-	[% SET query  = query.escape %]
+	[% SET query  = query.encode_utf8.escape %]
 	[% SET google = "http://www.google.com/search?q=%22$query%22"  %]
 	[% SET teoma  = "http://s.teoma.com/search?q=%22$query%22"    %]
 [% ELSE %]
