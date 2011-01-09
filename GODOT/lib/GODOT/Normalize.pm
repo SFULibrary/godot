@@ -17,6 +17,7 @@ use Exporter;
 use strict;
 
 use Data::Dumper;
+use Data::Dump;
 use MARC::Charset qw(marc8_to_utf8);
 use Encode;
 
@@ -37,28 +38,37 @@ my $BLANK = ' ';
 sub normalize_for_catalogue_match {
     my($string) = @_;
 
-    return &normalize($string);
+    my $normalized = &normalize($string);
+    #### debug location_plus, Data::Dump::dump($normalized);
+    return $normalized;
+
+    
 }
 
-
+##
+## (22-oct-2010 kl) -- no need for this logic -- by the time we get around to using the data, it has already been decoded
 ##
 ## (25-mar-2010 kl) -- leader offset 9 in marc21 has two values so normalize accordingly
 ##
 ##                     <space> - MARC-8
 ##                           a - UCS/Unicode
 ##
-sub normalize_for_catalogue_match_leader {
-    my($string, $leader) = @_;
-
-    my $leader_09 = substr($leader, 9, 1);
-    debug "leader-09 value is invalid ($leader_09)" unless grep { $leader eq $_ } ($BLANK, 'a');
-
-    if ($leader eq $BLANK) {
-  	MARC::Charset->ignore_errors(1);
-        $string = marc8_to_utf8($string);
-    }
-    return &normalize($string);
-}
+#### sub normalize_for_catalogue_match_leader {
+####    my($string, $leader) = @_;
+####
+####    #### report_location;
+####
+####    my $leader_09 = substr($leader, 9, 1);
+####
+####    debug "leader-09 value is invalid ($leader_09)" unless (grep { $leader_09 eq $_ } ($BLANK, 'a'));
+####
+####    if ($leader_09 eq $BLANK) {
+####        $string = marc8_to_utf8($string, 'ignore-errors');
+####    }
+####    return &normalize($string);
+#### }
+####
+####
 
 1;
 
