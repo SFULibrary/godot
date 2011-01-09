@@ -20,6 +20,12 @@ my $sandbox = param('sandbox');
 ##
 my $configuration = new GODOTConfig::Configuration($site_key, 'sandbox');
 
+##
+## (20-jul-2007 kl) - added temporarily until Configuration.pm fixed
+##
+$configuration->type('sandbox');
+
+
 my $frozen_object_file = "$GODOT::Config::SANDBOX_OBJECT_DIR/$sandbox";
 
 unless (-e $frozen_object_file)  {
