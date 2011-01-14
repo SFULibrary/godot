@@ -544,19 +544,17 @@ sub make_dir {
     my $path;
 
     foreach my $dir (@dirs) {
-
         next unless ($dir =~ m#\S#);
 
-	my $full_dir = "$path/$dir";
+	    my $full_dir = "$path/$dir";
+	    #### print $full_dir, "\n";
 
-	#### print $full_dir, "\n";
+	    unless (-d $full_dir) {
+	         my $res = mkdir $full_dir;
+	         unless ($res) { printw "creation of '$full_dir' failed:  $!\n"; }
+	    }
 
-	unless (-d $full_dir) {
-	    my $res = mkdir $full_dir;
-	    unless ($res) { printw "creation of '$full_dir' failed:  $!\n"; }
-	}
-
-	$path = $full_dir;
+	    $path = $full_dir;
     }
 }
 
