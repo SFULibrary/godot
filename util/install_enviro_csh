@@ -5,14 +5,14 @@
 ## 2. Type 'source util/install_enviro_csh'.
 ##
 
-setenv GODOT_ROOT_DIR        /home/kristina/godot
-setenv GODOT_ADMIN_EMAIL     klong@sfu.ca
+setenv GODOT_ROOT_DIR        /usr/local/godot
+setenv GODOT_ADMIN_EMAIL     changeme@changeme.ca
 
-setenv GODOT_CGI_DIR         /home/kristina/httpd/htdocs/GODOT
-setenv GODOT_CONFIG_CGI_DIR  /home/kristina/httpd/htdocs/GODOTConfig
+setenv GODOT_CGI_DIR         /usr/local/apache2/htdocs/GODOT
+setenv GODOT_CONFIG_CGI_DIR  /usr/local/apache2/htdocs/GODOTConfig
 
-setenv GODOT_URL             http://proxy2.lib.sfu.ca:8777/GODOT/hold_tab.cgi
-setenv GODOT_CONFIG_URL      http://proxy2.lib.sfu.ca:8777/GODOTConfig/config.cgi
+setenv GODOT_URL             http://changeme.ca/GODOT/hold_tab.cgi
+setenv GODOT_CONFIG_URL      http://changeme.ca/GODOTConfig/config.cgi
 
 
 ##
