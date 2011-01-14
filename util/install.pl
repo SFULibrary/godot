@@ -35,12 +35,14 @@ my @FILE_SUBSET = qw(util/install.pl
                      GODOT_ORIG/hold_tab.pm
                      GODOT/lib/GODOT/Authentication.pm
                      GODOT/lib/GODOT/CatalogueHoldings.pm
-		     GODOT/htdocs/GODOT/hold_tab.cgi
+		             GODOT/htdocs/GODOT/hold_tab.cgi
                      GODOT/templates/main_holdings_screen
                      GODOTConfig/templates/main
                      GODOTConfig/lib/GODOTConfig/AdvancedConfig.pm);
 
-my $SFU_GODOT_URL = 'http://godot.lib.sfu.ca:7888/godot/hold_tab.cgi';
+my $SFU_GODOT_URL = 'http://godot.lib.sfu.ca/GODOT/hold_tab.cgi';
+
+my $DEFAULT_MOD_PERL_VERSION = 2;
 
 my $no_DBI = 0;
 my $no_psql = 0;
@@ -54,38 +56,40 @@ my @MODULES = qw(Apache::DBI
                  Class::Data::Inheritable 
                  Class::DBI 
                  Class::DBI::AbstractSearch 
-	         Class::DBI::Iterator
+	             Class::DBI::Iterator
                  Class::DBI::Query
                  Class::DBI::Relationship                  
-	         Data::Dumper
-	         Data::Dump
-	         Date::Calc
+	             Data::Dumper
+	             Data::Dump
+	             Date::Calc
                  DBI
-	         DBD::Pg
+	             DBD::Pg
                  Encode
                  Error
                  Exception::Class 
                  Exception::Class::DBI 
                  Exporter
-	         File::Basename
+	             File::Basename
                  FileHandle
                  LWP::UserAgent
-	         MARC::Record
+                 MARC::File::XML
+	             MARC::Record
                  Net::Z3950
                  Parallel::ForkManager
                  POSIX
                  Socket
                  SQL::Abstract 
                  Template
-	         Template::Constants
-	         Template::Stash
+	             Template::Constants
+	             Template::Stash
                  Text::Normalize::NACO
-                 Text::Striphigh
                  Text::Template
                  Time::HiRes
                  Time::Local              
                  URI::Escape
-                 URI::URL);   
+                 URI::URL
+                 XML::DOM
+                 XML::LibXML);   
 
 
 $Template::Stash::SCALAR_OPS->{'escapeHTML'} = sub { 
@@ -113,7 +117,8 @@ $Template::Stash::HASH_OPS->{'url'} = sub {
 
 my $term = new Term::ReadLine 'GODOT Installation';
 if (grep {$_ eq '-m'} @ARGV) {
-        my $mod_perl_version = &mod_perl_version;
+    #### my $mod_perl_version = &mod_perl_version;         ## (14-jan-2011 kl) -- assume version 2
+    my $mod_perl_version = $DEFAULT_MOD_PERL_VERSION;
 	check_modules($mod_perl_version, [ @MODULES ]);
 	print "\n\n";
 	exit;
@@ -144,13 +149,13 @@ unless (check_psql()) {
 }
 
 unless (check_yaz()) {
-        diew "** The YAZ tool Z39.50 programmers' toolkit is required.  YAZ may be downloaded freely at http://http://www.indexdata.com/yaz/.\n";
+    diew "** The YAZ tool Z39.50 programmers' toolkit is required.  YAZ may be downloaded freely at http://http://www.indexdata.com/yaz/.\n";
 
 }
 
+#### my $mod_perl_version = &mod_perl_version;     ## (14-jan-2011 kl) -- assume version 2
+my $mod_perl_version = $DEFAULT_MOD_PERL_VERSION;
 
-
-my $mod_perl_version = &mod_perl_version;
 
 exit unless &check_modules($mod_perl_version, [ @MODULES ]);
 
@@ -201,12 +206,6 @@ chdir $base_dir;
 
 my @dirs;
 
-
-##
-## debug-1
-##
-#### goto _debug;
-
 printw "Next we need to install two packages -- GODOT and GODOTConfig.\n\n";
 
 ##
@@ -239,7 +238,6 @@ my $config_web_dir = &setup_web_tree($godotconfig_config, 'GODOTConfig', $ENV{'G
 
 &create_apache_config_modperl($godot_config, $godotconfig_config, $web_dir, $config_web_dir, $mod_perl_version);	
 
-
 ##
 ## Demo data and files
 ##
@@ -255,9 +253,6 @@ _debug:
 &installation_test_pages($godot_config);
 
 printw "\n\nATTENTION:  You are not done yet!  Please run\n\n    perl util/install_db.pl\n\nto set up the configuration profile database and optionally to install demo profile data.\n\nYou may want to run the database install as a different user (ie. postgres) depending on the postgres rights of the current user.\n\n";
-
-
-
 
 ##---------------------------------------------------------------------------------------------
 ##
@@ -361,30 +356,27 @@ sub verify_cwd {
 
 
 
-sub mod_perl_version {
-
-    my $version;
-
-    foreach my $iter (1 .. 3) {
-        printw "Which version of mod_perl are you using (1 or 2)?";
-        my $input = $term->readline('[2]: ');
-
-        $input = '2' if aws($input);
-
-        if ($input =~ /^\s*[1|2]\s*$/) {
-            $version = $input;
-            last;
-        }
-
-        printw "You must either enter '1' or '2'." unless $iter == 3;          
-    }
-    
-    unless ($version) {
-        diew "*** Unable to continue without a mod_perl version ***\n";
-    }
-
-    return $version;
-}
+##
+## (14-jan-2011 kl) -- no need to ask anymore
+##
+#### sub mod_perl_version {
+####    my $version;
+####    foreach my $iter (1 .. 3) {
+####        printw "Which version of mod_perl are you using (1 or 2)?";
+####        my $input = $term->readline('[2]: ');
+####        $input = '2' if aws($input);
+####        if ($input =~ /^\s*[1|2]\s*$/) {
+####            $version = $input;
+####            last;
+####        }
+####        printw "You must either enter '1' or '2'." unless $iter == 3;          
+####    }
+####    unless ($version) {
+####        diew "*** Unable to continue without a mod_perl version ***\n";
+####    }
+####    return $version;
+#### }
+####
 
 
 ##
@@ -738,20 +730,19 @@ sub check_modules {
     my $missing = 0;
     foreach my $module (sort @modules) {
         print "Checking for module $module... ";
-	if (check_module($module)) {
-	    print "found\n";
-	} else {
-	    print "not found\n";
-	    $missing++;
+	    if (check_module($module)) {
+	        print "found\n";
+	    } else {
+	        print "not found\n";
+	        $missing++;
             push @not_found, $module;
-	}
+	    }
     }
     if ($missing == 0) {
-	printw "Great, you seem to have everything necessary!\n";
+	    printw "Great, you seem to have everything necessary!\n";
     } else {
-	print "\nYou're missing $missing modules:\n\n    ", 
-	      join("\n    ", @not_found), "\n",
-              "\nPlease use CPAN to install them.\nYou can use $0 -m to check for the modules again.\n";
+	      print "\nYou're missing $missing modules:\n\n    ", 
+	      join("\n    ", @not_found), "\n\nPlease use CPAN to install them.\nYou can use $0 -m to check for the modules again.\n";
     }
 
     return ! $missing;
@@ -840,8 +831,8 @@ sub page {
 
     my $template = new Template({'INCLUDE_PATH' => $template_dir, 
                                  'PRE_CHOMP'    => 1,
-			         'POST_CHOMP'   => 1,
-			         'VARIABLES'    => $vars
+			                     'POST_CHOMP'   => 1,
+			                     'VARIABLES'    => $vars
                                });
     my $text;
  
