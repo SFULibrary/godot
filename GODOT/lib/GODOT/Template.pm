@@ -126,7 +126,8 @@ $Template::Stash::SCALAR_OPS->{'encode_utf8'} = sub {
 
 $Template::Stash::SCALAR_OPS->{'transliterate_to_latin1'} = sub { 
     my $x = shift; 
-    return GODOT::String::transliterate_string('latin1', $x);
+    ##### return GODOT::String::transliterate_string('latin1', $x);
+    return GODOT::Encode::Transliteration::transliterate_string('latin1', $x);
 };
 
 $Template::Stash::SCALAR_OPS->{'encode_latin1'} = sub { 
