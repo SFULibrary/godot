@@ -111,7 +111,6 @@ my $REMOVE_MARC_SUBFIELD = 'remove_marc_subfield';
 
 my @STOP_WORDS = qw(& a an of and in on for the le les la de du et au der das die el);
 
-
 # strip_dos_extended_characters - Changes DOS extended characters to their UNIX
 # equivalents so that GODOT doesn't choke on them.
 
@@ -1120,6 +1119,4 @@ Written by Todd Holbrook, based on existing GODOT code by Kristina Long and
 others over the years at SFU.
 
 =cut
-
-
 
