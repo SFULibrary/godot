@@ -623,8 +623,8 @@ sub create_apache_config_modperl {
 
     my @dirs = @Install::GODOT::INCLUDE_DIRS;
 
-    my @include = ( map { "$config->{'GODOT_ROOT'}/$_" }        @Install::GODOT::INCLUDE_DIRS, 
-                    map { "$config_config->{'GODOT_ROOT'}/$_" } @Install::GODOTConfig::INCLUDE_DIRS );
+    my @include = ( (map { "$config->{'GODOT_ROOT'}/$_" }        @Install::GODOT::INCLUDE_DIRS), 
+                    (map { "$config_config->{'GODOT_ROOT'}/$_" } @Install::GODOTConfig::INCLUDE_DIRS) );
   
 
     my $use_lib_qw = '    use lib qw';
