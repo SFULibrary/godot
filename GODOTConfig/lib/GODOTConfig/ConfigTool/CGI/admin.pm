@@ -718,7 +718,7 @@ sub process_global_transfer_template {
 	# Copy sandbox template over
 	`cp $GODOTConfig::Config::GODOT_GLOBAL_TEMPLATE_DIR/sandbox/$template_name $GODOTConfig::Config::GODOT_GLOBAL_TEMPLATE_DIR/$template_name`;
 
-	$self->results(["Global template transfered: $template_name"]);
+	$self->results(["Global template transferred: $template_name"]);
 	
 	return 'global_templates';
 }
@@ -891,7 +891,7 @@ sub process_global_transfer_css {
 	# Copy sandbox css over
 	`cp $GODOTConfig::Config::GODOT_GLOBAL_CSS_DIR/sandbox/$css_name $GODOTConfig::Config::GODOT_GLOBAL_CSS_DIR/$css_name`;
 
-	$self->results(["Global css transfered: $css_name"]);
+	$self->results(["Global css transferred: $css_name"]);
 	
 	return 'global_css';
 }
