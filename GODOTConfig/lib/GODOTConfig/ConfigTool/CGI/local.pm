@@ -260,7 +260,7 @@ sub process_local_transfer_template {
 	# Copy sandbox template over
 	`cp $GODOTConfig::Config::GODOT_SITE_TEMPLATE_DIR/sandbox/$site_id/$template_name $GODOTConfig::Config::GODOT_SITE_TEMPLATE_DIR/active/$site_id/$template_name`;
 
-	$self->results(["Site template transfered: $template_name"]);
+	$self->results(["Site template transferred: $template_name"]);
 	
 	param('group', $GODOTConfig::Config::GODOT_TEMPLATE_CONFIG{$template_name}->{'group'});
 	return 'local_list_templates';
@@ -452,7 +452,7 @@ sub process_local_transfer_css {
 	# Copy sandbox css over
 	`cp $GODOTConfig::Config::GODOT_SITE_CSS_DIR/sandbox/$site_id/$css_name $GODOTConfig::Config::GODOT_SITE_CSS_DIR/active/$site_id/$css_name`;
 
-	$self->results(["Site css transfered: $css_name"]);
+	$self->results(["Site css transferred: $css_name"]);
 	
 	return 'local_css';
 }
