@@ -80,6 +80,11 @@ sub bib_record_read_correct_decode {
     my $bib_record_object_decoded = MARC::Record->new();
 
     ##
+    ## (26-mar-2011 kl) - added as leader was not being included in $bib_record_object_decoded
+    ##
+    $bib_record_object_decoded->leader($bib_record_object->leader);
+
+    ##
     ## Copy all fields to $bib_record_object_decoded using a decoded version of all non-control fields.
     ## !!!! Below will cause problems if any MARC::Field or MARC::Record logic is used that assumes data is still encoded.  However this should be ok for now for our purposes. !!!
     ##    
@@ -165,6 +170,8 @@ sub good_match {
 
     my $leader = $bib_record_object->leader;
 
+    #### debug "good_match leader:  $leader";
+
     foreach my $marc_field ($MARC_ISBN_FIELD, $MARC_OTHER_STANDARD_ID_FIELD, $MARC_ISSN_FIELD, $MARC_TITLE_FIELD, $MARC_VARYING_FORM_TITLE_FIELD) {
 
         $clean{$marc_field} = [];
@@ -181,7 +188,6 @@ sub good_match {
             push @{$clean{$marc_field}}, @cleaned_up;
 	     }
     }
-
                              
     #### debug "-----------------------------------";
     #### debug "from citation ... ISBN:  $citation_isbn, ISBN CONVERTED:  $citation_isbn_converted, ISSN:  $citation_issn, TITLE:  $citation_title";
@@ -368,11 +374,11 @@ sub leader_match {
     my @leader_07_for_journal = qw(s i);
     my $leader_07 = substr($leader, 7, 1);
 
-    #### debug "leader_07:  $leader_07";
+    debug "leader_07:  $leader_07";
 
     if (grep {$leader_07 eq $_} qw(a b c d i m s)) {
                 
-	if ($citation->is_journal) {
+	    if ($citation->is_journal) {
             return $FALSE unless (grep {$leader_07 eq $_} @leader_07_for_journal);
         }
 	    else {
