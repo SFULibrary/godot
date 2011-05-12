@@ -245,7 +245,6 @@ sub send_by_http {
     ##
     return $FALSE unless ($self->auth($ua));    ## -default 'auth' method is to do nothing      
 
-
     my $request;
 
     if ($self->use_http_post) {
@@ -305,7 +304,7 @@ sub send_by_relais {
 
     $self->formatted_content($content);
 
-    debug Data::Dump::dump(split("\n", "\n\n$content\n\n"));
+    #### debug Data::Dump::dump(split("\n", "\n\n$content\n\n"));
 
     if (defined $self->error_message) { return $FALSE; }
 
@@ -313,10 +312,16 @@ sub send_by_relais {
     
     my $request = new HTTP::Request 'POST' => $url;
     $request->content_type('text/xml; charset=utf-8');
-    $request->header(Accept => 'application/soap+xml, application/dime, multipart/related, text/*');
-    $request->header(SOAPAction => '');
+    unless ($self->is_relais_version_2010) {
+        $request->header(Accept => 'application/soap+xml, application/dime, multipart/related, text/*');
+        $request->header(SOAPAction => '');
+    }
     $request->content($content);
 
+    debug "------------------------------------ xml as sent to relais server -----------------------------";
+    debug $content;
+    debug "-----------------------------------------------------------------------------------------------";
+ 
     my $res = $ua->request($request);
 
     unless ($res->is_success) {
