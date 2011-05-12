@@ -148,13 +148,12 @@ Subject: $header_subject$content_type$content_transfer_encoding
 $body
 End_of_Message
 
-
     debug location;
-    debug '------------------------------------------------------';
-    foreach my $line (split("\n", $complete_message)) {
-        debug Data::Dump::dump($line);
-    }
-    debug '------------------------------------------------------';
+    #### debug '------------------------------------------------------';
+    #### foreach my $line (split("\n", $complete_message)) {
+    ####    debug Data::Dump::dump($line);
+    #### }
+    #### debug '------------------------------------------------------';
 
     use FileHandle;
     my $fh = new FileHandle "| $GODOT::Config::SENDMAIL";
