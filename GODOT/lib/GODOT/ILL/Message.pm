@@ -703,6 +703,13 @@ sub encoding   {
     return undef;
 }
 
+##
+## (28-apr-2011 kl) - hosted sites will be moving to version 2010 soon 
+##
+sub is_relais_version_2010 {
+    return $FALSE;
+}
+
 sub _delim            { return $DELIM; }
 
 sub _wrap_indent      { return $WRAP_INDENT; }
