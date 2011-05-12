@@ -63,8 +63,10 @@ sub format {
     my $xml;
     my $writer = new XML::Writer( OUTPUT => \$xml, UNSAFE => 1 );
     
+    my $version = ($self->is_relais_version_2010) ? '2010.0.0.0' : '2006.0.0.0';
+
     $writer->startTag('AddRequest',
-                      'version'   => '2006.0.0.0',
+                      'version'   => $version,
                       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                       'xsi:noNamespaceSchemaLocation' => $self->schema_location,
     );
@@ -104,22 +106,29 @@ sub format {
     my @partners_list = $self->get_partners_list();
 
     if ( $self->request_type eq 'W' ) {
-
     	@partners_list = ();
     }
     elsif ( ( !grep { $self->request_type eq $_ } qw(D S) ) && scalar( @partners_list )) {
-
         unshift @partners_list, $self->nuc;
     }
-    
+
+    ##
+    ## (29-apr-2011 kl) - version 2010 shows Location as a 'complexType'
+    ##
     foreach my $site ( @partners_list ) {
         $writer->startTag('Location');
-        $writer->characters( $site );
+        if ($self->is_relais_version_2010) {
+            $writer->startTag('SupplierCode');
+            $writer->characters( $site );
+            $writer->endTag('SupplierCode');
+        }
+        else {
+            $writer->characters( $site );
+        }
         $writer->endTag('Location');
     }
 
     $writer->endTag('BibliographicInfo');    
-
 
     $writer->startTag('PublisherInfo');
 
@@ -266,20 +275,7 @@ sub format {
 
             my ( $field, $size, $relais_field, $format ) = @$row;
             my $data = $patron->$field();
-           
-            ##
-            ## (03-oct-2006 kl) - remove this check for whitespace in order to solve the problem with Relais not accepting the
-            ##                    case where PrimaryAddress.Address1 is not passed, but a filled PrimaryAddress.Address2
-            ##                    is passed. If this breaks something else, may have to make this a special case.
-            ##
-
-            #### next if aws($data);            
-            #### if ( !aws($format) ) {
-            ####        $data = $self->$format( $data );
-            #### }
-            
-            $data = $self->$format( $data );
-
+            $data = $self->$format( $data ) unless aws($format);
             $data = substr( $data, 0, $size );
             $writer->startTag( $relais_field );
             $writer->characters( $data );
@@ -305,7 +301,6 @@ sub format {
             $writer->endTag('BillingInformation');
     }
 
-
     $self->_format_electronic_delivery($writer, $patron);
 
     if ($self->_include_user_login) {
@@ -322,13 +317,13 @@ sub format {
         $writer->endTag('UserLogin');
     }
 
-
     $writer->endTag('PatronRecord');
     
     $writer->endTag('Record');
     $writer->endTag('AddRequest');
 
     $writer->end;
+
 
     ## 
     ## (27-oct-2010 kl) 
@@ -348,76 +343,28 @@ sub format {
     $b->indent_str(' ');
     $xml = $b->beautify(\$xml);
 
-    debug Data::Dump::dump(split("\n", $xml));
+    #### debug Data::Dump::dump(split("\n", $xml));
 
-    debug "\n\n-=-=-=- RESPONSE -=-=-=-=\n\n";
+    ##
+    ## (28-apr-2011 kl) - no SOAP for relais version 2010
+    ##
+    unless ($self->is_relais_version_2010) {
+        ##
+        ## Encode XML before sending through SOAP  (<>&")
+        ##
+        my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;');
+        $xml =~ s/([&<>\"])/$encode_attribute{$1}/g;
 
-    # Encode XML before sending through SOAP  (<>&")
-
-    my %encode_attribute = ('&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;');
-    $xml =~ s/([&<>\"])/$encode_attribute{$1}/g;
-
-    # Add SOAP wrapper.. Tried using SOAP::Lite, but it doesn't quite work with the Relais stuff. Probably my fault.
-    
-    $xml =   '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><addRequest soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><param xsi:type="xsd:string">'
-           . $xml
-           . '</param></addRequest></soapenv:Body></soapenv:Envelope>';
+        ##
+        ## Add SOAP wrapper. Tried using SOAP::Lite, but it doesn't quite work with the Relais stuff. Probably my fault.
+        ##
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><addRequest soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><param xsi:type="xsd:string">'
+               . $xml
+               . '</param></addRequest></soapenv:Body></soapenv:Envelope>';
+    }
 
     return $xml;
-
 }
-
-sub _format_electronic_delivery {
-    my($self, $writer, $patron) = @_;
-
-    $writer->startTag('ElectronicDelivery');
-
-    $writer->startTag('DeliveryMethod');
-    $writer->characters($self->_delivery_method);
-    $writer->endTag('DeliveryMethod');
-
-    if ($self->_include_delivery_email) {
-        $writer->startTag('DeliveryEmail');
-        $writer->characters( $patron->email );
-        $writer->endTag('DeliveryEmail');
-    }
-
-    if ($self->_include_messaging_format) {
-        $writer->startTag('MessagingFormat');
-        $writer->characters('T');
-        $writer->endTag('MessagingFormat');
-    } 
-
-    $writer->startTag('MessagingMethod');
-    $writer->characters($self->_messaging_method);
-    $writer->endTag('MessagingMethod');
-    
-    $writer->startTag('MessagingEmail');
-    $writer->characters( $patron->email );
-    $writer->endTag('MessagingEmail');
-
-    ##
-    ## (22-aug-2010 kl) -- added '<ElectronicDelivery><PhoneNumber>' so could send patron work phone number to U of Winnipeg;
-    ##                  -- they are using schema 'http://www.relais-intl.com/schema/2009.0/AddRequest.xsd' which does not allow '<PatronRecord><ContactPhone>';
-    ##                  -- multiple '<BillingInformation><BillingContact><ContactPhone>' does not work so put work phone number in '<ElectronicDelivery><PhoneNumber>';
-    ##
-    if (naws($patron->phone_work)  && $self->_include_phone_as_billing_contact_phone_work) {
-            $writer->startTag('PhoneNumber');
-            $writer->characters( $patron->phone_work );
-            $writer->endTag('PhoneNumber');
-    }
-
-    $writer->startTag('PickupLocation');
-    $writer->characters( $patron->pickup );
-    $writer->endTag('PickupLocation');
-
-    $writer->startTag('DeliveryService');
-    $writer->characters( 'Unknown' );
-    $writer->endTag('DeliveryService');
-
-    $writer->endTag('ElectronicDelivery');
-}
-
 
 sub message_url   {
     my($self) = @_;
@@ -540,19 +487,9 @@ sub check_http_return {
         my $ill_local_system_request_number = $1;
         $self->ill_local_system_request_number($ill_local_system_request_number);
         return $TRUE;
-    
     }
     return $FALSE;
 }
-
-####
-#### sub check_http_return {
-####    my($self, $string) = @_;
-####
-####    return $FALSE if $self->http_return_contains_error_message($string);
-####    return ($string =~ m#PAT-\d+#);
-#### }
-####
 
 sub http_return_contains_error_message {
     my($self, $string) = @_;
@@ -632,7 +569,7 @@ sub get_partners_list {
         ## Depending on transformation by next_partner method we may have duplicates (eg. all BVAU-XXX map to BVAU)
         ##
 
-	push(@site_arr, "$tmp_user") unless (grep { $tmp_user eq $_ } @site_arr);
+	    push(@site_arr, "$tmp_user") unless (grep { $tmp_user eq $_ } @site_arr);
 
     }     
 
@@ -688,6 +625,58 @@ sub transliteration  { return 'utf8'; }
 
 sub encoding         { return 'utf8'; }
 
+
+
+sub _format_electronic_delivery {
+    my($self, $writer, $patron) = @_;
+
+    $writer->startTag('ElectronicDelivery');
+
+    $writer->startTag('DeliveryMethod');
+    $writer->characters($self->_delivery_method);
+    $writer->endTag('DeliveryMethod');
+
+    if ($self->_include_delivery_email) {
+        $writer->startTag('DeliveryEmail');
+        $writer->characters( $patron->email );
+        $writer->endTag('DeliveryEmail');
+    }
+
+    if ($self->_include_messaging_format) {
+        $writer->startTag('MessagingFormat');
+        $writer->characters('T');
+        $writer->endTag('MessagingFormat');
+    } 
+
+    $writer->startTag('MessagingMethod');
+    $writer->characters($self->_messaging_method);
+    $writer->endTag('MessagingMethod');
+    
+    $writer->startTag('MessagingEmail');
+    $writer->characters( $patron->email );
+    $writer->endTag('MessagingEmail');
+
+    ##
+    ## (22-aug-2010 kl) -- added '<ElectronicDelivery><PhoneNumber>' so could send patron work phone number to U of Winnipeg;
+    ##                  -- they are using schema 'http://www.relais-intl.com/schema/2009.0/AddRequest.xsd' which does not allow '<PatronRecord><ContactPhone>';
+    ##                  -- multiple '<BillingInformation><BillingContact><ContactPhone>' does not work so put work phone number in '<ElectronicDelivery><PhoneNumber>';
+    ##
+    if (naws($patron->phone_work)  && $self->_include_phone_as_billing_contact_phone_work) {
+            $writer->startTag('PhoneNumber');
+            $writer->characters( $patron->phone_work );
+            $writer->endTag('PhoneNumber');
+    }
+
+    $writer->startTag('PickupLocation');
+    $writer->characters( $patron->pickup );
+    $writer->endTag('PickupLocation');
+
+    $writer->startTag('DeliveryService');
+    $writer->characters( 'Unknown' );
+    $writer->endTag('DeliveryService');
+
+    $writer->endTag('ElectronicDelivery');
+}
 
 sub _delivery_method {
     return 'P';
@@ -774,6 +763,7 @@ sub _include_phone_as_billing_contact_phone {
 sub _include_phone_as_billing_contact_phone_work {
     return $FALSE;
 }
+
 
 
 1;
