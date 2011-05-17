@@ -249,12 +249,17 @@ sub format {
         $writer->endTag('ContactPhone');
     }
 
+    ##
+    ## (17-may-2011 kl) - relais version 2010 does not like blank departments ...
+    ##
     if ($self->_include_department) {
-        $writer->startTag('Department');
-        $writer->startTag('DepartmentDescription');
-        $writer->characters( $patron->department );
-        $writer->endTag('DepartmentDescription');
-        $writer->endTag('Department');
+        if ((! $self->is_relais_version_2010) || (naws($patron->department))) {
+            $writer->startTag('Department');
+            $writer->startTag('DepartmentDescription');
+            $writer->characters( $patron->department );
+            $writer->endTag('DepartmentDescription');
+            $writer->endTag('Department');
+        }
     }
 
     my $has_address_data = 0;
