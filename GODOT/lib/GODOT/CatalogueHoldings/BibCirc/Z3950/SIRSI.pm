@@ -48,11 +48,6 @@ sub holdings_from_cat_rec {
 
     my @fields = $marc->field('927');
     return $FALSE unless scalar @fields;
-
-    #### debug "......................................";
-    #### debug $self->source;
-    #### debug Dumper(@fields);
-    #### debug "......................................";
  
     $self->holdings_found($TRUE);
 
@@ -65,8 +60,7 @@ sub holdings_from_cat_rec {
         ##
         ## -is this a header record? -- ie. only has 927-a 
         ##
-                   
-	my $value_927_a = $self->_keep_subfields_clean_up_marc($field, ['a']);
+        my $value_927_a = $self->_keep_subfields_clean_up_marc($field, ['a']);
 
         if ($value_927_a ne '') {
 
@@ -79,10 +73,10 @@ sub holdings_from_cat_rec {
                 $value_927           .= $value_927_a;
             }
 
-	    $value_927_sirsi_fmt .= '</TD></TR>';
+	        $value_927_sirsi_fmt .= '</TD></TR>';
 
             push(@value_927_arr, [$value_927_a, $value_927]);
-	    push(@value_927_sirsi_fmt_arr, [$value_927_a, $value_927_sirsi_fmt]);  
+	        push(@value_927_sirsi_fmt_arr, [$value_927_a, $value_927_sirsi_fmt]);  
         }
         else {                      
             my $label       = $self->_keep_subfields_clean_up_marc($field, ['b']); 
@@ -129,17 +123,13 @@ sub holdings_from_cat_rec {
     my ($value_927_a, $value_927) = $self->_add_holdings([@value_927_arr]);
     if ($value_927 ne '') { push(@value_927_arr, [$value_927_a, $value_927]);  }  
 
-
     foreach my $value_927_ref (@value_927_arr) {
-
         my($value_927_a, $value_927) = @{$value_927_ref};
         $value_927 = $self->_label_value_clean_up($value_927);
-
         $self->holdings($value_927_a, $value_927);
     }
 
     foreach my $value_927_sirsi_fmt_ref (@value_927_sirsi_fmt_arr) {
-
         my($value_927_a, $value_927_sirsi_fmt) = @{$value_927_sirsi_fmt_ref};    
         $self->sirsi_holdings($value_927_a, "<TABLE>$value_927_sirsi_fmt</TABLE>");
     }
@@ -180,7 +170,7 @@ sub circulation_from_cat_rec {
         }
 
         $self->circulation((($location) ? "$library $location" : $library), 
-                           $call . ' ' . (($copy ne '1') ? "c. $copy " : ''),
+                           $call . (($copy ne '1') ? " c. $copy " : ''),
                            (($status) ? "DUE $status" : 'AVAILABLE'));        
     }
            
