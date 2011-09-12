@@ -4548,7 +4548,7 @@ sub check_button {
         unless ($location_config->disable_journal_details) { $want_details_button = $TRUE; }
     }
     else  { 
-	unless ($location_config->disable_non_journal_details) { $want_details_button = $TRUE; }
+	    unless ($location_config->disable_non_journal_details) { $want_details_button = $TRUE; }
     }
 
     my $button = undef;        
