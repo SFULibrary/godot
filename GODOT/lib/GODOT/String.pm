@@ -219,7 +219,7 @@ sub valid_ISBN_10 {
     ##                  - some online isbn checkers allow bad country and publisher codes so results of such a check
     ##                    can be different
     ##
-
+    
     return ($obj->is_valid eq Business::ISBN::GOOD_ISBN) ? $isbn : undef;
 }
 
@@ -260,7 +260,7 @@ sub convert_ISBN {
     if ((length($isbn) == 10) && valid_ISBN_10($isbn)) {
 
         my $obj = Business::ISBN->new($isbn);
-        my $isbn13 = $obj->as_isbn13($isbn);
+        my $isbn13 = $obj->as_isbn13($isbn)->as_string;
 
         push @isbns, $isbn, $isbn13;
     }
@@ -291,9 +291,9 @@ sub convert_ISBN {
 ##                  - now returns valid ISSN or undef instead of 1/0
 ##
 sub valid_ISSN_s_ok {
-        my($string) = @_;
+    my($string) = @_;
 
-        if ($string =~ m#^[0-9]{4,4}-[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
+    if ($string =~ m#^[0-9]{4,4}-[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
 	return undef;
 }
 
@@ -301,10 +301,10 @@ sub valid_ISSN_s_ok {
 ##  (08-dec-2006 kl) - same as valid_ISSN_s_ok
 ##
 sub valid_ISSN_no_hyphen_s_ok {
-        my($string) = @_;
+    my($string) = @_;
 
-        if ($string =~ m#^[0-9]{4,4}[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
-        return undef;
+    if ($string =~ m#^[0-9]{4,4}[0-9]{3,3}[0-9|X|S]$#i) { return $string; }
+    return undef;
 }
 
 
