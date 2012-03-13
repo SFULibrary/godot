@@ -8,14 +8,14 @@ Installing GODOT
 Upgrading GODOT
 
     For notes about upgrading to the latest version of GODOT please see 
-    'http://cufts2.lib.sfu.ca/trac/godot/wiki/DownloadGodot'.
+    'http://lib-code.lib.sfu.ca/projects/godot/wiki/DownloadGodot'.
+
 
 Changes
 
-    Changes are no longer being added here.  
-
-    Please see the GODOT development site 'http://cufts2.lib.sfu.ca/trac/godot' for the 
-    latest changes.  The repository log is at 'http://cufts2.lib.sfu.ca/trac/godot/log/trunk'.
+    Changes are no longer being added here. Please see the GODOT development site 
+    'http://lib-code.lib.sfu.ca/projects/godot' for the latest changes.  The repository 
+    log is at 'http://lib-code.lib.sfu.ca/projects/godot/log/trunk'.
 
     2.0.3 Fixed problem related to using Class::Accessor and 'location' as a field name.  
           Assume this was related to the fact that location is also a subroutine name.
