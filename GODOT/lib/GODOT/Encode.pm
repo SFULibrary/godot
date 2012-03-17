@@ -131,15 +131,18 @@ sub bib_record_detect_encoding {
     }
     else {
         $encoding = 'unknown';
-        debug location_plus, "none of utf8, marc8 or latin1 encoding\n";       
-        debug '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
-        my @fields = split("\036", $rawdata);
-        foreach my $field (@fields) {
-            foreach my $subfield (split("\037", $field)) {
-                debug Data::Dump::dump($subfield);
-            }
-        }
-        debug '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
+
+        ####
+        #### debug location_plus, "none of utf8, marc8 or latin1 encoding\n";       
+        #### debug '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
+        #### my @fields = split("\036", $rawdata);
+        #### foreach my $field (@fields) {
+        ####    foreach my $subfield (split("\037", $field)) {
+        ####        debug Data::Dump::dump($subfield);
+        ####    }
+        #### }
+        #### debug '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
+        ####
     }    
 
     return ($encoding, $try_to_read);
