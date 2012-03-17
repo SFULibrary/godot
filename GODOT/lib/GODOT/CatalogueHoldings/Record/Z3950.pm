@@ -54,7 +54,7 @@ sub bib_record_read_correct_decode {
  
     if ($leader_09 ne $new_leader_09) {
         substr($rawdata, 9, 1) = $new_leader_09;
-        debug location_plus, "leader changed from '$leader_09' to '$new_leader_09'";
+        #### debug location_plus, "leader changed from '$leader_09' to '$new_leader_09'";
     }
 
     my $bib_record_object;
@@ -374,7 +374,7 @@ sub leader_match {
     my @leader_07_for_journal = qw(s i);
     my $leader_07 = substr($leader, 7, 1);
 
-    debug "leader_07:  $leader_07";
+    #### debug location_plus, "leader_07:  $leader_07";
 
     if (grep {$leader_07 eq $_} qw(a b c d i m s)) {
                 
