@@ -392,7 +392,7 @@ sub is_marc8_octets {
     MARC::Charset->ignore_errors($prev_ignore);
    
     if (@errors) {
-        for my $error (@errors) { debug location, ":  $error"; }
+        #### for my $error (@errors) { debug location, ":  $error"; }
     }
 
     return (@errors) ? $FALSE : $TRUE;
