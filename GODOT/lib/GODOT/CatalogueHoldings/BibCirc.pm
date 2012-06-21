@@ -331,7 +331,6 @@ sub holdings_format {
     if (($self->search_type eq 'holdings') && ($self->citation->is_journal)) {
 
         unless ((scalar $self->holdings || scalar $self->circulation))  {
-
            $self->empty;
         }
     }
@@ -991,7 +990,6 @@ sub _holdings_found_if_holdings {
     my($self) = @_;
     $self->holdings_found($TRUE);
 }
-
 
 sub _adjust_holdings {
     my($self, $string) = @_;
