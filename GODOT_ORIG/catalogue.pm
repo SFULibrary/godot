@@ -545,9 +545,9 @@ sub cat_search  {
         }
     }
 
-    #### debug "//////////////////////////////////////////////////////////////",
+    #### debug "//////////////////////////////////////////////////////////////";
     #### debug Data::Dump::dump($bib_circ_arr_ref);
-    #### deubg "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\";
+    #### debug "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\";
 
     return($res, $docs, $reason);      
 }
@@ -1029,8 +1029,7 @@ sub fmt_bib_circ {
 }
 
 ##
-## -are there holdings that can be found in the site's catalogue -- or are there 
-##  only holdings from collections like ERIC or Microlog fiche
+## -are there holdings that can be found in the site's catalogue or are there only holdings from collections like ERIC or Microlog fiche?
 ##
 sub holdings_in_catalogue {
     my($holdings_hash_ref, $location) = @_;
@@ -1044,12 +1043,13 @@ sub holdings_in_catalogue {
         my($num_circ)     = @{${$bib_circ_hash_ref}{$BIB_CIRC_CIRC}}     if (defined ${$bib_circ_hash_ref}{$BIB_CIRC_CIRC});
 
         ##
-        ## (09-oct-1999 kl) - not sure why this not working as expected ...
+        ## (20-jun-2012 kl) 
+        ## -display link to catalogue if there is a url in the catalogue to the item 
+        ## -was added to fix problem where title and isbn for a book were being displayed on the main screen but a 'Check Detailed Holdings' link was not 
         ##
-        #### if ((defined ${$bib_circ_hash_ref}{$BIB_CIRC_HOLDINGS})  || (defined ${$bib_circ_hash_ref}{$BIB_CIRC_CIRC}))  {
+        my($num_bib_url) = @{${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL}}     if (defined ${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL});
 
-        if ($num_holdings || $num_circ) {
-
+        if ($num_holdings || $num_circ || $num_bib_url) {
             return $TRUE;
         }
     }
