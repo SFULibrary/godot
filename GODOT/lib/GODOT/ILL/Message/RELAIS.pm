@@ -499,29 +499,25 @@ sub check_http_return {
 sub http_return_contains_error_message {
     my($self, $string) = @_;
 
-    debug 'httpd_return_contains_error_message:  ', $string;
+    debug '>>>>>>>>> httpd_return_contains_error_message:  ', $string;
 
-    ## 
-    ## (04-feb-2010 kl) -- error messages are being passed back by relais as follows: 
-    ##                         &lt;ErrorMessage&gt;There was an Internal Error. Please contact the service provider.                                     &lt;/ErrorMessage&gt;
-    ##                         &lt;ErrorMessage&gt;The LoginID or Password is incorrect in Request XML.  Invalid LoginID or LoginPassword in PatronRecord&lt;/ErrorMessage&gt;
+    #### !!!!!!!!!!!!!!! here666 !!!!!!!!!!!!!!!!!!!!!!
+    #### !!!!!!!!!!!!!!! are there any other places where relais logic needs to be changed because no longer getting '&lt;' version back ..... ???????????????
+    ## (13-aug-2012 kl)
+    ## -error messages are also being passed back as follows:
+    ##  <ErrorMessage>The Patron in Request XML is not registered.  NCIP server profile STATUS ValidToDate indicate that the user is no longer active.</ErrorMessage>
+    ##
+    ## (04-feb-2010 kl) 
+    ## -error messages are being passed back by relais as follows: 
+    ##  &lt;ErrorMessage&gt;There was an Internal Error. Please contact the service provider.                                     &lt;/ErrorMessage&gt;
+    ##  &lt;ErrorMessage&gt;The LoginID or Password is incorrect in Request XML.  Invalid LoginID or LoginPassword in PatronRecord&lt;/ErrorMessage&gt;
     ##
     ## -use 's' as a modifier, as this will lets '.' match newline (normally it doesn't)
     ## -use '?' for minimal matching, so we match on the first '&lt;/ErrorMessage&gt;', not the last; 
     ##
-    if ($string =~ m#&lt;ErrorMessage&gt;(.+?)&lt;\/ErrorMessage&gt;#is) {    
+    if (($string =~ m#&lt;ErrorMessage&gt;(.+?)&lt;\/ErrorMessage&gt;#is) || 
+        ($string =~ m#<ErrorMessage>(.+?)<\/ErrorMessage>#is))  {    
         my $error_message = $1;
-
-        ##
-        ## -also try to parse out error number if possible, eg.  &lt;ErrorNumber&gt;PUBAUT011&lt;/ErrorNumber&gt;
-        ## -comment out for now as may just confuse user
-        ##
-        #### my $error_number;
-        #### if ($string =~ m#&lt;ErrorNumber&gt;(.+?)&lt;\/ErrorNumber&gt;#is) {    
-        ####    $error_number = $1;
-        ####    $error_message .= " ($error_number)";
-        #### }
-        ####
         $self->error_message($error_message);
         return $TRUE;
     }
@@ -595,9 +591,7 @@ sub message_note   {
     my($self, $reqno, $widv, $pagv) = @_;
               
     my(@misc_arr) = $self->_message_note_fields($reqno);
-
     my $note;
-
     my @do_not_include = $self->_do_not_include;
 
     foreach my $list_ref (@misc_arr) {
@@ -607,7 +601,7 @@ sub message_note   {
         next if (grep {$id eq $_} @do_not_include);
         next if (aws($value));
 
-	$note .= "$label: $value\n";
+	    $note .= "$label: $value\n";
     }
 
     if ( length($note) > 980 ) {
@@ -673,7 +667,11 @@ sub _format_electronic_delivery {
     }
 
     $writer->startTag('PickupLocation');
-    $writer->characters( $patron->pickup );
+    ##
+    ## (17-nov-2011 kl) -- added for Winnipeg
+    ##
+    #### $writer->characters( $patron->pickup );
+    $writer->characters( $self->_pickup_location($patron));
     $writer->endTag('PickupLocation');
 
     $writer->startTag('DeliveryService');
@@ -691,6 +689,10 @@ sub _messaging_method {
     return 'E';
 }
 
+sub _pickup_location {
+    my($self, $patron) = @_;
+    return $patron->pickup;
+}
 
 sub _message_note_fields {
     my($self, $reqno) = @_;
