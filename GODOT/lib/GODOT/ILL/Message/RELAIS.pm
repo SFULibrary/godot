@@ -161,50 +161,10 @@ sub format {
 
     $writer->endTag('PublisherInfo');
 
-    $writer->startTag('RequestInfo');
-
-    $writer->startTag('ServiceType');
-    $writer->characters( $citation->is_journal || $citation->is_book_article ? 'X' : 'L' );
-    $writer->endTag('ServiceType');    
-
-    $writer->startTag('ServiceLevel');
-    $writer->characters( 'R' );
-    $writer->endTag('ServiceLevel');    
-
-    $writer->startTag('Notes');
-    my $notes = $self->trim( $self->message_note( $reqno ) );
-    foreach my $note ( split /\n/, $notes ) {
-    	$writer->characters( $note );
-	$writer->raw('&#13;');
-	$writer->raw('&#10;');
-    }
-    $writer->endTag('Notes');
-
-
-    if ($self->_include_request_type) {
-
-        $writer->startTag('Mailbox');
-        $writer->characters(
-              ( grep { $self->request_type eq $_ } qw(D S) ) 
-            ? 'UNMED' 
-            : scalar( @partners_list ) > 0
-            ? 'APPROVAL'
-            : 'MED'
-        );
-        $writer->endTag('Mailbox');
-    }
-
+    ## 
+    ## (12-sep-2012 kl) -- added so can have site specific logic for University of the Fraser Valley;
     ##
-    ## -relais does not like a blank date
-    ##
-    if (naws($self->not_req_after())) {
-        $writer->startTag('NeedByDate');
-        $writer->characters( $self->not_req_after() );
-        $writer->endTag('NeedByDate');    
-    }
-
-    $writer->endTag('RequestInfo');
-
+    $self->_format_request_info($writer, $patron, [ @partners_list ], $reqno);
     $writer->endTag('Request');
 
     $writer->startTag('PatronRecord');
@@ -624,7 +584,55 @@ sub transliteration  { return 'utf8'; }
 
 sub encoding         { return 'utf8'; }
 
+sub _format_request_info {
+    my($self, $writer, $patron, $partners_list, $reqno) = @_;
 
+    my $citation = $self->citation;
+    my @partners_list = @{$partners_list};
+
+    $writer->startTag('RequestInfo');
+
+    $writer->startTag('ServiceType');
+    $writer->characters( $citation->is_journal || $citation->is_book_article ? 'X' : 'L' );
+    $writer->endTag('ServiceType');    
+
+    $writer->startTag('ServiceLevel');
+    $writer->characters( 'R' );
+    $writer->endTag('ServiceLevel');    
+
+    $writer->startTag('Notes');
+    my $notes = $self->trim( $self->message_note( $reqno ) );
+    foreach my $note ( split /\n/, $notes ) {
+    	$writer->characters( $note );
+	    $writer->raw('&#13;');
+	    $writer->raw('&#10;');
+    }
+    $writer->endTag('Notes');
+
+    if ($self->_include_request_type) {
+
+        $writer->startTag('Mailbox');
+        $writer->characters(
+              ( grep { $self->request_type eq $_ } qw(D S) ) 
+            ? 'UNMED' 
+            : scalar( @partners_list ) > 0
+            ? 'APPROVAL'
+            : 'MED'
+        );
+        $writer->endTag('Mailbox');
+    }
+
+    ##
+    ## -relais does not like a blank date
+    ##
+    if (naws($self->not_req_after())) {
+        $writer->startTag('NeedByDate');
+        $writer->characters( $self->not_req_after() );
+        $writer->endTag('NeedByDate');    
+    }
+
+    $writer->endTag('RequestInfo');
+}
 
 sub _format_electronic_delivery {
     my($self, $writer, $patron) = @_;
