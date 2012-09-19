@@ -47,7 +47,6 @@ sub decode_from_octets {
 
     eval {  $string = decode_utf8($octets, Encode::FB_CROAK);  };
     $error = $@;
-
     #### debug location_plus, "utf8:  $error";  
         
     ##
@@ -57,9 +56,19 @@ sub decode_from_octets {
     if ($error) {
         eval { $string = decode('cp1252', $octets, Encode::FB_CROAK);  }; 
         $error = $@; 
-
         #### debug location_plus, "cp1252:  $error";  
-        if ($error) { $string = decode('cp1252', $octets, Encode::FB_DEFAULT); }   ## -with Encode::FB_DEFAULT substitution characters will be put in place of the malformed character
+
+        if ($error) { 
+            ##
+            ## -with Encode::FB_DEFAULT substitution characters will be put in place of the malformed character
+            ## -(19-sep-2012 kl) was failing with 'Wide character in subroutine entry at /usr/lib/perl5/5.8.5/i386-linux-thread-multi/Encode.pm line 164'
+            ##  so add an eval;  if decode fails then $string will be empty;
+            ##
+            eval { $string = decode('cp1252', $octets, Encode::FB_DEFAULT); };
+            $error = $@;
+            debug location_plus, 'error after decode with Encode::FB_DEFAULT:  ',  $error;  
+            debug location_plus, 'string after decode with Encode::FB_DEFAULT:  ',  $string;  
+        }
     }
 
     return $string;
