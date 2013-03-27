@@ -514,7 +514,7 @@ sub cat_search  {
                 
             if ($match_res)  {         
                             
-                debug location_plus, "after successful good match ($site)";
+                #### debug location_plus, "after successful good match ($site)";
 
                 my $bib_circ = GODOT::CatalogueHoldings::BibCirc->dispatch({'site' => $site, 'system' => $system_type});           
                 $bib_circ->user_site($config->name);
@@ -789,7 +789,6 @@ sub fill_bib_circ {
 ##
 ## -a hash value may be a scalar, a list ref, or a ref to a list of list ref (ie. [[], [], [], ...])
 ##
-
 sub fmt_bib_circ {
     my($bib_circ_hash_ref, $reqtype, $fmt) = @_;
 
@@ -936,7 +935,7 @@ sub fmt_bib_circ {
 
                 my(@tmp_arr_text, @tmp_arr_html);  
 
-		my($source_db) = ${$bib_circ_hash_ref}{$BIB_CIRC_DB};
+		        my($source_db) = ${$bib_circ_hash_ref}{$BIB_CIRC_DB};
 
                 if ($html_incl || $text_incl) {
 
@@ -985,16 +984,12 @@ sub fmt_bib_circ {
                 if ($html_incl) {
 
                     if    ($field eq $BIB_CIRC_CIRC)   { 
-
-			$html_str .= join('<P>', @tmp_arr_html);
-
+			            $html_str .= join('<P>', @tmp_arr_html);
                     }
                     elsif ($field eq $BIB_CIRC_HOLDINGS) { 
-
                         $html_str .= join('<P>', @tmp_arr_html);     
                     }
                     else  { 
-
                         $html_str .= join('<BR>', @tmp_arr_html);    
                     } 
                 }
@@ -1047,7 +1042,7 @@ sub holdings_in_catalogue {
         ## -display link to catalogue if there is a url in the catalogue to the item 
         ## -was added to fix problem where title and isbn for a book were being displayed on the main screen but a 'Check Detailed Holdings' link was not 
         ##
-        my($num_bib_url) = @{${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL}}     if (defined ${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL});
+        my($num_bib_url) = @{${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL}} if (defined ${$bib_circ_hash_ref}{$BIB_CIRC_BIB_URL});
 
         if ($num_holdings || $num_circ || $num_bib_url) {
             return $TRUE;
