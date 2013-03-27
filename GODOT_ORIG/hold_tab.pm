@@ -958,7 +958,7 @@ sub catalogue_interface_screen {
         my $parallel = &para::from_queue(\%queue_hash, $query);
 
         if ((defined $parallel) && (ref($parallel->data) eq 'ARRAY')) {
-	    @cat_url_arr = @{ $parallel->data };
+	        @cat_url_arr = @{ $parallel->data };
             $res = $TRUE;
         }
     }
@@ -2311,14 +2311,11 @@ sub print_hold_tab  {
                     $count++;
 
                     ##
-                    ## -for now, we are just doing journals so 'html_incl_hash' and 'text_incl_hash' parameters 
-                    ##  can be for journals only
+                    ## -for now, we are just doing journals so 'html_incl_hash' and 'text_incl_hash' parameters can be for journals only
                     ##
-
                     my($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($link_bib_circ_hash_ref, 
                                                                                                     $reqtype, 
                                                                                                     $catalogue::SHORT_FMT);
-
                     foreach (split(/\035/, $bib_url_str)) {
 
                         my($text, $url) = split(/\036/, $_);
@@ -3182,7 +3179,7 @@ sub print_result_row {
     my(@hold_branch_arr, @record_arr);
     my($hold_ref, $bib_circ_hash_ref);
     my($recnum, $rowspan, $location, $i, $first_time);
-    my($html_str, $text_str, $last_html_str, $last_text_str, $call_no_str, $last_call_no_str, $tmp_str);
+    my($html_str, $text_str, $last_html_str, $last_text_str, $call_no_str, $last_call_no_str, $tmp_str, $bib_url_str);
     my($next_action, $fmt);
     my($num_request_link, $has_check_link, $has_auto_req_link, $has_hidden_record); 
 
@@ -3297,7 +3294,6 @@ sub print_result_row {
 
             my $search_group = ($citation->is_journal) ? $config->search_group($location) :
                                                          $config->search_group_non_journal($location);
-
             report_time_location;
 
             $record->display_group($display_group);
@@ -3316,35 +3312,50 @@ sub print_result_row {
 
                 foreach $bib_circ_hash_ref (@{${$holdings_hash_ref}{$location}}) {
                  
-                    ($html_str, $text_str, $call_no_str) = &catalogue::fmt_bib_circ($bib_circ_hash_ref, 
-                                                                                    $reqtype, 
-                                                                                    $fmt);                                    
+                    ##
+                    ## (23-feb-2013 kl) - adding display of 856 
+                    ##
+                    ($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($bib_circ_hash_ref, 
+                                                                                                  $reqtype, 
+                                                                                                  $fmt);                                    
                     if (($html_str eq '') && ($text_str eq '')) {
                         $tmp_str = sprintf("%s - %s - %s - %s", $location, param($gconst::TITLE_FIELD), param($gconst::ISBN_FIELD), param($gconst::ISSN_FIELD));
                     }
 
+                    ##----------------------------------------------
+                    ##
+                    ## (23-feb-2013 kl) - see same dated comment above
+                    ##
+                    my $bib_url_html_str;
+                    foreach (split(/\035/, $bib_url_str)) {
+
+                        my($text, $url) = split(/\036/, $_);
+
+                        $text = trim_beg_end($text);
+                        $url  = trim_beg_end($url);
+
+                        $bib_url_html_str .= "<a href=\"$url\">$text</a> ";           ## -need trailing space in case there are multiple marc-856
+                    }
+                    ##----------------------------------------------
+
                     if (naws($html_str)) { $row_holdings_found = $TRUE; } 
 
-                    if ($last_text_str ne $text_str) {                 ## -no point repeating text
-
+                    if ($last_text_str ne $text_str) {                       ## -no point repeating text
                         $holdings_save_hash{$location} .= $text_str;
-
                         $last_text_str = $text_str;
                     }
                 
                     if ($last_call_no_str ne $call_no_str) {                 ## -no point repeating text
-
                         ##
                         ## -dedup later by splitting on '036'
                         ##
                         if (naws($call_no_save_hash{$location})) { $call_no_save_hash{$location} .= "\036"; }
    
                         $call_no_save_hash{$location} .= $call_no_str;
-
                         $last_call_no_str = $call_no_str;
                     }
                 
-                    if ($last_html_str ne $html_str) {                 ## -no point repeating html
+                    if ($last_html_str ne $html_str) {                       ## -no point repeating html
 
                         if ($first_time) { 
                             $first_time = $FALSE; 
@@ -3352,9 +3363,11 @@ sub print_result_row {
                         else {
 			                $text_string .= '<P>';
                         }
-
-                        $text_string .= $html_str;    
-
+                        ##
+                        ## (23-feb-2013 kl) - see same dated comment above
+                        ##
+                        #### $text_string .= $html_str;    
+                        $text_string .= $html_str . $bib_url_html_str;    
                         $last_html_str = $html_str;
                     } 
                 }
@@ -3393,14 +3406,11 @@ sub print_result_row {
 
                 #### debug "show_record:  $show_record";
 
-
                 if ($show_record) {  
-
                     push(@record_arr, $record); 
                     if ($check_button) { $has_check_link++;  }
                 } 
                 else {  
-
                     $has_hidden_record++;       
                 }
             }
@@ -3445,16 +3455,11 @@ sub print_result_row {
     ## -get rid of poss call no dups here
     ##
     foreach (keys %call_no_save_hash) {
-
         my(@call_no_arr) = split(/\036/, $call_no_save_hash{$_});
-
         @call_no_arr = map { trim_beg_end(comp_ws($_)) }  @call_no_arr;
-
         rm_arr_dup_str(\@call_no_arr);
-
         $call_no_save_hash{$_} = join('; ', @call_no_arr);
     }
-
 
     param(-name=>$CALL_NO_SAVE_FIELD, '-values'=>[%call_no_save_hash]);         
 
@@ -3463,11 +3468,8 @@ sub print_result_row {
     #### debug location_plus, "*******************************";
 
     report_time_location;
-
     return (\@record_arr, $num_request_link, $has_check_link, $has_auto_req_link, $has_hidden_record);
 }
-
-
 
 ##
 ## -returns TRUE/FALSE for success/failure
