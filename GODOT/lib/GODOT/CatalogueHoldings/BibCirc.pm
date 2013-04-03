@@ -503,16 +503,26 @@ sub issn_from_cat_rec {
 
 sub bib_url_from_cat_rec {
     my($self, $record, $marc) = @_;
-    
+
     my @fields = $marc->field('856');
     return $FALSE unless scalar @fields;
 
-    my $url_text_subfield = $self->_url_text_subfield;
+    ##
+    ## (24-feb-2013 kl) - there may be multiple 856 subfields containing text (eg. upei uses both 'y' or 'z');
+    ## 
+    #### my $url_text_subfield = $self->_url_text_subfield;
+    my @url_text_subfield = $self->_url_text_subfield;
+
+    #### debug '-------------------------- @url_text_subfield: ', join('--', @url_text_subfield);
 
     foreach my $field (@fields) {
 
         my $url      =  $self->_keep_subfields_clean_up_marc($field, ['u']);
-        my $url_text =  $self->_keep_subfields_clean_up_marc($field, [$url_text_subfield]);  
+        my $url_text =  $self->_keep_subfields_clean_up_marc($field, [@url_text_subfield]);  
+        ##
+        ## (23-feb-2013 kl) - add method for default text;
+        ##
+        $url_text = $self->default_bib_url_text if aws($url_text);
 
         $self->bib_url($url, $url_text) unless aws($url);
     }
@@ -610,7 +620,9 @@ sub default_holdings {
     }
 }
 
-
+sub default_bib_url_text {
+    return 'Online access';
+}
 
 sub skip_circ_location { return $FALSE; }
 
@@ -618,7 +630,6 @@ sub skip_circ_location { return $FALSE; }
 sub adjust_html_incl {
     ## do nothing
 }
-
 
 sub adjust_html_incl_long {
     ## do nothing
@@ -951,7 +962,12 @@ sub _union_holdings_subfield_processing {
     return $subfield;
 }
 
-sub _url_text_subfield { return 'z'; }
+##
+## (26-feb-2013 kl) 
+##  - return array instead of scalar; 
+##  - there may be multiple 856 subfields containing text (eg. upei uses both 'y' or 'z');
+##
+sub _url_text_subfield { return qw(z); }
 
 sub _clean_up_marc {
     my($self, $field) = @_;
