@@ -1,4 +1,4 @@
-INSERT INTO accounts (key, name, email, phone, password, administrator) VALUES ('admin', 'Default Administrator', '', '', 'adx5P1MEHU372', true);
+INSERT INTO accounts (key, name, email, phone, password, administrator) VALUES ('admin', 'Default Administrator', '', '', '{{admin_password}}', true);
 
 INSERT INTO sites (key, name, active) values ('AEU',       'University of Alberta',                      true);
 INSERT INTO sites (key, name, active) values ('BVAS',      'Simon Fraser University',                    true);
