@@ -143,6 +143,10 @@ sub import_citation {
 
     debug location_plus, "export_url:  ",  $export_url;
 
+    ##
+    ## (23-oct-2013 kl) -- added as requested by Acadia   
+    ## 
+    my $vendor = param('vendor');
 
     ##
     ## (21-apr-2005 kl) - the vendor and database do not show up in refworks.  This is a problem for other 
@@ -152,7 +156,7 @@ sub import_citation {
 
     my $rw_url =  join('', 
                        $self->refworks_root_url, 
-                       '?vendor=', 
+                       '?vendor=', escape($vendor), 
                        '&filter=', escape($FILTER),
                        '&database=', escape($db),
                        '&url=', escape($export_url)); 
@@ -171,18 +175,28 @@ sub import_citation {
 sub export_citation {
     my($self) = @_;
 
+    debug '1 export_citation';
+
     $self->file_id(param('id'));
 
+    debug '2 export_citation';
+
     $self->generate_file_name;
+
+    debug '3 export_citation';
 
     if (aws($self->file)) {
         return header . start_html . "Unable to generate name for temporary file." . end_html;        
     }
 
+    debug '4 export_citation';
+
     my $fh = new FileHandle;
     unless (open $fh, $self->file) {
         return  header . start_html . "Unable to open temporary file (" . $self->file . ") for reading." . end_html;        
     } 
+
+    debug '5 export_citation';
     
     my @filtered = <$fh>;    
      
@@ -191,6 +205,9 @@ sub export_citation {
     ##
     #### return header('text/plain') . join('', @filtered);
     ####
+
+    debug '6 export_citation';
+
     return header(-type => 'text/plain', -charset => 'ISO-8859-1') . join('', @filtered);
 }
 
