@@ -963,7 +963,10 @@ sub catalogue_interface_screen {
         }
     }
 
-    #### foreach my $u (@cat_url_arr) { debug "cat_url:  $u"; }
+    debug '---------------------------------------------------'; 
+    foreach my $u (@cat_url_arr) { debug "cat_url:  $u"; }
+    debug '---------------------------------------------------'; 
+
 
     my $cat_url =  shift @cat_url_arr; 
 
@@ -1205,9 +1208,9 @@ sub request_screen {
          $ill_fields{$HOLDINGS_SITE_FIELD} = join(' ', param($HOLDINGS_SITE_FIELD) );
     }
 
-
-    #### debug "*** ", location, " - HOLDINGS_SITE_FIELD:  ", $ill_fields{$HOLDINGS_SITE_FIELD};
-
+    debug '---------------------------------------------------------------------------------';
+    debug "*** ", location, " - HOLDINGS_SITE_FIELD:  ", $ill_fields{$HOLDINGS_SITE_FIELD};
+    debug '---------------------------------------------------------------------------------';
 
     ## -moved HTTP_REFERER logic to main_hold_scr so that it would get URL of database CGI instead this one (kl)
 
@@ -2313,9 +2316,8 @@ sub print_hold_tab  {
                     ##
                     ## -for now, we are just doing journals so 'html_incl_hash' and 'text_incl_hash' parameters can be for journals only
                     ##
-                    my($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($link_bib_circ_hash_ref, 
-                                                                                                    $reqtype, 
-                                                                                                    $catalogue::SHORT_FMT);
+                    my($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($link_bib_circ_hash_ref, $reqtype, $catalogue::SHORT_FMT);
+
                     foreach (split(/\035/, $bib_url_str)) {
 
                         my($text, $url) = split(/\036/, $_);
@@ -3315,9 +3317,8 @@ sub print_result_row {
                     ##
                     ## (23-feb-2013 kl) - adding display of 856 
                     ##
-                    ($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($bib_circ_hash_ref, 
-                                                                                                  $reqtype, 
-                                                                                                  $fmt);                                    
+                    ($html_str, $text_str, $call_no_str, $bib_url_str) = &catalogue::fmt_bib_circ($bib_circ_hash_ref, $reqtype, $fmt);  
+
                     if (($html_str eq '') && ($text_str eq '')) {
                         $tmp_str = sprintf("%s - %s - %s - %s", $location, param($gconst::TITLE_FIELD), param($gconst::ISBN_FIELD), param($gconst::ISSN_FIELD));
                     }
@@ -3366,8 +3367,8 @@ sub print_result_row {
                         ##
                         ## (23-feb-2013 kl) - see same dated comment above
                         ##
-                        #### $text_string .= $html_str;    
-                        $text_string .= $html_str . $bib_url_html_str;    
+                        $text_string .= $html_str;    
+                        $text_string .= $bib_url_html_str unless ($citation->is_journal);    
                         $last_html_str = $html_str;
                     } 
                 }
@@ -3735,17 +3736,16 @@ sub get_table_info {
 
         unless (($config->holdings_list eq $HOLDINGS_LIST_CAN_BORROW_ONLY) && (! ${$table_request_hash_ref}{$lend_branch})) {
 
-            
-            debug $config->holdings_list, " -- $lend_branch -- ${$table_request_hash_ref}{$lend_branch}\n";
+            #### debug $config->holdings_list, " -- $lend_branch -- ${$table_request_hash_ref}{$lend_branch}\n";
 
             ##
             ## (01-sep-2004 kl) - multiple iterations of main_holdings_screen (due to different scrno or due to 
             ##                    page reloading) will result in sites being added more than once, so need
             ##                    to check whether site is in list of not
 
-	    unless (grep {$lender_site->description eq $_} param($HOLDINGS_SITE_FIELD)) {     
+	        unless (grep {$lender_site->description eq $_} param($HOLDINGS_SITE_FIELD)) {     
                 param(-name=>$HOLDINGS_SITE_FIELD, '-values'=>[param($HOLDINGS_SITE_FIELD), $lender_site->description]);
-	    }
+	        }
         }
 
         ##-----------fill $ill_info_hash_ref------------------------------------------
