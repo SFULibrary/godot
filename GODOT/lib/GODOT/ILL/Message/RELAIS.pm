@@ -387,7 +387,7 @@ sub valid_date {
         my $max_year = &GODOT::Date::date_yyyy(time) + 2;
 
         if ($yyyy > $max_year)  {
-            $self->error_message("Need before date is too far in the future.  Use the format DD/MM/YY (eg: 31/12/00 NOT 31/12/2000)");
+            $self->error_message("Need before date is too far in the future.  Use the format DD/MM/YY (eg: 31/12/00 NOT 31/12/2000).");
             return $FALSE;
         }
         
@@ -405,7 +405,7 @@ sub valid_date {
         ##
 
         if (Time::Local::timelocal(59,59,23,$dd,$mm-1,$yyyy) < time()) {
-            $self->error_message("Need before date must be a future date.");
+            $self->error_message("Need before date must be a future date. Use the format DD/MM/YY (eg: 31/12/00 NOT 31/12/2000).");
             return $FALSE;
         }
 
