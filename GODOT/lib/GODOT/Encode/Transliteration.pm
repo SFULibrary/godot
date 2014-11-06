@@ -84,7 +84,7 @@ sub utf8_to_ascii_transliteration {
 }
 
 ##
-## (29-jan-2010 kl) -- started with code from Search::Tools::Transliterate by Peter Korman
+## (29-jan-2010 kl) -- started with code from Search::Tools::Transliterate by Peter Karman
 ## 
 ## Input and output are strings in perl internal format.
 ## Output only contains characters in latin1 range.
@@ -129,7 +129,7 @@ sub utf8_to_latin1_transliteration {
 
 
 ##
-## (29-jan-2010 kl) -- based on code from Search::Tools::Transliterate by Peter Korman
+## (29-jan-2010 kl) -- based on code from Search::Tools::Transliterate by Peter Karman
 ##
 sub utf8_to_latin1_transliteration_map {
  
@@ -161,7 +161,7 @@ sub utf8_to_latin1_transliteration_map {
 }
 
 ##
-## (29-jan-2010 kl) -- based on code from Search::Tools::Transliterate by Peter Korman
+## (29-jan-2010 kl) -- based on code from Search::Tools::Transliterate by Peter Karman
 ##
 sub _Utag_to_chr {
     my($t) = @_;
@@ -172,7 +172,7 @@ sub _Utag_to_chr {
 }
 
 ##
-## Based on code from Search::Tools::Transliterate by Peter Korman.  Notes in this module say that the  
+## Based on code from Search::Tools::Transliterate by Peter Karman.  Notes in this module say that the  
 ## map was taken directly from http://www.cl.cam.ac.uk/~mgk25/download/transtab.tar.gz by Markus Kuhn.
 ## Includes mappings for more than just utf8 to latin1 transliteration.
 ## 
