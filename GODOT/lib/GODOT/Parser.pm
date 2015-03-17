@@ -28,70 +28,70 @@ use strict;
 # returns: $parser - a parser object
 
 sub dispatch {
-	my ($class, $db, $database, $site) = @_;
+    my ($class, $db, $database, $site) = @_;
 
-	debug("Dispatching database parser from GODOT::Parser for database '$db'") if $GODOT::Config::TRACE_CALLS;
+    debug("Dispatching database parser from GODOT::Parser for database '$db'") if $GODOT::Config::TRACE_CALLS;
 
-        #### debug location, ":  db:\n", Dumper($db);
-        #### debug location, ":  database:\n", Dumper($database);
+    #### debug location, ":  db:\n", Dumper($db);
+    #### debug location, ":  database:\n", Dumper($database);
 
-	# Map databases to specific parsers
-	my $mapping = \%GODOT::Config::DBASE_PARSER_MAPPING;
+    ##
+    ## Map databases to specific parsers
+    ##
+    my $mapping = \%GODOT::Config::DBASE_PARSER_MAPPING;
 
-        my $mapping_dbase_type = \%GODOT::Config::DBASE_TYPE_PARSER_MAPPING;	
+    my $mapping_dbase_type = \%GODOT::Config::DBASE_TYPE_PARSER_MAPPING;    
 
-	my $module;
+    my $module;
 
-	if (exists($mapping->{$db})) {
-
-		# Check the mapping above for a defined parser mapping
-		$module = "GODOT::Parser::" . $mapping->{$db};
+    if (exists($mapping->{$db})) {
+        ##
+        ## Check the mapping above for a defined parser mapping
+        ##
+        $module = "GODOT::Parser::" . $mapping->{$db};
 
         ##
         ## (15-may-2002 kl) - added for FirstSearch openurl parser
         ##
-	} elsif (exists($mapping_dbase_type->{$database->dbase_type()})) {
+    } 
+    elsif (exists($mapping_dbase_type->{$database->dbase_type()})) {        
+        warn "<<< ", $mapping_dbase_type->{$database->dbase_type()}, ">>>";
+        $module = "GODOT::Parser::" . $mapping_dbase_type->{$database->dbase_type()};        
+    } 
+    elsif ($database->is_openurl_syntax()) {
         
- 	        warn "<<< ", $mapping_dbase_type->{$database->dbase_type()}, ">>>";
+        $module = "GODOT::Parser::" . 'openurl';
 
-	        $module = "GODOT::Parser::" . $mapping_dbase_type->{$database->dbase_type()};        
-        ##
-        ## (06-feb-2002 kl)
-        ##
-	} elsif ($database->is_openurl_syntax()) {
-        
-            $module = "GODOT::Parser::" . 'openurl';
+    } else {
+        ## Attempt to load a like-named parser from the Parser
+        ## directory.  If that fails, return a new object of the
+        ## generic parser (this module).
 
-	} else {
-		# Attempt to load a like-named parser from the Parser
-		# directory.  If that fails, return a new object of the
-                # generic parser (this module).
+        $module = "GODOT::Parser::" . $db;
+    }        
 
-		$module = "GODOT::Parser::" . $db;
-	}		
+    # Require uses filename rather than package name if passed a string
+    (my $file = "$module.pm") =~ s/::/\//g;
 
-	# Require uses filename rather than package name if passed a string
-	(my $file = "$module.pm") =~ s/::/\//g;
+    debug("GODOT::Parser::dispatch chose module: $module ($file)");
 
-	debug("GODOT::Parser::dispatch chose module: $module ($file)");
-
-	eval {require($file)};
-	if ($@ eq '') {
-		return new $module $site;
-	} else {
-		warning("Could not load parser $module ($file) for database $db: $@") if $GODOT::Config::WARN_ON_DEFAULT_PARSER;
-		return 0; 
-	}
+    eval {require($file)};
+    if ($@ eq '') {
+        return new $module $site;
+    } else {
+        warning("Could not load parser $module ($file) for database $db: $@") if $GODOT::Config::WARN_ON_DEFAULT_PARSER;
+        return 0; 
+    }
 }
 
 # new - Returns a blessed GODOT::Parser object.
 
 sub new {
-        my($class, $site) = @_;
+    my($class, $site) = @_;
 
-	my $object = bless {}, $class;
-        $object->{'site'} = $site;
-        return $object;
+    my $object = bless {}, $class;
+    $object->{'site'} = $site;
+    return $object;
 }
 
 # preparse - Does things common to almost all parsers like setting the 
@@ -100,20 +100,20 @@ sub new {
 
 
 sub parse {
-	my ($self, $citation) = @_;
-	debug("Generic parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation) = @_;
+    debug("Generic parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
 
-	$self->pre_parse($citation);
+    $self->pre_parse($citation);
 
-	$citation->req_type($self->pre_get_req($citation));
+    $citation->req_type($self->pre_get_req($citation));
 
-	unless (defined($citation->req_type())) {
-		$citation->req_type($self->get_req_type($citation));
-	}
-	
-	$self->parse_citation($citation);
-	
-	$self->post_parse($citation);
+    unless (defined($citation->req_type())) {
+        $citation->req_type($self->get_req_type($citation));
+    }
+    
+    $self->parse_citation($citation);
+    
+    $self->post_parse($citation);
 }
 
 ## ---pre_parse---- 
@@ -121,243 +121,250 @@ sub parse {
 #2) does some parsing that has to be done before deciding req_type.
 
 sub pre_parse {
-	my ($self, $citation) = @_;
-	debug("Generic pre_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation) = @_;
+    debug("Generic pre_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
 
-	if ($citation->pre('PT')) { 
-		$citation->parsed('PUBTYPE', lc($citation->pre('PT')));
-	} else {
-		$citation->parsed('PUBTYPE', lc($citation->pre('DT')));
-	}
+    if ($citation->pre('PT')) { 
+        $citation->parsed('PUBTYPE', lc($citation->pre('PT')));
+    } else {
+        $citation->parsed('PUBTYPE', lc($citation->pre('DT')));
+    }
 
-	# Check standard ISSN fields
-	foreach my $field ('IS', 'ISSN', 'SN', 'NU') {
-		last if defined($citation->parsed('ISSN', GODOT::String::clean_ISSN($citation->pre($field))));
-	}
-
+    # Check standard ISSN fields
+    foreach my $field ('IS', 'ISSN', 'SN', 'NU') {
+        last if defined($citation->parsed('ISSN', GODOT::String::clean_ISSN($citation->pre($field))));
+    }
 }
 
 sub post_parse {
-	my ($self, $citation) = @_;
-	debug("Generic post_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
-	
-        #### debug ('-----------------------------------------------------------------');
-        #### debug Dumper($self);
-        #### debug ('-----------------------------------------------------------------');
+    my ($self, $citation) = @_;
+    debug("Generic post_parse() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    
+    #### debug ('-----------------------------------------------------------------');
+    #### debug Dumper($self);
+    #### debug ('-----------------------------------------------------------------');
        
-        ##
-        ## -use info in citation (eg. pmid, doi) to find out more about citation;  
-        ## -add this new data to citation object;
-        ##
-        use GODOT::FetchAll;
-        my $fetch_all = GODOT::FetchAll->dispatch({'dispatch_site' => $self->{'site'}});        
-        $fetch_all->add_data($citation);     ## -add fetched data from zero or more sources to $citation object
+    ##
+    ## -use info in citation (eg. pmid, doi) to find out more about citation;  
+    ## -add this new data to citation object;
+    ##
+    use GODOT::FetchAll;
+    my $fetch_all = GODOT::FetchAll->dispatch({'dispatch_site' => $self->{'site'}});        
+    $fetch_all->add_data($citation);     ## -add fetched data from zero or more sources to $citation object
 
-	my $temp = $citation->parsed('PGS');
+    my $temp = $citation->parsed('PGS');
 
-	# remove trailing periods so periods in 'Pages VII.15-VII.23.1976. .' (from georef) do not get stripped 
-	$temp =~ s#\.\s*$##; 
+    # remove trailing periods so periods in 'Pages VII.15-VII.23.1976. .' (from georef) do not get stripped 
+    $temp =~ s#\.\s*$##; 
 
-        # (28-mar-2002 kl) - remove leading 'pages', 'page' and abbreviations
-        $temp =~ s#^\s*pages|^\s*page|^\s*pp[\.]*|^\s*p[\.]*|^\s*pgs[\.]*##;
+    # (28-mar-2002 kl) - remove leading 'pages', 'page' and abbreviations
+    $temp =~ s#^\s*pages|^\s*page|^\s*pp[\.]*|^\s*p[\.]*|^\s*pgs[\.]*##;
 
-	$citation->parsed('PGS', $temp);
+    $citation->parsed('PGS', $temp);
 
-	# try to fill title
-	
-	if (aws($citation->parsed('TITLE'))) {
-		$citation->parsed('TITLE', $citation->parsed('SERIES'));
-	} 
+    # try to fill title
+    
+    if (aws($citation->parsed('TITLE'))) {
+        $citation->parsed('TITLE', $citation->parsed('SERIES'));
+    } 
 
-	if (aws($citation->parsed('TITLE'))) {
-		$citation->parsed('TITLE', $citation->parsed('SOURCE'));
-	} 
+    if (aws($citation->parsed('TITLE'))) {
+        $citation->parsed('TITLE', $citation->parsed('SOURCE'));
+    } 
 
-	# strip year out of pub field
+    # strip year out of pub field
 
-	if ($citation->parsed('PUB') =~ m#(\d{4})\s*$#) {
-		my $year = $1;
+    if ($citation->parsed('PUB') =~ m#(\d{4})\s*$#) {
+        my $year = $1;
 
-		# if same then strip off as it is dup info
-		if ($year eq $citation->parsed('YEAR')) {
-			my $temp = $citation->parsed('PUB');
-			$temp =~ s#\d{4}\s*$##;
-			$temp = strip_trailing_punc_ws($temp);
-			$citation->parsed('PUB', $temp);
-		}
-	}
+        # if same then strip off as it is dup info
+        if ($year eq $citation->parsed('YEAR')) {
+            my $temp = $citation->parsed('PUB');
+            $temp =~ s#\d{4}\s*$##;
+            $temp = strip_trailing_punc_ws($temp);
+            $citation->parsed('PUB', $temp);
+        }
+    }
 
+    ##
+    ## (28-mar-2002 kl) - try to fill the MONTH field and the new DAY field if they are not already filled
+    ## (28-mar-2002 kl) - check to see if month includes a date, if so parse out and put in DAY field 
+    ##
+    if ($citation->parsed('MONTH') =~ m#^\s*([a-zA-Z]+)\s+(\d{1,2})\s*$#)   {
 
-        # (28-mar-2002 kl) - try to fill the MONTH field and the new DAY field if they
-        #                    are not already filled
-
-
-        # (28-mar-2002 kl) - check to see if month includes a date, if so parse out and put in DAY field 
-
-        if ($citation->parsed('MONTH') =~ m#^\s*([a-zA-Z]+)\s+(\d{1,2})\s*$#)   {
-
-            my $mon = $1;
-            my $date = $2;
-
-            $date =~ s#^0+##;
+        my $mon = $1;
+        my $date = $2;
+        $date =~ s#^0+##;
  
-            if (($date > 0) && ($date <= 31)) {
-                $citation->parsed('MONTH', $mon);                 
-                $citation->parsed('DAY', $date); 
-            }
+        if (($date > 0) && ($date <= 31)) {
+            $citation->parsed('MONTH', $mon);                 
+            $citation->parsed('DAY', $date); 
         }
+    }
 
-
-        my $yyyymmdd = $citation->parsed('YYYYMMDD');
+    my $yyyymmdd = $citation->parsed('YYYYMMDD');
         
-        if (GODOT::String::aws($citation->parsed('MONTH')) && (length($yyyymmdd) >= 6))  {
+    if (GODOT::String::aws($citation->parsed('MONTH')) && (length($yyyymmdd) >= 6))  {
+        my $mm = substr($yyyymmdd, 4, 2);
+        $citation->parsed('MONTH', GODOT::Date::date_mm_to_mon($mm)) unless ($mm == 0);
+    }
 
-            my $mm = substr($yyyymmdd, 4, 2);
-            $citation->parsed('MONTH', GODOT::Date::date_mm_to_mon($mm)) unless ($mm == 0);
-        }
+    if (GODOT::String::aws($citation->parsed('DAY')) && (length($yyyymmdd) == 8))  {
+        my $dd = substr($yyyymmdd, 6, 2);
+        $dd =~ s#^0+##;   
+        $citation->parsed('DAY', $dd) unless ($dd == 0);
+    }
 
-        if (GODOT::String::aws($citation->parsed('DAY')) && (length($yyyymmdd) == 8))  {
+    if (aws($citation->parsed('YEAR'))) {       
+        my $year = substr($yyyymmdd, 0, 4);
+        $citation->parsed('YEAR', $year);
+    }
 
-            my $dd = substr($yyyymmdd, 6, 2);
-            $dd =~ s#^0+##;   
-            $citation->parsed('DAY', $dd) unless ($dd == 0);
-        }
+    ##
+    ## (08-dec-2006 kl) -- check that we have valid ISBN and if not try to extract one 
+    ##
 
-        if (aws($citation->parsed('YEAR'))) {       
+    if (my $isbn = valid_ISBN($citation->parsed('ISBN'))) {
 
-            my $year = substr($yyyymmdd, 0, 4);
-            $citation->parsed('YEAR', $year);
-        }
-
-        ##
-        ## (08-dec-2006 kl) -- check that we have valid ISBN and if not try to extract one 
-        ##
-
-        if (my $isbn = valid_ISBN($citation->parsed('ISBN'))) {
-
-            if ($isbn ne $citation->parsed('ISBN')) {
-                ##
-                ## -tested ISBN was not valid, but we were able to extract a valid one, so save that to ISBN field
-                ##
-                $citation->parsed('ISBN', $isbn);
-            }
-        }
-        else { 
-            ##         
-            ## (01-jan-2006 kl ) tested ISBN was not valid and we were unable to extract a valid one, so initialize field
-            ## 
-            $citation->parsed('ISBN', '');
-        }
-
-        ##
-	## strip leading and trailing whitespace from the citation fields
-        ##
-	my $tmp_value;
-	foreach my $field (@GODOT::Citation::PARSED_FIELDS) {
-	    $tmp_value = $citation->parsed($field);
-	    $tmp_value = &GODOT::String::trim_beg_end($tmp_value);
-
+        if ($isbn ne $citation->parsed('ISBN')) {
             ##
-            ## (17-jan-2007 kl) - strip out NUL characters as they may be taken as end of string when data is passed to 
-            ##                    other programs
-            ## 
-            $tmp_value =~ s#\000##g;
-
+            ## -tested ISBN was not valid, but we were able to extract a valid one, so save that to ISBN field
             ##
-            ## -(17-jan-2007 kl) - what we see when an 'en-dash' is cut/paste             
-            ##
-            $tmp_value =~ s#\226#-#g;                 
-
-	    $citation->parsed($field, $tmp_value);
-	}
-
-        ##
-        ## -final try to get a request type
-        ##
-        if ($citation->is_unknown) {
-            my $reqtype = $self->post_get_req_type($citation);
-            $citation->req_type($reqtype);
-
-            ##
-            ## -if we went from 'unknown' to 'journal article' then adjust author accordingly
-            ##
-            if ($citation->is_journal && aws($citation->parsed('ARTAUT'))  && naws($citation->parsed('AUT'))) {
-                $citation->parsed('ARTAUT', $citation->parsed('AUT'));
-                $citation->parsed('AUT', '');
-            }
+            $citation->parsed('ISBN', $isbn);
         }
+    }
+    else { 
+        ##         
+        ## (01-jan-2006 kl ) tested ISBN was not valid and we were unable to extract a valid one, so initialize field
+        ## 
+        $citation->parsed('ISBN', '');
+    }
+
+    ##
+    ## strip leading and trailing whitespace from the citation fields
+    ##
+    my $tmp_value;
+    foreach my $field (@GODOT::Citation::PARSED_FIELDS) {
+        $tmp_value = $citation->parsed($field);
+        $tmp_value = &GODOT::String::trim_beg_end($tmp_value);
+        ##
+        ## (17-jan-2007 kl) - strip out NUL characters as they may be taken as end of string when data is passed to 
+        ##                    other programs
+        ## 
+        $tmp_value =~ s#\000##g;
+        ##
+        ## -(17-jan-2007 kl) - what we see when an 'en-dash' is cut/paste             
+        ##
+        $tmp_value =~ s#\226#-#g;                 
+
+        $citation->parsed($field, $tmp_value);
+    }
+
+    ##
+    ## -final try to get a request type
+    ##
+    if ($citation->is_unknown) {
+        my $reqtype = $self->post_get_req_type($citation);
+        $citation->req_type($reqtype);
 
         ##
-        ## (23-jan-2003 kl)
-        ##               
-	if (($citation->req_type() eq $GODOT::Constants::THESIS_TYPE) && (&diss_abs_issn($citation->parsed('ISSN')))) {             
-	     $citation->parsed('ISSN', '');
-	}
+        ## -if we went from 'unknown' to 'journal article' then adjust author accordingly
+        ##
+        if ($citation->is_journal && aws($citation->parsed('ARTAUT'))  && naws($citation->parsed('AUT'))) {
+            $citation->parsed('ARTAUT', $citation->parsed('AUT'));
+            $citation->parsed('AUT', '');
+        }
+    }
+
+    ##
+    ## (16-mar-2015 kl) 
+    ## - changed from &diss_abs_issn to &diss_abs_match for both issn and title
+    ## - more change to parsed fields if match on 'dissertation abstracts' or on 'masters abstracts'
+    ##              
+    if (&diss_abs_issn($citation->parsed('ISSN')) || &diss_abs_title($citation->parsed('TITLE'))) {             
+         $citation->req_type($GODOT::Constants::THESIS_TYPE);
+         $citation->parsed('ISSN', '');
+         if (naws($citation->parsed('ARTTIT'))) {   ## - assume ARTTIT contains thesis title
+             $citation->parsed('NOTE', $citation->parsed('TITLE'));
+             $citation->parsed('TITLE', $citation->parsed('ARTTIT'));
+             $citation->parsed('ARTTIT', '');
+         }
+         if (naws($citation->parsed('ARTAUT'))) {                                                   ## - assume ARTAUT contains thesis author
+             $citation->parsed('AUT', $citation->parsed('ARTAUT'));
+             $citation->parsed('ARTAUT', '');
+         }
+         $citation->parsed('VOL', '');                  
+         $citation->parsed('ISS', '');                  
+         $citation->parsed('PGS', '');                  
+    }
 }
-	
-
 
 # parse_citation - Default parser, attempts to pick out common items like
 # title, ISSN, etc. Takes a GODOT::Citation object and returns that object
 # including the parsed fields.
 
 sub parse_citation {
-	my ($self, $citation) = @_;
-	debug("Generic parse_citation() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation) = @_;
+    debug("Generic parse_citation() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
 
-	$citation->parsed('SOURCE', $citation->pre('SO'));
-	if (GODOT::String::aws($citation->parsed('SOURCE')) && $citation->is_journal() ) {
-	    $citation->parsed('SOURCE', $citation->pre('JN'));
-	}
+    $citation->parsed('SOURCE', $citation->pre('SO'));
+    if (GODOT::String::aws($citation->parsed('SOURCE')) && $citation->is_journal() ) {
+        $citation->parsed('SOURCE', $citation->pre('JN'));
+    }
 
-	if ( $citation->is_thesis()  || $citation->is_book()    || $citation->is_unknown() ) {
-		$citation->parsed('TITLE', $citation->pre('TI'));
-		$citation->parsed('AUT', $citation->pre('AU'));
-	} else {
-		if (! $citation->get_dbase()->is_blank_dbase()) {
-		    $citation->parsed('ARTTIT', $citation->pre('TI'));
-		    $citation->parsed('ARTAUT', $citation->pre('AU'));
-		}
-	}
+    if ( $citation->is_thesis()  || $citation->is_book()    || $citation->is_unknown() ) {
+        $citation->parsed('TITLE', $citation->pre('TI'));
+        $citation->parsed('AUT', $citation->pre('AU'));
+    } else {
+        if (! $citation->get_dbase()->is_blank_dbase()) {
+            $citation->parsed('ARTTIT', $citation->pre('TI'));
+            $citation->parsed('ARTAUT', $citation->pre('AU'));
+        }
+    }
 
-	$citation->parsed('YEAR', $citation->pre('PY'));
-	$citation->parsed('SERIES', $citation->pre('SE')); 
+    $citation->parsed('YEAR', $citation->pre('PY'));
+    $citation->parsed('SERIES', $citation->pre('SE')); 
 
-        ##
-	## Check standard ISBN fields
-        ##
-        ## (13-nov-2006 kl) - Changed from 'clean_ISBN' to 'valid_ISBN' so check digit value gets checked.
-        ##
-	foreach my $field ('IB', 'ISBN', 'BN', 'SN', 'IS', 'NU') {
+    ##
+    ## Check standard ISBN fields
+    ##
+    ## (13-nov-2006 kl) - Changed from 'clean_ISBN' to 'valid_ISBN' so check digit value gets checked.
+    ##
+    foreach my $field ('IB', 'ISBN', 'BN', 'SN', 'IS', 'NU') {
 
-	    if (my $isbn = valid_ISBN($citation->pre($field))) {
-             	$citation->parsed('ISBN', $isbn);   
-                last;
-            }
-	}
+        if (my $isbn = valid_ISBN($citation->pre($field))) {
+            $citation->parsed('ISBN', $isbn);   
+            last;
+        }
+    }
 
-	return $citation;
+    return $citation;
 }
 
-##---pre_get_req()----
-#Handles some special cases in deciding req_type
-#
+##
+## Handles some special cases in deciding req_type
+##
 sub pre_get_req {
-	my ($self, $citation) = @_;
-	debug("Generic pre_get_req() in GODOT::Parser\n") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation) = @_;
+    debug("Generic pre_get_req() in GODOT::Parser\n") if $GODOT::Config::TRACE_CALLS;
 
-	my $reqtype;
+    my $reqtype;
 
-	if (&diss_abs_issn($citation->parsed('ISSN'))) { 
-	     $reqtype =  $GODOT::Constants::THESIS_TYPE;
-	     $citation->parsed('ISSN', '');
-	}
-	else {
-	}
+    ##
+    ## (16-mar-2015 kl) - commented out as calling &diss_abs_issn and &diss_abs_title in &post_parse should be sufficient
+    ##               
 
-	return $reqtype;
+    ##
+    ## - parsed title is not yet available so no point passing to &diss_abs_match
+    ##
+    #### if (&diss_abs_issn($citation->parsed('ISSN'), '')) {   
+    ####     $reqtype =  $GODOT::Constants::THESIS_TYPE;
+    ####     $citation->parsed('ISSN', '');
+    #### }
+    ####
+
+    return $reqtype;
 }
-
 
 # get_req_type - Attempts to determine what type of request is being parsed 
 # (book, thesis, etc.).
@@ -366,72 +373,87 @@ sub pre_get_req {
 # returns: a GODOT::Constants::REQ_TYPE variable 
 
 sub get_req_type {
-	my ($self, $citation, $pubtype) = @_;
-	debug("Generic get_req_typ() in GODOT::Parser\n") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation, $pubtype) = @_;
+    debug("Generic get_req_typ() in GODOT::Parser\n") if $GODOT::Config::TRACE_CALLS;
 
-	my $reqtype = $GODOT::Constants::UNKNOWN_TYPE;
-	$pubtype = lc($citation->parsed('PUBTYPE') or $citation->pre('PT') or $citation->pre('DT')) unless defined($pubtype);
+    my $reqtype = $GODOT::Constants::UNKNOWN_TYPE;
+    $pubtype = lc($citation->parsed('PUBTYPE') or $citation->pre('PT') or $citation->pre('DT')) unless defined($pubtype);
 
-	if ( $pubtype =~ /journal/           || 
-	     $pubtype eq 'article-citation'  || 
-	     $pubtype eq 'article'           ||
-	     $pubtype eq 'letter'            ||
-	     $pubtype =~ /editorial/         ||
-	     $pubtype =~ /periodical/        ||
-	     $pubtype =~ /book.*review/ ) {
+    if ( $pubtype =~ /journal/           || 
+         $pubtype eq 'article-citation'  || 
+         $pubtype eq 'article'           ||
+         $pubtype eq 'letter'            ||
+         $pubtype =~ /editorial/         ||
+         $pubtype =~ /periodical/        ||
+         $pubtype =~ /book.*review/ ) {
 
             $reqtype = $GODOT::Constants::JOURNAL_TYPE;
         }
-        elsif ( $pubtype =~ /association.*paper/  ||
-                $pubtype =~ /chapter/            ||
-                $pubtype =~ /book.*article/ ) {
-            $reqtype = $GODOT::Constants::BOOK_ARTICLE_TYPE;
-        }
-        elsif ($pubtype =~ /book/ || $pubtype =~ /monograph/) {
-            $reqtype =  $GODOT::Constants::BOOK_TYPE;
-        }
-        elsif ($pubtype =~ /dissertation/) {
-            $reqtype = $GODOT::Constants::THESIS_TYPE;
-        }
-	return $reqtype;
+    elsif ( $pubtype =~ /association.*paper/  ||
+        $pubtype =~ /chapter/            ||
+        $pubtype =~ /book.*article/ ) {
+        $reqtype = $GODOT::Constants::BOOK_ARTICLE_TYPE;
+    }
+    elsif ($pubtype =~ /book/ || $pubtype =~ /monograph/) {
+        $reqtype =  $GODOT::Constants::BOOK_TYPE;
+    }
+    elsif ($pubtype =~ /dissertation/) {
+        $reqtype = $GODOT::Constants::THESIS_TYPE;
+    }
+    return $reqtype;
 }
-
 
 sub run_post_get_req_type {
     return $FALSE;
 }
 
 sub post_get_req_type {
-	my ($self, $citation) = @_;
-	debug("Generic post_get_req_type() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
+    my ($self, $citation) = @_;
+    debug("Generic post_get_req_type() in GODOT::Parser") if $GODOT::Config::TRACE_CALLS;
     
-        my $reqtype = $citation->req_type;
-        return $reqtype unless $self->run_post_get_req_type;
+    my $reqtype = $citation->req_type;
+    return $reqtype unless $self->run_post_get_req_type;
 
-        if (naws($citation->parsed('ISSN'))) {
-                return $GODOT::Constants::JOURNAL_TYPE;
-        }
-        elsif (naws($citation->parsed('UMI_DISS_NO')) || naws($citation->parsed('THESIS_TYPE'))) {
-                return $GODOT::Constants::THESIS_TYPE;
-        }
+    if (naws($citation->parsed('ISSN'))) {
+        return $GODOT::Constants::JOURNAL_TYPE;
+    }
+    elsif (naws($citation->parsed('UMI_DISS_NO')) || naws($citation->parsed('THESIS_TYPE'))) {
+        return $GODOT::Constants::THESIS_TYPE;
+    }
 
-        if (naws($citation->parsed('ARTTIT')) || naws($citation->parsed('ARTAUT'))) {
-	    return (naws($citation->parsed('VOLISS'))) ? $GODOT::Constants::JOURNAL_TYPE : $GODOT::Constants::BOOK_ARTICLE_TYPE;
-        }
+    if (naws($citation->parsed('ARTTIT')) || naws($citation->parsed('ARTAUT'))) {
+        return (naws($citation->parsed('VOLISS'))) ? $GODOT::Constants::JOURNAL_TYPE : $GODOT::Constants::BOOK_ARTICLE_TYPE;
+    }
 
-        return $GODOT::Constants::BOOK_TYPE;        
+    return $GODOT::Constants::BOOK_TYPE;        
 }
-
 
 
 sub diss_abs_issn {
-        my($issn) = @_;
+    my($issn) = @_;
 
-	$issn = &GODOT::String::clean_ISSN($issn, 0);
-        
-        return scalar(grep {$issn eq $_} @GODOT::Config::DISS_ABS_ISSN_ARR);
+    ##
+    ## (16-mar-2015 kl) - account for issn containing 'x' or 'X' 
+    ## 
+    $issn = lc(&GODOT::String::clean_ISSN($issn, 0));
+    my @lc_diss_abs_issn_arr = map { lc($_) } @GODOT::Config::DISS_ABS_ISSN_ARR;          
+    my $issn_match = (scalar(grep {$issn eq $_} @lc_diss_abs_issn_arr)) ? $TRUE : $FALSE;
+    #### debug location, "  issn_match:  $issn_match ($issn)";    
+    return $issn_match;
+
 }
 
+##
+## (16-mar-2015 kl) - added title match as per 27-feb-2015 sw email
+##               
+sub diss_abs_title {
+    my($title) = @_;
+
+    my $title_match = (($title =~ m#^dissertation abstracts#i) || ($title =~ m#^masters abstracts#i));
+    #### debug location, "  title_match:  $title_match ($title)";
+    return $title_match;
+
+}
 
 1;
 
@@ -499,7 +521,7 @@ parse_citation() to increase the amount of code we can re-use.
 
 Updates the $cit->{'parsed'} fields based on the $cit->{'pre'}
 fields and the parser details.  Returns the citation object with
-modified fields.	
+modified fields.    
 
 =back
 
