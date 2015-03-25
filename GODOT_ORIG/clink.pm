@@ -91,7 +91,6 @@ sub fmt_display_name {
 ## 
 ## -returns a GODOT::CUFTS::Search object
 ## 
-
 sub cufts_server_query {
     my($config, $assoc_sites, $is_bccampus) = @_;
 
@@ -140,26 +139,26 @@ sub cufts_server_query {
     }
 
     ##
+    ## -added doi, pmid, bibcode and oai (20-mar-2015 kl)
     ## -create url for cufts server
-    ##
     ## -commented out 'authLast' and 'authFirst' as it is hard to extract them with any reliability
     ##
-    ## -!!!!!!!!!!!!!!!!!!!!!!!!!!!! future change - assign genre dynamically !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ##
 
     %field_hash = ('genre'      => 'article',
-
                    'title'      => trim_beg_end($exact_title),
                    'issn'       => trim_beg_end($issn),
                    'isbn'       => trim_beg_end($isbn),
-
                    'atitle'     => trim_beg_end(param($gconst::ARTTIT_FIELD)),
                    'volume'     => trim_beg_end(param($gconst::VOL_FIELD)),
                    'issue'      => trim_beg_end(param($gconst::ISS_FIELD)),
                    'spage'      => trim_beg_end($start_page),
                    'sici'       => trim_beg_end(param($gconst::SICI_FIELD)),
-
-                   'date'       => $date                                                                                     
+                   'date'       => $date, 
+                   'doi'        => trim_beg_end(param($gconst::DOI_FIELD)),
+                   'pmid'       => trim_beg_end(param($gconst::PMID_FIELD)),
+                   'bibcode'    => trim_beg_end(param($gconst::BIBCODE_FIELD)),
+                   'oai'        => trim_beg_end(param($gconst::OAI_FIELD)),                                                                             
                   );
 
 
@@ -169,7 +168,6 @@ sub cufts_server_query {
 
     foreach my $field (keys %field_hash) { $citation->$field($field_hash{$field}); }
 
-
     use GODOT::CUFTS::Site;
 
     my $tmp = naws($config->link_name) ? $config->link_name : $config->name;
@@ -177,12 +175,6 @@ sub cufts_server_query {
     my $site = new GODOT::CUFTS::Site { 'site' => [ $tmp ], 
                                         'assoc_sites' => [ $assoc_sites ],
                                         'is_bccampus' => [ $is_bccampus ]};
-
-
-    #### debug "++++++++++++++++++++++ is_bccampus:  $is_bccampus";
-    #### debug "------------------";
-    #### debug $site->tagged; 
-    #### debug "------------------";;
 
     my $search = new GODOT::CUFTS::Search { 'citation'    => [ $citation ], 
                                             'site'        => [ $site ] };
@@ -199,7 +191,7 @@ sub cufts_server_query {
     #### else {
     ####    debug "\n----------------------------------------------------\n",
     ####           $search->tagged,
-    #### 	  "\n----------------------------------------------------\n";
+    #### 	      "\n----------------------------------------------------\n";
     #### }
 
     return $search;
