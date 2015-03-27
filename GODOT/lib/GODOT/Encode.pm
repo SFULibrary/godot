@@ -48,6 +48,7 @@ sub decode_from_octets {
     eval {  $string = decode_utf8($octets, Encode::FB_CROAK);  };
     $error = $@;
     #### debug location_plus, "utf8:  $error";  
+    #### debug location_plus, "string:  $string";
         
     ##
     ## -if there is an error then assume it is because this is not valid utf8 encoding and the encoding is either windows-1252 or iso-8859-1
@@ -66,8 +67,8 @@ sub decode_from_octets {
             ##
             eval { $string = decode('cp1252', $octets, Encode::FB_DEFAULT); };
             $error = $@;
-            debug location_plus, 'error after decode with Encode::FB_DEFAULT:  ',  $error;  
-            debug location_plus, 'string after decode with Encode::FB_DEFAULT:  ',  $string;  
+            #### debug location_plus, 'error after decode with Encode::FB_DEFAULT:  ',  $error;  
+            #### debug location_plus, 'string after decode with Encode::FB_DEFAULT:  ',  $string;  
         }
     }
 
