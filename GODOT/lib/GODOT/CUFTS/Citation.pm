@@ -4,9 +4,7 @@ package GODOT::CUFTS::Citation;
 ##
 
 use CGI qw(:escape);
-
 use Encode;
-
 use GODOT::Debug;
 use GODOT::String;
 use GODOT::Encode;
@@ -22,7 +20,8 @@ my $FALSE = 0;
 my $TRUE  = 1;
 
 ##
-## OpenURL (version 0.1) fields
+## OpenURL (version 0.1) fields 
+## 
 ##
 my @FIELDS = qw(genre
                 aulast aufirst auinit auinit1 auinitm
@@ -31,8 +30,10 @@ my @FIELDS = qw(genre
                 title stitle atitle
                 volume part issue spage epage pages artnum
                 date ssn quarter                                 
+                doi pmid bibcode oai
                );
 
+my @ID_FIELDS = qw(doi pmid bibcode oai);
 
 sub new {
     my ($self, $fields, $values) = @_;
@@ -59,7 +60,6 @@ sub title {
     else    { return $self->{$field}; }
 }
 
-
 sub query_url {
     my($self, $site) = @_;
 
@@ -78,23 +78,20 @@ sub query_url {
         ##  
         my $escaped_value = escape(GODOT::String::encode_string('latin1', utf8_to_latin1_transliteration($self->$field)));
 
-        $url .= join('', $delim, $field, '=', $escaped_value);                
+        if (grep { $field eq $_} @ID_FIELDS) {
+            $url .= join('', $delim, 'id', '=', $field, ':', $escaped_value);                
+        }
+        else {
+            $url .= join('', $delim, $field, '=', $escaped_value);                
+        }
     }
     
     if ($url) {
-
         my $sites = $site->site;
-
-        #### debug location, ":  before assoc_sites: $sites";
          
         if (&GODOT::String::naws($site->assoc_sites)) { 
-
-            #### debug location, "assoc_sites: ", $site->assoc_sites;
             $sites  = join(',', $sites, split(/\s+/, $site->assoc_sites));
         }
-
-        #### debug location, ":  this is the site list for CUFTS:  $sites";  
-        #### debug location, ":  bccampus:  ", $site->is_bccampus;  
 
         $url = $GODOT::Config::CUFTS_SERVER_URL . 
                (($GODOT::Config::CUFTS_SERVER_URL =~ m#\/$#) ? '' : '/' ) . 
@@ -104,60 +101,13 @@ sub query_url {
         ##
         ## (28-jan-2005 kl) - BC Campus logic -- need to move to 'local' class .... 
         ##
-
         if ($site->is_bccampus) {  $url .= '%26<CUFTSproxy>alternate</CUFTSproxy>';  }
     }
-
 
     debug "CUFTS::Citation::query_url:  $url\n";
 
     return $url;
 }
 
-
-
 1;
 
-__END__
-
-
------------------------------------------------------------------------------------------
-
-=head1 NAME
-
-GODOT::XXX - 
-
-=head1 METHODS
-
-=head2 Constructor
-
-=over 4
-
-=item new([$dbase])
-
-=back
-
-Returns a reference to Citation object. I<$dbase> is a refenerce
-to Database object.
-
-=head2 ACCESSOR METHODS
-
-=over 4
-
-=item mysubroutine([$value])
-
-Accessor methods for checking $self->{'req_type'} for a specific type of
-document, or for setting the Citation object to be a certain type of
-document.  These methods are similar to the req_type(), but use boolean
-values for each document type rather than returning or setting the actual
-req_type value which req_type() does.
-
-
-=back
-
-=head1 AUTHORS / ACKNOWLEDGMENTS
-
-Kristina Long
-
-
-=cut
