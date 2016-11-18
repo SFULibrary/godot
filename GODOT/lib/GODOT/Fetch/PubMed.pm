@@ -44,7 +44,7 @@ my $month_lookup = {
 sub url {
     my($self) = @_;
 
-    return 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi';
+    return 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi';
 }
 
 
@@ -194,11 +194,11 @@ sub parse_pubmed_data {
             $pages = "$spage-$epage";
         }   
 
-	if (aws($pages) && naws($spage)) {
+    	if (aws($pages) && naws($spage)) {
             $pages = $spage . (naws($epage) ? "-$epage" : '');
         }
 
-	$data->{PGS} = $pages;
+	    $data->{PGS} = $pages;
 
         my $issn_nodes = $article->getElementsByTagName('ISSN');
         my $n          = $issn_nodes->getLength;
