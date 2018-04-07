@@ -1,0 +1,82 @@
+== Development Notes ==
+
+Miscellaneous notes related to godot development.
+
+=== Things to try if godot is not working ===
+
+1. Check values in both GODOT/lib/GODOT/BasicConfig.pm and GODOTConfig/lib/GODOTConfig/BasicConfig.pm.  Values to pay attention to include the location of the global templates, site templates and the '''configuration cache'''. This becomes an issue particularly when you are running development and production copies of godot.
+
+2. If you are overriding a method that returns the current value of the object when no parameters are passed, then remember to include this logic in your overriding method. 
+
+=== Notes from migrating configuration database from stalefish server to lib-godot server in December 2010 ===
+
+{{{
+root on stalefish
+stop httpd_godot_v2
+disable config cgi -- include 'unavailable' message
+
+root on lib-godot
+su postgres
+
+##
+## The '--encoding=UNICODE' does not work for the stalefish dump as the database is encoded with SQL_ASCII and conversion is not possible.
+##
+
+pg_dump --host=xxx.xxx.xxx.xxx --data-only --encoding=UNICODE  GODOT_config > /tmp/GODOT_config.stalefish.<date>.dump
+start httpd_godot_v2 but keep config cgi disabled
+
+move dump file to ~kristina/godot_misc/migration
+change ownership to kristina
+exit from postgres and root
+
+cd ~kristina/godot_misc/migration
+
+change all instances of ownership 'tholbroo' to 'godot';  
+
+change all carriage returns to '\r' using '~kristina/godot_misc/migration/carriage_return.pl';
+check for data that is not UTF-8 encoded using '~kristina/encoding/check_for_valid_encode_utf8.pl'
+
+pggc
+\i empty_GODOT_config
+check for any errors
+\q
+
+comment out all sql in empty_GODOT_config
+
+su root
+su godot
+cd /home/kristina/godot_misc/migration
+psql GODOTConfig < GODOT_config.stalefish.<date>.dump.no_cr
+
+run comparisons of tables on lib-godot and stalefish:
+
+psql -d GODOTConfig -U godot
+\o accounts.lib-godot
+select id,key,name,password,email,phone,administrator,active from accounts order by id;
+\o site_config.lib-godot
+select id,site,config_group,field,value from site_config order by id;
+\o
+\q
+
+psql -h xxx.xxx.xxx.xxx -d GODOT_config -U tholbroo
+\o accounts.stalefish
+select id,key,name,password,email,phone,administrator,active from accounts order by id;
+\o site_config.stalefish
+select id,site,config_group,field,value from site_config order by id;
+\o
+\q
+
+diff accounts.lib-godot accounts.stalefish
+diff site_config.lib-godot site_config.stalefish
+
+run optimization commands:
+
+stop httpd and godot_para_server first or vacuum will hang
+su postgres
+psql GODOTConfig
+vacuum full;
+analyze;
+
+}}}
+
+

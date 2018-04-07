@@ -1,0 +1,24 @@
+This is the '''GODOT development wiki'''.  The main reSearcher site is at http://researcher.sfu.ca.
+
+Code repository log is at http://lib-code.lib.sfu.ca/projects/godot/log/trunk.  
+
+There is also a ticket database ([[report:9 open]] and [[http://lib-code.lib.sfu.ca/projects/godot/query?status=closed&group=milestone&order=priority closed]]) although it is currently somewhat out of date and needs a good review and clean up. 
+
+[http://lib-forums.lib.sfu.ca/index.php reSearcher Software Forums]
+
+[wiki:DownloadGodot Downloading and Installing GODOT]
+
+=== Documents ===
+  * [wiki:DevelopmentNotes Development Notes]
+  * [wiki:TestCasesForNewILSAndNewSites Test Cases for Adding New ILS Types and New Sites] 
+  * [wiki:OpenURLLinkConsiderations  OpenURL Link Considerations]
+  * [wiki:CreatingGODOTSyntaxLinks   Creating 'GODOT syntax' Links]
+  * [wiki:ButtonImages  Button Images]
+  * [wiki:BibliographicCirculationPatronDatabaseAccess Bibliographic, Circulation and Patron Database Access]
+  * [wiki:PatronDatabaseAPI  Patron Database API Specifications]
+  * [wiki:OnTheFlyMatchingAlgorithm2001 On-the-Fly Matching Algorithm (2001)]
+
+
+
+
+

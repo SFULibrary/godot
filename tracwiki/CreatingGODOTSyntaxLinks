@@ -1,0 +1,1113 @@
+= Creating 'GODOT syntax' Links =
+
+{{{
+#!html
+<p>
+<font color="red">(26-feb-2003 kl) - This document outlines the syntax used to link to GODOT 
+before OpenURL was available.  Please use OpenURL links when possible. 
+</font>
+<p>
+
+The general instructions for adding a link to godot from any HTML/Java
+interface are as follows:
+
+<ul>
+<li>
+Create a POST or a GET link consisting of&nbsp; the fields specified below
+in the <b>Names</b> column</li>
+
+<li>
+The production version of GODOT is currently <b>http://stalefish.lib.sfu.ca:7331/godot/hold_tab.cgi</b></li>
+
+<li>
+Fill the first 5 fields with the appropriate values:</li>
+
+<ul>
+<li>
+<b>hold_tab_dbase_local</b> - see me for more info</li>
+
+<li>
+
+<b>hold_tab_dbase_type</b> - see me for more info</li>
+
+<li>
+<b>hold_tab_back_url</b> - URL to use for 'Back to Database'&nbsp; link
+offered on many of the GODOT screens - if not provided, HTTP_REFERER will
+be used. A third option is to send the <b>hold_tab_back_url</b> field but
+leave it blank.&nbsp; In this case, the 'Back to Database' link will not
+be offered.&nbsp; This third option is useful when GODOT is invoked in a separate
+Javascript window.</li>
+
+<li>
+<b>hold_tab_userno</b> - use session number from database interface - if
+there is no session number used by the interface that can be passed on
+then let me know and I will add some logic to godot to deal with this situation</li>
+
+<li>
+<b>hold_tab_branch</b> - this would usually be left empty to force user
+identity to be assigned based on client cookie or IP address - for further
+information see <a href="/godot/doc/technical/auth.htm#auth_godot">Authentication
+Options for GODOT</a></li>
+</ul>
+
+<li>
+All fields under <b>@parse::CITN_PRE_ARR </b>should be filled as closely
+as possible with the contents indicated. Any differences between the actual
+content and the desired content can be dealt with by logic that you add
+to <b>parse.pm.</b></li>
+
+<li>
+The purpose of the <b>parse.pm</b> module is basically to do the following
+mapping:</li>
+</ul>
+
+<center>'external' citation fields -- defined by <b>@parse::CITN_PRE_ARR
+</b>--
+prefix <b>hold_tab_</b>
+<br>to
+<br>'internal' citation fields -- defined by <b>@hold_tab::CITN_ARR --
+
+</b>prefix<b>
+_ht_</b></center>
+
+<ul>
+
+<li>
+Make sure that characters in the GET or POST fields are properly escaped
+(ex. '+' space, '%2c' for comma).</li>
+
+<li>
+An <b>Item database </b>refers to a database that catalogues items (books,
+serials) and not articles or chapters.&nbsp; For instance the SFU library
+catalogue is an item database, while Current Contents is not.&nbsp; The
+
+<b>contribution
+</b>(ie.
+article/chapter)<b> </b>field below indicates fields that will
+<b>not </b>be
+available in an item database and so cannot be passed as part of a GODOT
+link.&nbsp; Logic will soon be added to GODOT to prompt the user for these
+fields, when the database is an item database.</li>
+</ul>
+
+<table BORDER COLS=10 WIDTH="96%" >
+<tr>
+<td COLSPAN="10"><b>Link from Non-MARC Databases</b></td>
+</tr>
+
+<tr>
+<td COLSPAN="10"><font size=-2>(++ append to $PUB_FIELD)</font></td>
+</tr>
+
+<tr>
+<td COLSPAN="10"></td>
+</tr>
+
+<tr>
+<td><b><font size=-2>General Fields</font></b></td>
+
+<td><b><font size=-2>Names</font></b></td>
+
+<td><b><font size=-2>Contribution</font></b></td>
+
+<td><b><font size=-2>Variables</font></b></td>
+
+<td><b><font size=-2>BOOK</font></b></td>
+
+<td><b><font size=-2>BOOK-ARTICLE</font></b></td>
+
+<td><b><font size=-2>CONFERENCE</font></b></td>
+
+<td><b><font size=-2>JOURNAL</font></b></td>
+
+<td><b><font size=-2>TECH</font></b></td>
+
+<td><b><font size=-2>THESIS</font></b></td>
+</tr>
+
+<tr>
+<td><font size=-2>Database</font></td>
+
+<td><font size=-2>hold_tab_dbase_local</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>Interface type&nbsp;</font>
+<br><font size=-2>(ex. erl, slri)</font></td>
+
+<td><font size=-2>hold_tab_dbase_type</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>Session number</font></td>
+
+<td><font size=-2>hold_tab_userno</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>User (ie. site or branch)</font></td>
+
+<td><font size=-2>hold_tab_branch</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Back to Database URL</font></td>
+
+<td><font size=-2>hold_tab_back_url</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><b><font size=-2>Citation Fields</font></b></td>
+
+<td><b><font size=-2>@parse::CITN_PRE_ARR</font></b></td>
+
+<td><font size=-2>-</font></td>
+
+<td><b><font size=-2>@hold_tab::CITN_ARR</font></b></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Article/Chapter Author</font></td>
+
+<td><font size=-2>hold_tab_ca</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$ARTAUT_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Article Title</font></td>
+
+<td><font size=-2>hold_tab_ti</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$ARTTIT_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>Author</font></td>
+
+<td><font size=-2>hold_tab_au</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$AUT_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$EDITION_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$ERIC_AV_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$ERIC_NO_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$FTREC_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>ISBN&nbsp;</font></td>
+
+<td><font size=-2>hold_tab_isbn</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$ISBN_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>ISSN</font></td>
+
+<td><font size=-2>hold_tab_issn</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$ISSN_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Issue</font></td>
+
+<td><font size=-2>hold_tab_iss</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$ISS_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$MLOG_NO_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Month Field</font></td>
+
+<td><font size=-2>hold_tab_mon</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$MONTH_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font color="#000000"><font size=-2>YYYYMMDD Field</font></font></td>
+
+<td><font color="#000000"><font size=-2>hold_tab_da</font></font></td>
+
+<td BGCOLOR="#FFFF99"><font color="#000000"><font size=-2>*</font></font></td>
+
+<td><font color="#000000"><font size=-2>$YYYYMMDD_FIELD</font></font></td>
+
+<td><font color="#000000"><font size=-2>-</font></font></td>
+
+<td><font color="#000000"><font size=-2>-</font></font></td>
+
+<td BGCOLOR="#FFCCCC"><font color="#000000"><font size=-2>*</font></font></td>
+
+<td BGCOLOR="#FFCCCC"><font color="#000000"><font size=-2>*</font></font></td>
+
+<td BGCOLOR="#FFCCCC"><font color="#000000"><font size=-2>*</font></font></td>
+
+<td BGCOLOR="#FFCCCC"><font color="#000000"><font size=-2>*</font></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$NOTE_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Pages</font></td>
+
+<td><font size=-2>hold_tab_pg</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$PGS_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$PUBTYPE_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Publisher</font></td>
+
+<td><font size=-2>hold_tab_pub</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$PUB_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Report Number</font></td>
+
+<td><font size=-2>hold_tab_nu</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$REPNO_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Document Type*</font></td>
+
+<td><font size=-2>hold_tab_pt</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$REQTYPE_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Series</font></td>
+
+<td><font size=-2>hold_tab_se</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$SERIES_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>System ID</font></td>
+
+<td><font size=-2>hold_tab_sid</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$SYSID_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Thesis Type (ex. Master's)</font></td>
+
+<td><font size=-2>hold_tab_lv</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$THESIS_TYPE_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Title / Source&nbsp;</font></td>
+
+<td><font size=-2>hold_tab_so</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$TITLE_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>UMI Dissertation Code</font></td>
+
+<td><font size=-2>hold_tab_on</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$UMI_DISS_NO_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>URL to Fulltext</font></td>
+
+<td><font size=-2>hold_tab_ur</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$URL_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Fulltext Available</font></td>
+
+<td><font size=-2>hold_tab_ft</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$FTREC_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>$VOLISS_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Volume</font></td>
+
+<td><font size=-2>hold_tab_vol</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>*</font></td>
+
+<td><font size=-2>$VOL_FIELD</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Year</font></td>
+
+<td><font size=-2>hold_tab_py</font></td>
+
+<td BGCOLOR="#FFFF99"><font size=-2>* (if journal)</font></td>
+
+<td><font size=-2>$YEAR_FIELD</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Conference Location</font></td>
+
+<td><font size=-2>hold_tab_ct</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>++</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Place of Publication</font></td>
+
+<td><font size=-2>hold_tab_pb</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>++</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td BGCOLOR="#FFCCCC"><font size=-2>*</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+<td><font size=-2>-</font></td>
+
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=2 WIDTH="96%" >
+<tr>
+<td COLSPAN="2"><b>Link from MARC Databases</b></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><font size=-2>(For repeated MARC fields, use multiple 'hold_tab_tnnn'
+tags.&nbsp; For example, if there are two 022 fields, then the tag hold_tab_t022
+should appear twice in your GET/POST link.)</font></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"></td>
+</tr>
+
+<tr>
+<td><b><font size=-2>General Fields</font></b></td>
+
+<td><b><font size=-2>Names</font></b></td>
+</tr>
+
+<tr>
+<td><font size=-2>-same as 'Link from Non-Marc Databases' above&nbsp;</font></td>
+
+<td></td>
+
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font size=-2>Citation Fields</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font size=-2>Leader</font></td>
+
+<td><font size=-2>hold_tab_t000</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Bibliographic Record Control Number</font></td>
+
+<td><font size=-2>hold_tab_t001</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Fixed Field Data Elements</font></td>
+
+<td><font size=-2>hold_tab_t008</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>ISBN</font></td>
+
+<td><font size=-2>hold_tab_t020</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>ISSN</font></td>
+
+<td><font size=-2>hold_tab_t022</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>Standard Technical Report Number</font></td>
+
+<td><font size=-2>hold_tab_t027</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Local - Call Number&nbsp;</font>
+<br><font size=-2>(AEU, BVAU, MWU, MWUC, SSU)</font></td>
+
+<td><font size=-2>hold_tab_t090</font></td>
+
+</tr>
+
+<tr>
+<td><font size=-2>Local - Call Number</font></td>
+
+<td><font size=-2>hold_tab_t099</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Main Entry Heading - Personal Name</font></td>
+
+<td><font size=-2>hold_tab_t100</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Main Entry Heading - Corporate Name</font></td>
+
+<td><font size=-2>hold_tab_t110</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Main Entry Heading - Conference or Meeting&nbsp;</font></td>
+
+<td><font size=-2>hold_tab_t111</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Title Statement</font></td>
+
+<td><font size=-2>hold_tab_t245</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Edition Statement</font></td>
+
+<td><font size=-2>hold_tab_250</font></td>
+</tr>
+
+<tr>
+
+<td><font size=-2>Publication, Distribution, etc. (Imprint)</font></td>
+
+<td><font size=-2>hold_tab_260</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Series Statement - Title (Traced)</font></td>
+
+<td><font size=-2>hold_tab_440</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Added Entry - Personal Name</font></td>
+
+<td><font size=-2>hold_tab_700</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Host Item Entry</font></td>
+
+<td><font size=-2>hold_tab_773</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Series Added Entry - Personal Name/Title</font></td>
+
+<td><font size=-2>hold_tab_800</font></td>
+</tr>
+
+<tr>
+<td><font size=-2>Electronic Location and Access</font></td>
+
+<td><font size=-2>hold_tab_856</font></td>
+</tr>
+</table>
+
+</P>
+}}}

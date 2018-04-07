@@ -1,0 +1,43 @@
+= OpenURL Link Considerations =
+ * Is enough information from the citation passed in order to submit an ILL request?  For exampe, an OpenURL with only the ISSN as citation information is a valid OpenURL but does not have enough information to do an ILL request for an article.
+ * What fields are passed by the OpenURL? (see http://www.sfxit.com/openurl/openurl.html for a list of fields)
+ * Can the following javascript 'window.open' function parameters be customized?
+   * name
+   * toolbar
+   * menubar
+   * width
+   * height
+ * If 'name' can't be custominzed then it would be preferable if it was generic (eg. OpenURL) and not SFX specific (as a number of them are). The 'Back' button on the toolbar is useful in GODOT and the menubar makes printing easier.  The first GODOT screen has quite a bit of information on it and needs a larger window than SFX so width and height should either be much larger or customizable. Can the link image or link wording be customized?
+ * What are the dimensions of the link image for a specific interface?
+ * Is 'title' the full title or an abbreviated one?
+ * Are we getting good/complete date info?
+ * What are all the possible values for 'VendorID' (a component of the 'sid' field)?
+ * Do we need all the possible values for 'sid' (ie. both 'VendorID' and 'DatabaseID') for any special processing?
+ * Is 'pid' field  (ie. LOCAL-IDENTIFIER-ZONE) used?  If so, what is its contents?
+ * For testing purposes, a list of examples of citations for all the possible OpenURL genres
+   is very useful.  Can vendor provide examples for databases to which we have 
+   access?  Possible genres    (from  http://www.sfxit.com/openurl/openurl.html) are:
+   * journal
+   * book
+   * conference
+   * article
+   * preprint
+   * proceeding
+   * book item
+
+== Programming ==
+You will need to add entries to:
+
+ * %GODOT::Config::DBASE_PARSER_MAPPING
+ * %GODOT::Config::DBASE_TYPE_PARSER_MAPPING
+ * %GODOT::Config::DBASE_LOCAL_MAPPING
+ * %GODOT::Config::DBASE_INFO_HASH
+ * @GODOT::Config::DBASE_ARR
+
+ * @GODOT::Constants::OPENURL_DB_ARR
+ * @GODOT::Constants::DBASE_TYPE_ARR
+
+Not OpenURL specific, but they often need to be set:
+
+  * @GODOT::Config::NO_BACK_TO_DATABASE_DBASE_ARR
+  * @GODOT::Config::NO_BACK_TO_DATABASE_DBASE_TYPE_ARR

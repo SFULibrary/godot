@@ -1,0 +1,88 @@
+= GODOT On-the-Fly Matching =
+
+''(01-nov-2001 - Kristina Long - klong@sfu.ca)''
+
+== Matching Algorithm ==
+
+Searches on ISSN, ISBN (with standard hyphenation and with no hyphens) and title (some clean up done).  An exact  title search will be done if possible, and if it makes sense given the configuration of the database being searched.  Whether this is possible or not will depend on whether exact searching is supported by the database's Z39.50 server and how the database has been indexed.  The Z39.50 attributes used for title searching are determined as follows:
+
+  '''Use:'''  The default is '4'.  This can be overriden by ZUSE_ATT_TITLE_FIELD and ZUSE_ATT_JOURNAL_TITLE_FIELD.
+
+  '''Relation:'''  Not used.
+
+  '''Position:'''  The default is to not use this attribute, however if any of the ZPOS_ATT_SW_TITLE_FIELD, ZPOS_ATT_TITLE_FIELD, ZPOS_ATT_SW_JOURNAL_TITLE_FIELD and ZPOS_ATT_JOURNAL_TITLE_FIELD options are specified their values will be used. SW means 'single word'. 
+
+  Unless a site has done a lot of customization, it is generally possible  to set these fields according to what type of database system they use, although you should do a test search to make sure. 
+
+  Notes about settings for various ILSs can be found in the document 'Bibliographic, Circulation and Patron Database Access'. 
+
+  '''Structure:'''  Set to '1' (Phrase searching) if the database system is BRS, OCLC or Sirsi.  Otherwise, it is not used. 
+
+  '''Truncation:'''  The default is to not use this attribute, however if any of the ZTRUNC_ATT_SW_TITLE_FIELD, ZTRUNC_ATT_TITLE_FIELD, ZTRUNC_ATT_SW_JOURNAL_TITLE_FIELD and ZTRUNC_ATT_JOURNAL_TITLE_FIELD options are specified their values will be used. SW means 'single word'.  
+
+  Notes about settings for various ILSs can be found in the document 'Bibliographic, Circulation and Patron Database Access'. 
+
+  '''Completeness:'''  Set to '3' unless the database is BRS, III or Sirsi.  For those databases no completeness attribute is specified.
+
+If too many hits are returned (22-oct-2001 - maximum is 350), it searches on just ISSN and ISBN.  Single word titles, where the title is a common word (eg. 'Science'), are generally why too many hits are returned.
+
+After the records are retrieved from the database, a test is run on each record to determine if it is a good match for the citation.  This is required as Z39.50 searching is not accurate enough for our purposes.  The lack of accuracy is due to Z39.50 server implementations which only support a subset of the available Z39.50 search attributes and due to the varied local indexing practices seen in the databases searched.
+
+For each record three lists are built.  The contents of the ISSN, ISBN and title lists are as follows:
+
+  '''ISBN:'''  '020-a'
+
+  '''ISSN:'''  '022-a'
+
+  '''Title:'''  '245-a', '245-a 245-b', '245-b' (only if no preceeding 245-a) and '246-a'
+
+If both a citation ISSN/ISBN and one or more bibliographic record ISSNs/ISBNs are available, but there is no match between the citation ISSN/ISBN and one of the record ISSNs/ISBNs, then the record will be rejected as a match.  If a match is found then the record will be considered a good match .
+
+If no match (or rejection) has been made based on ISSN/ISBN, then a title match is tried.
+
+All matches (ISSN, ISBN and title) involve some clean up of  the elements being compared, so that unimportant differences (eg. hyphenation) will not have an effect on the match.
+
+
+== Fixing Matching Problems ==
+
+If your catalogue (or union serials list) record is missing an ISSN/ISBN, add it.
+
+If the problem is searching a one word title, where the word is common (eg. 'Science') and no citation ISSN/ISBN is available, then you will want to configure GODOT so that it uses the best possible Z39.50 attributes to do the searching.  See 'Bibliographic, Circulation and Patron Database Access' for possible attribute settings for single word titles.
+
+Journal searching can be improved by making your journal title index (if your catalogue has one) seachable via Z39.50.  The common use attribute for journal title is '33'.  Sometimes this is set up to searh the same index as the standard title use attribute ('4') so you will want to make sure that it is actually searching just your journal index by doing a few test searches.
+
+There are a number of  Z39.50 configuration options which you might want to change. See the 'System and Z39.50' section of the profile configuration tool.
+
+Suggest changes to the attributes used for the Z39.50 searching or changes to the matching algorithm.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

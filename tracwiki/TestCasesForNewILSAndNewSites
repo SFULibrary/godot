@@ -1,0 +1,19 @@
+= Test Cases for Adding New ILS Types and New Sites =
+
+
+||||journal_brief||journal_catalogue_link||monograph_brief||monograph_catalogue_link||
+||no holdings records|| || || || ||
+||no holdings records;  has 856 field|| || || || ||
+||no circulation records|| || || || ||
+||no circulation records;  has 856 field|| || || || ||
+||catalogue link will be by issn|| || || || ||
+||catalogue link will be by isbn|| || || || ||
+||catalogue link will be by ascii title as record has no issn or isbn|| || || || ||
+||catalogue link will be by non-ascii title as record has no issn or isbn|| || || || ||
+||search ascii title in journal title index|| || || || ||
+||search non-ascii title in journal title index|| || || || ||
+||ascii title of '245a: 245b' format (eg. a brief history of time:  from the big bang to black holes)|| || || || ||
+||common single word title searches (eg. science)|| || || || ||
+||ascii title with semi-colon|| || || || ||
+||title with colon in 245a|| || || || ||
+||title with brackets|| || || || ||

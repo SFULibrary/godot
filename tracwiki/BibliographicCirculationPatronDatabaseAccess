@@ -1,0 +1,111 @@
+= Bibliographic, Circulation and Patron Database Access =  
+
+
+Ideally GODOT would be able to interact with the bibliographic, circulation and patron databases of each site.  Lack of standards and vendor APIs mean that this is not always simple task.  The purpose of the following chart is to keep track of what is known about interacting with these three databases.
+
+If something in this table is incorrect or you have some comments to add, please let me know (klong@sfu.ca).
+
+If you are planning on writing an API for your patron database then please see 'Patron Database API Specifications'.
+
+== Autographics == 
+
+=== Bibliographic ===
+
+Z39.50.
+
+(22-oct-2001) For single word title searches c=3 works.
+
+== Dynix == 
+
+=== Patron ===
+
+RSS has way to access patron db.
+
+VPL is using Dynix patron id for authentication for Ebsco - how are they doing this?
+
+== III ==
+
+=== Bibliographic ===
+
+Z39.50.
+
+(22-oct-2001) - if a journal title index is available for the catalogue, then u=33 can be set up to point to it.  This needs to be done by III.  It was done for SFU as part of call #C562832.  It was suggested by III that this call number be referenced if another site makes this request. 
+
+(22-oct-2001) Problem:  doing title searches when the single word title is a  common word, eg. 'science'.  Potential solutions:   have tried using c=3 (complete subfield) but this is ignored by III and instead c=1 is done.  According to the III online manual, the III Z39.50 server only ever does a c=1 search.  I have a call into III (call number 563473) to determine if this can be changed.  Fortunately, it appears that a single word title search can be done by using t=100.  This worked OK on the SFU catalogue.  It still needs to be tested on other III catalogues. Using p=1 appears to have no effect on exact single word title searches.
+
+=== Circulation ===
+
+Z39.50 with syntax=OPAC.
+ 
+Circulation info will be in marc-920.
+
+=== Patron ===
+
+III HTTP Patron API has been  installed at SFU and at U of Sask. This allows us to access the patron record fields via a URL which returns formatted HTML. 
+
+I can send you a fax of the documentation if you want further information on the API.  
+
+
+== Notis ==
+
+=== Circulation ===
+
+Circ info via Z39.50 opac syntax.
+
+U of S using this method with WebZ.
+
+=== Patron ===
+
+Horizon ? - RSS has way to access patron db.
+
+
+
+
+== Sirsi ==
+
+
+=== Circulation ===
+
+Beginning with version 99.2, the status and summary holdings information can be packaged in the USMARC syntax in the 926 field.
+
+  * libarary - 926-a
+  * location -926-b
+  * call number - 926-c
+  * due date - 926-e
+  * copy number - 926-f
+
+For instructions on how to configure this, please see 
+[http://web.viu.ca/library/marlin/docs/circ_holdings_z39.50.htm MARC Holdings and Circulation Information Displayed in Z39.50 Search Results]. 
+
+=== Patron ===
+
+SIRSI-GODOT gateway:
+
+  * libuser.c
+  * library_user.c
+  * Makefile
+
+Socket wrapper:
+  * sockwrap.c
+  * Makefile
+
+Dan Woods - for now just Yes/No, no patron data  (email 24-feb-1999). 
+
+== Endeavor ==
+
+=== Bibliographic ===
+
+(22-oct-2001) - to do a single word title search, use p=1.  It does not, however, work for multiple word title searches.  If you use 'c', it will be ignored. 
+
+(10-jan-2002) -from email from Liz Best: The journal title index is not available through Z39.50.  Voyager's journal title index is the same as the title index + a hard-coded limit to records where byte 07 of the leader is 's'.  This hard-coded limit is what makes journal title searching unavailable through Z39.50.  An enhancement on this was  previously requested and rejected.
+
+=== Circulation ===
+
+(15-apr-2000) -in order to link to circ/status information, it was necessary to use the modified zclient from Iowa State that Sandy Gordon (UVic) found and syntax=OPAC.
+
+
+=== Patron ===
+
+(24-sep-1999) - conv with Sandy Gordon (UVic) -- decision was that the best approach is for UVic to write a gateway script as there is no API available -- probably about 2 days work for UVic 
+
+(27-feb-2000) - BVIV now configured (when POK_FIELD turned on)  to use patron api that Sandy wrote (~ Nov 99). 

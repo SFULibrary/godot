@@ -1,0 +1,178 @@
+= Downloading and Installing GODOT =
+
+There are now two options to installing GODOT -- '''Live CD''' and '''SVN''' repository
+
+== Live CD (02-nov-2006) ==
+
+(06-jan-2011) This will typically not contain the latest version of godot.  The current copy is old.  A new one will be available soon.
+
+http://lib-code.lib.sfu.ca/projects/dbwiz/wiki/LiveCDDownload
+
+The LiveCD is based on the Dapper release of ubuntu linux. The LiveCD allows you to boot your computer using the CD and have a CUFTS, dbWiz and GODOT installation ready for testing. It also features an installer so that you can load ubuntu linux along with CUFTS/dbWiz/GODOT pre-installed onto any x86 based computer.
+
+== Regular Install from SVN repository ==
+
+Anonymous [http://subversion.tigris.org/ subversion] checkout of GODOT:
+{{{
+svn checkout http://lib-code.lib.sfu.ca/svn/godot/trunk godot
+}}}
+
+'''NOTE''': If you are updating GODOT from subversion please '''check the notes below'''.  Sometimes there will be database or other changes that you will need to know about when doing the update.
+
+For general installation details, please read the [http://researcher.sfu.ca/documents GODOT Administration Guide].
+
+=== Notes on January 2011 version of GODOT ===
+
+This set of changes is mostly related to improvements in the handling of different character sets and encodings.
+
+One approach to upgrading a current godot installation would be as below.  This approach to the upgrade assumes you will '''not''' be running the install.pl script. 
+
+Ideally you would apply the upgrade to your development copy of godot and then move any changes made from there to your production copy. Alternatively you could apply the changes directly to your production copy.  
+
+In the instructions below 'currently installation' refers to either your development copy or your production copy.
+
+  1. Backup your current installation including both the files and the database.
+  1. Create a directory  (eg. /tmp/godot_upgrade) for the purposes of merging the new code with any changes you have made to the installation you are currently running.
+  1. Change to your upgrade directory and run the 'svn checkout' statement from above.
+  1. Copy the 'GODOT/lib/GODOT/BasicConfig.pm' and 'GODOTConfig/lib/GODOTConfig/BasicConfig.pm' files from your current installation to the upgrade.
+  1. Merge any changes that you have made to your currently installation of godot to the upgrade. Directories (including subdirectories) to check include (but are not limited to) those listed below.  For now don't consider any changes you have made to the site specific css and template files.  Site specific means the sites for which your godot installation has profiles.  The 'diff' command and its '--recursive' and '--exclude' flags can be useful for this step.
+    * GODOTConfig/htdocs
+    * GODOT/htdocs (excluding site specific css files)
+    * GODOT_ORIG
+    * GODOT/lib
+    * GODOTConfig/lib
+    * GODOT/templates
+    * GODOTConfig/templates
+  1. Stop the httpd server now.  
+  1. Stop the godot parallel server.
+  1. Copy the updated/merged directories back to your current installation. 
+  1. Apply the changes listed below in the 'Changes required to existing template, css and site module files' section.  If you are applying changes directly to the file instead of via the config tool (for css and template files) you will need to delete the equivalent 'sandbox' file as otherwise you may later overwrite your changes.  
+    * GODOT/templates
+    * GODOT/htdocs/GODOT/css
+    * GODOT/htdocs/GODOT/css/site
+    * GODOTConfig/site_templates
+    * local
+  1. Check that your site specific modules all pass the syntax check.
+  1. Start the godot parallel server.
+  1. Start the httpd server.
+  1. Do some testing to make sure godot works as expected.  See test cases at the bottom of this page.
+
+
+==== Changes required to existing template, css and site module files: ====
+
+  * Delete references to GODOT::Object::dump as it no longer exists.  It was resulting in a 'Subroutine dump redefined at Object.pm line 316.' warning.
+
+
+  * Add encode_utf8 to 'citation.parsed' in the following global and site templates.  For example "citation.parsed('TITLE')" would become "citation.parsed('TITLE').encode_utf8".
+    1. article_form_screen
+    1. citation_display
+    1. main_holdings_cufts
+    1. main_holdings_related_info
+    1. warning_screen
+    1. catalogue_print
+    1. main_holdings_print
+
+  * Change site and global copies of the main_holdings_print and catalogue_print templates so that there is no global flag on 'replace' statements as it generates error messages in the httpd error_log.  For example, in the catalogue_print template "string = string.replace('(?ig)<br><p>', '<br>');" would become "string = string.replace('(?i)<br><p>', '<br>');".
+
+  * Make sure all non-ascii characters in your templates are UTF-8 encoded or, perhaps even easier, just use their html escape sequence (eg. '&sdot;').  Characters which are not UTF-8 encoded will either be displayed incorrectly or will cause characters in the template which are correctly encoded, to be displayed incorrectly.  See 'bad_utf8.pl' script below to look for non-ascii characters which have not been properly UTF-8 encoded.
+{{{
+#!/bin/env perl
+##
+## bad_utf8.pl:  look for bad UTF-8 in template files
+##
+## usage:  cd templates
+##         find . -exec /home/kristina/encoding/bad_utf8.pl {} \; 
+##
+use strict;
+use Encode;
+
+my $count;
+my $filename = $ARGV[0];
+
+open FILE, $filename or die $!;
+
+while (<FILE>) {
+    chop $_;
+    my $line = $_;         
+    $count++;
+    
+    eval { 
+        $line = decode('UTF-8', $line, Encode::FB_CROAK);  
+    }; 
+    my $error = $@;
+ 
+    if ($error) { 
+        print "$count:  $line\n";
+        print "$error\n"; 
+        last;
+    }
+}
+
+close FILE;
+}}}
+
+  * Add UTF-8 related code to the global and site specific main_layout templates as below:
+{{{
+<html>
+<head>
+
+[%# (23-aug-2010 kl) -- for overkill .... added 'HTML meta tag equivalent 
+    to the Content-Type HTTP header'  
+%]
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+[% INCLUDE html_header %]
+
+</head>
+
+<body leftmargin="0" rightmargin="0" onload="" topmargin="0" marginwidth="0" marginheight="0">
+
+[% INCLUDE page_header %]
+[% INCLUDE sidebar %]
+
+<div id="content">
+
+<span id="page-title">[% page.title %]</span>
+
+[%# (23-aug-2010 kl) -- added 'accept-charset' so that utf8 encoded data would 
+    be read in from input fields on forms correctly 
+%]
+
+<form method="post" action="[% page.form_url %]" accept-charset="utf-8">
+
+[% page.hidden_fields %]
+[% INCLUDE $screen %]
+
+</form>
+</div>
+
+[% INCLUDE page_footer %]
+
+</body>
+</html>
+}}}
+
+
+  * If you use 'citation.openurl' in your templates, you may need to change to 'citation.openurl_latin1' or even 'citation.openurl_ascii' depending on the capabilities of the remote system.
+
+  * Currently (05-dec-2010) links to illiad should use 'citation.openurl_latin1'.
+
+  * Any instances of using the 'escape' method in global or site templates requires first encoding the string as UTF-8.  For example, '[% SET query  = query.escape %]' in the main_holdings_related_info template would become '[% SET query  = query.encode_utf8.escape %]'.  
+
+  * In comparison to the above, the 'escapeHTML' method needs to operate on a character string instead of a byte string so no change is required.
+
+
+==== Testing: ====
+
+Test that your installation of godot is properly handling incoming ascii, ISO 8859-1 (eg. Latin-1) and UTF-8 encoded citations and is able to match records with either UTF-8 or MARC-8 encoding.  The test cases below point to the SFU copy of godot.  You will need to make copies of the links and change them to point at your godot. 
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?genre=article&atitle=Determining%20the%20causes%20of%20fertility%20problems%E2%80%A6%20this%20article%20is%20the%20third%20in%20our%20series%20about%20fertility%2E&title=Nursing%20Times&issn=0954-7762&volume=93&issue=45&date=1997-11-05&spage=48-50 Nursing Times] (UTF-8 encoded horizontal ellipsis character.  Will be transliterated to '...' for the CUFTS URL.)
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?__char_set=utf8&id=pmid:18586456 pmid:18586456] (Only citation data is pmid.  Data fetched from pubmed has latin1 encoding.  First 'a' in author Estefânia has caret accent. )
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?sid=FirstSearch%3AAnthropologyPlus&genre=article&atitle=Divided%20we%20stand%3A%20survival%20and%20tension%20among%20the%20Sekani%20Indians%20of%20northern%20British%20Columbia&title=Anthropologie%20et%20soci%E9t%E9s&volume=14&spage=117&epage=41&date=1990&aulast=Lanoue&aufirst=Guy&id=doi%3A&pid=%3Caccession%20number%3E909522230%20909522230%3C%2Faccession%20number%3E%3Cfssessid%3Efsapp7-55896-g1shqq8u-3lz89p%3C%2Ffssessid%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AAnthropologyPlus&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&req_dat=%3Csessionid%3Efsapp7-55896-g1shqq8u-3lz89p%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E909522230%20909522230%3C%2Faccessionnumber%3E&rft.aulast=Lanoue&rft.aufirst=Guy&rft.atitle=Divided%20we%20stand%3A%20survival%20and%20tension%20among%20the%20Sekani%20Indians%20of%20northern%20British%20Columbia&rft.jtitle=Anthropologie%20et%20soci%E9t%E9s&rft.date=1990&rft.volume=14&rft.spage=117&rft.epage=41&rft.genre=article Anthropologie et sociétés] (Latin1 encoding for the two é in title.  )
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?sid=FirstSearch%3AWorldCat&genre=book&title=L%E0-bas+%28Down+there%29.&date=1972&aulast=Huysmans&aufirst=J&auinitm=-K Là-bas (Down there)] (Latin1 encoding.)
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?hold_tab_dbase=blank&hold_tab_dt=BOOK&hold_tab_so=The%20Queen%92s%20other%20realms%3A%20the%20Crown%20and%20its%20legacy%20in%20Australia%2C%20Canada%20and%20New%20Zealand&hold_tab_au=Peter%20Boyce&hold_tab_py=2008&hold_tab_isbn=9781862877009&hold_tab_pub=Federation%20Press The Queen's other realms: the Crown and its legacy in Australia, Canada and New Zealand] (Windows-1252 encoding for apostrophe in title.)
+  * [http://godot.lib.sfu.ca/GODOT/hold_tab.cgi/BVAS?genre=book&title=Harc%C3%A8lements%20%C3%A0%20l%27%C3%A9cole Harcèlements à l'école] (UTF-8 encoding.)
+
+
+
+

@@ -1,0 +1,82 @@
+= Button Images =
+
+{{{
+#!html
+
+<table cellpadding=25 border=0>
+
+<tr>
+<td valign=bottom align=center>
+<img src="http://godot.lib.sfu.ca/godot/images/axiom_godot.gif">
+<br>
+53 X 80 px
+</td>
+
+
+
+<td valign=bottom align=center>
+<img src="http://godot.lib.sfu.ca/godot/images/rlg_godot.gif">
+<br>
+172 X 27 px
+</td>
+
+
+<td valign=bottom align=center>
+<img src="http://godot.lib.sfu.ca/godot/images/rlg_godot_no_black_line.gif">
+<br>
+170 X 25 px
+</td>
+
+</tr>
+<tr>
+
+
+<td valign=bottom align=center>
+<img src="http://static.lib.sfu.ca/images/pubmed_godot.gif">
+<br>
+146 X 15 px
+</td>
+
+
+
+<td valign=bottom align=center>
+<img src="http://static.lib.sfu.ca/images/pubmed_godot_2.jpg">
+<br>
+120 X 12 px
+</td>
+
+
+<td valign=bottom align=center>
+<img src="http://static.lib.sfu.ca/images/pubmed_godot3.jpg">
+<br>
+121 X 31 px
+</td>
+
+
+
+
+</tr>
+<tr>
+
+
+
+<td valign=bottom align=center>
+<img src="http://godot.lib.sfu.ca/godot/images/infotrac_godot.gif">
+<br>
+54 X 20 px
+</td>
+
+<td valign=bottom align=center>
+<img src="http://godot.lib.sfu.ca/godot/images/godotbtn.gif"> <sup>*</sup>
+<br>
+50 X 24 px
+</td>
+
+</tr>
+</table>
+
+
+(* Provided by Eric Tull at the University of Calgary.)
+
+
+}}}

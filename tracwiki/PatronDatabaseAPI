@@ -1,0 +1,201 @@
+= Patron Database API Specifications =
+
+This document describes the default GODOT patron database API.  The original idea was to have GODOT talk directly to the various ILS patron APIs.  This is the case with the III HTML API. However, as I started looking at how to add logic to make GODOT talk to the new UBC full record DRA API and the University of Calgary's SIRSI API it became apparent that it would make more sense to define a default GODOT patron API and then, if necessary, write gateway software to link GODOT and the ILS (or other) patron database API.
+
+The reason for using this approach is that the combination of the various vendor's patron database APIs and the implementation differences between sites that are using the same ILS, meant that there were potentially a large number of configuration options.  Some of the options are not completely straightforward to specify. As well, this gateway approach provides much more flexibility in terms of the sources of patron information.  For instance, patron information from an ILS could be combined with email address information from a separate database.
+
+The following describes two patron database APIs.  The first one, the non-HTTP API, is currently implemented and is based on  the patron database API documentation written by UBC and the University of Alberta.  The second one, the HTTP API, is a proposal only, but could be easily implemented if there was a demand. 
+
+The other alternative is using the API used by the 'III HTTP Patron API' which is implemented in GODOT.  This has been done by a couple of sites.  For the documentation on the 'III HTTP Patron API' please email us so we can fax it to you.
+
+== Non-HTTP Patron API ==
+
+GODOT communicates with the API using a TCP stream connection to a specified machine and port.
+
+Once connected, the client sends a command and waits for the reply.After the reply is received, the client may send another command, or close the connection. Each command is sent to the server as a single line of text, terminated by a linefeed (hex 0A) or a carriage return followed by a linefeed (hex 0D followed by hex 0A). All commands except for the QUIT command produce a reply message, which consists of a number of key-data pairs.  The reply is formatted as follows:
+
+
+{{{
+
+        <reply> ::= <line>... ">\r\n"
+        <line>  ::= <key> ">" <data> "\r\n"
+        <key>   ::= one or more upper case letters, digits, or underscore.
+        <data>  ::= one or more characters, not including \r, \n, or the ">" character.
+
+        ("\r", "\n", and ">" refer to the carriage return character (hex 0D),
+         the linefeed character (hex 0A), and the greater-than character,
+         (hex 62) respectively).
+
+}}}  
+
+The keys are unique.  The order of fields in the replies is not guaranteed.  For example, the reply to a successful AUTH command might look like:
+
+{{{
+
+PATR_LIBRARY_ID_FIELD>29424000037031\r\n           
+PATR_STREET_FIELD>211-1805 Crescent Road\r\n           
+PATR_POSTAL_CODE_FIELD>W7B 3Q3\r\n           
+...
+>\r\n
+
+}}}
+
+
+== Commands ==
+
+
+=== AUTH ===
+
+==== Syntax ==== 
+AUTH <id> [<pin>]
+
+==== Parameters ==== 
+<id>  is the patron's library card number (or barcode); <pin> is the patron's PIN
+
+==== Description ====
+
+Given a patron's library card and personal identification numbers, this command locates and returns the the patron data.
+
+==== Returned Data ====
+If a patron record is found with the given barcode, and if the supplied PIN is correct, then the patron data is returned.  The field names are listed in GODOT Patron Fields.  In addition, one or more of the following 'status' fields are returned: 
+
+||'''Fields'''||'''Values'''||
+||VALID ||	[ Y | N ] ||
+||VALID_REASON || If VALID=N then this will contain a textual explanation of the problem. Reasons for a patron record to be considered invalid could include expiration of the card, or an excessive amount of items overdue or amount owed. ||
+||ERROR || If the barcode or pin are incorrect, or there is some other error getting the patron data, then a '''single''' field of the form 'ERROR> <message>' is returned. ||
+
+
+Currently GODOT handles the return of 'ERROR>...' and 'VALID>N' in the same way.  In the future, however, they may be handled in different ways, so you will want to keep this in mind when determining which 'status' field to return. 
+
+==== Examples ====
+
+{{{
+command: AUTH 29424000037031 1234
+
+reply:   ERROR>barcode or pin is incorrect
+
+command: AUTH 29424000037031 5678 
+
+reply:   PATR_LIBRARY_ID_FIELD>29424000037031                
+         VALID>Y 
+         PATR_STREET_FIELD>211-1805, Crescent Road               
+         PATR_PROV_FIELD>AB                
+         PATR_PHONE_FIELD>403-232-1234                
+         PATR_PATRON_EMAIL_FIELD>fbloggs@isp.bc.ca                
+         PATR_PATRON_TYPE_FIELD>Undergraduate                
+         PATR_FIRST_NAME_FIELD>Fred A                
+         PATR_LAST_NAME_FIELD>Bloggs                
+         PATR_CITY_FIELD>Herne Bay ...
+
+command: AUTH 29424000056762 4444 
+
+reply:   ERROR>Patron's card has expired
+}}}
+
+
+=== LOGOUT ===
+
+==== Syntax ====
+
+LOGOUT
+
+==== Parameters ====
+
+none
+
+==== Description ====
+
+This command has no effect other than to record a logout message in the auth server log file (if one exists).
+
+==== Returned Data ====
+
+No fields are returned.  That is, the reply message will always be just ">\r\n".
+
+=== QUIT ===
+
+==== Syntax ====
+
+QUIT
+
+==== Parameters ====
+
+none
+
+==== Description ====
+
+This command causes the server to close the connection to the client.  An equally acceptable way for the client to terminate the session is for it to close the connection itself.
+
+
+==== Returned Data ====
+
+The connection is closed immediately.  No data at all is returned (not even the reply terminator ">\r\n").
+ 
+
+== HTTP Patron API ==
+
+This API described below is not yet fully implemented, but could easily be, if there was a demand. 
+
+=== AUTH (HTTP) ===
+
+==== Syntax ====
+
+{{{
+http://<machine>[:<port>]/AUTH/<id>[/<pin>]
+}}}
+==== Parameters ====
+
+
+  * <machine> is the web server
+  * <port> is the web server port
+  * <id> is the patron's library card number (or barcode)
+  * <pin> is the patron's PIN
+
+==== Returned Data ====
+
+
+{{{
+http://mymachine.lib.sfu.ca:4500/AUTH/2934500093456/1234
+
+<HTML><BODY>
+PATR_LIBRARY_ID_FIELD=29424000037031<BR>
+VALID=Y<BR>
+PATR_STREET_FIELD=211-1805, Crescent Road<BR>
+PATR_PROV_FIELD=AB<BR>
+PATR_PHONE_FIELD=403-232-1234<BR>
+PATR_PATRON_EMAIL_FIELD=fbloggs@isp.bc.ca<BR>
+PATR_PATRON_TYPE_FIELD=Undergraduate<BR>
+PATR_FIRST_NAME_FIELD=Fred A<BR>
+PATR_LAST_NAME_FIELD=Bloggs<BR>
+PATR_CITY_FIELD=Herne Bay<BR>
+</BODY></HTML>
+
+}}}
+
+
+== GODOT Patron Fields ==
+
+These are the fields returned by the AUTH command. Fields containing no data do not need to be returned. 
+
+||VALID||see AUTH command description||
+||VALID_REASON||see AUTH command description||
+||ERROR||see AUTH command description||
+||PATR_FIRST_NAME_FIELD||First + Middle name||
+||PATR_LAST_NAME_FIELD||Last name||
+||PATR_LIBRARY_ID_FIELD||Patron library card number or barcode||
+||PATR_PATRON_TYPE_FIELD||Patron type. Should match list specified by GODOT configuration tool.||
+||PATR_DEPARTMENT_FIELD||Department||
+||PATR_PATRON_EMAIL_FIELD||e-mail address||
+||PATR_PICKUP_FIELD||Pickup location. Should match list specified by GODOT configuration tool.||
+||PATR_PHONE_FIELD||Telephone number||
+||PATR_PHONE_WORK_FIELD||Telephone number at work||
+||PATR_BUILDING_FIELD||Building||
+||PATR_PATRON_NOTI_FIELD||How to notify patron (ex. phone, email)||
+||PATR_STREET_FIELD||Street address Line 1 + Line 2||
+||PATR_CITY_FIELD||City||
+||PATR_PROV_FIELD||Province||
+||PATR_POSTAL_CODE_FIELD||Postal code||
+||PATR_PAID_FIELD||Payment method||
+||PATR_ACCOUNT_NO_FIELD||Account||
+||PATR_NOTE_FIELD||Notes||
+
+
