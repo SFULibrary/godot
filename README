@@ -1,5 +1,11 @@
 README
 
+UPDATE: As of Aug. 31, 2017 all reSearcher projects have been shut down. lib-code.lib.sfu.ca has been discontinued.  The code for GODOT can be found here.  The documentation previously available on the GODOT Trac wiki can be found in the tracwiki directory of this repository as text files.  As all reSearcher projects have been discontiuned no support is available and the code is provided as is.
+
+
+Original README file follows.
+
+
 Installing GODOT
 
     Please see 'http://researcher.sfu.ca | DOCUMENTS | GODOT Administration Guide'
